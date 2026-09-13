@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hant">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Money Statistics - 方案</title>
+
+
+    <!-- Supabase -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            min-height: 100vh;
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                "Microsoft JhengHei",
+                sans-serif;
+
+            background: #f5f5f7;
+
+            color: #1d1d1f;
+
+        }
+
+
+        /* ========================================
+           Header
+        ======================================== */
+
+        .header {
+
+            height: 64px;
+
+            padding: 0 32px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            background: rgba(255, 255, 255, 0.9);
+
+            border-bottom:
+                1px solid #e5e5e5;
+
+            backdrop-filter: blur(20px);
+
+        }
+
+
+        .brand {
+
+            font-size: 20px;
+
+            font-weight: 600;
+
+        }
+
+
+        .header-right {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 16px;
+
+        }
+
+
+        .user-email {
+
+            color: #6e6e73;
+
+            font-size: 14px;
+
+        }
+
+
+        .logout-button {
+
+            padding: 8px 16px;
+
+            border: 1px solid #d2d2d7;
+
+            border-radius: 8px;
+
+            background: white;
+
+            color: #1d1d1f;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+        }
+
+
+        .logout-button:hover {
+
+            background: #f5f5f7;
+
+        }
+
+
+        /* ========================================
+           Content
+        ======================================== */
+
+        .content {
+
+            max-width: 1100px;
+
+            margin: 0 auto;
+
+            padding: 50px 24px;
+
+        }
+
+
+        .back-button {
+
+            display: inline-block;
+
+            margin-bottom: 24px;
+
+            color: #0071e3;
+
+            text-decoration: none;
+
+            font-size: 15px;
+
+        }
+
+
+        .back-button:hover {
+
+            text-decoration: underline;
+
+        }
+
+
+        .page-title {
+
+            margin: 0;
+
+            font-size: 36px;
+
+            font-weight: 600;
+
+        }
+
+
+        .page-description {
+
+            margin-top: 10px;
+
+            margin-bottom: 35px;
+
+            color: #6e6e73;
+
+            font-size: 16px;
+
+        }
+
+
+        /* ========================================
+           Plan Card
+        ======================================== */
+
+        .plan-container {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(320px, 1fr));
+
+            gap: 24px;
+
+        }
+
+
+        .plan-card {
+
+            background: white;
+
+            border-radius: 22px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.06);
+
+        }
+
+
+        .plan-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .plan-name {
+
+            margin: 0;
+
+            font-size: 24px;
+
+            font-weight: 600;
+
+        }
+
+
+        /* ========================================
+           Status
+        ======================================== */
+
+        .status {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            padding: 6px 12px;
+
+            border-radius: 20px;
+
+            font-size: 13px;
+
+            font-weight: 500;
+
+            white-space: nowrap;
+
+        }
+
+
+        .status-pending {
+
+            background: #fff4ce;
+
+            color: #8a5a00;
+
+        }
+
+
+        .status-active {
+
+            background: #e3f7e8;
+
+            color: #1f7a35;
+
+        }
+
+
+        .status-expired {
+
+            background: #eeeeef;
+
+            color: #6e6e73;
+
+        }
+
+
+        .status-cancelled {
+
+            background: #ffe5e5;
+
+            color: #c41e3a;
+
+        }
+
+
+        .status-refunded {
+
+            background: #f0e5ff;
+
+            color: #6f42c1;
+
+        }
+
+
+        .status-suspended {
+
+            background: #ffe8d5;
+
+            color: #a44a00;
+
+        }
+
+
+        /* ========================================
+           Information
+        ======================================== */
+
+        .info-list {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 0;
+
+        }
+
+
+        .info-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 20px;
+
+            padding: 15px 0;
+
+            border-bottom:
+                1px solid #eeeeef;
+
+        }
+
+
+        .info-row:last-child {
+
+            border-bottom: none;
+
+        }
+
+
+        .info-label {
+
+            color: #6e6e73;
+
+            font-size: 14px;
+
+        }
+
+
+        .info-value {
+
+            font-size: 15px;
+
+            font-weight: 500;
+
+            text-align: right;
+
+        }
+
+
+        .price {
+
+            font-size: 20px;
+
+            font-weight: 600;
+
+        }
+
+
+        /* ========================================
+           Loading
+        ======================================== */
+
+        .loading {
+
+            padding: 60px 20px;
+
+            text-align: center;
+
+            color: #6e6e73;
+
+        }
+
+
+        /* ========================================
+           Empty
+        ======================================== */
+
+        .empty {
+
+            padding: 60px 30px;
+
+            text-align: center;
+
+            background: white;
+
+            border-radius: 22px;
+
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.06);
+
+        }
+
+
+        .empty-title {
+
+            font-size: 22px;
+
+            font-weight: 600;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .empty-description {
+
+            color: #6e6e73;
+
+        }
+
+
+        /* ========================================
+           Error
+        ======================================== */
+
+        .error {
+
+            padding: 20px;
+
+            border-radius: 14px;
+
+            background: #ffe5e5;
+
+            color: #c41e3a;
+
+            line-height: 1.6;
+
+        }
+
+
+        /* ========================================
+           Responsive
+        ======================================== */
+
+        @media (max-width: 600px) {
+
+            .header {
+
+                padding: 0 16px;
+
+            }
+
+
+            .user-email {
+
+                display: none;
+
+            }
+
+
+            .content {
+
+                padding: 35px 16px;
+
+            }
+
+
+            .page-title {
+
+                font-size: 30px;
+
+            }
+
+
+            .plan-header {
+
+                flex-direction: column;
+
+            }
+
+
+            .info-row {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+                gap: 5px;
+
+            }
+
+
+            .info-value {
+
+                text-align: left;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ========================================
+         Header
+    ======================================== -->
+
+    <header class="header">
+
+        <div class="brand">
+
+            Money Statistics
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span
+                class="user-email"
+                id="userEmail"
+            >
+                載入中…
+            </span>
+
+
+            <button
+                class="logout-button"
+                id="logoutButton"
+            >
+                登出
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ========================================
+         Main
+    ======================================== -->
+
+    <main class="content">
+
+
+        <a
+            href="index.html"
+            class="back-button"
+        >
+            ← 返回
+        </a>
+
+
+        <h1 class="page-title">
+            我的方案
+        </h1>
+
+
+        <p class="page-description">
+            查看目前 Money Statistics 的方案與合約資訊。
+        </p>
+
+
+        <!-- Loading -->
+
+        <div
+            id="loading"
+            class="loading"
+        >
+            正在載入方案資訊…
+        </div>
+
+
+        <!-- Plan -->
+
+        <div
+            id="planContainer"
+            class="plan-container"
+        ></div>
+
+
+    </main>
+
+
+
+    <!-- Supabase Client -->
+
+    <script src="supabase.js"></script>
+
+
+    <script>
+
+        // ========================================
+        // DOM
+        // ========================================
+
+        const userEmail =
+            document.getElementById("userEmail");
+
+        const logoutButton =
+            document.getElementById("logoutButton");
+
+        const loading =
+            document.getElementById("loading");
+
+        const planContainer =
+            document.getElementById("planContainer");
+
+
+        // ========================================
+        // 狀態中文
+        // ========================================
+
+        const statusNames = {
+
+            pending: "待生效",
+
+            active: "使用中",
+
+            expired: "已到期",
+
+            cancelled: "已取消",
+
+            refunded: "已退款",
+
+            suspended: "已暫停"
+
+        };
+
+
+        // ========================================
+        // 格式化狀態
+        // ========================================
+
+        function getStatusName(status) {
+
+            return statusNames[status]
+                || status;
+
+        }
+
+
+        // ========================================
+        // 格式化日期
+        // ========================================
+
+        function formatDate(dateString) {
+
+            if (!dateString) {
+
+                return "-";
+
+            }
+
+
+            const date =
+                new Date(dateString);
+
+
+            if (isNaN(date.getTime())) {
+
+                return dateString;
+
+            }
+
+
+            return date.toLocaleDateString(
+                "zh-TW",
+                {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit"
+                }
+            );
+
+        }
+
+
+        // ========================================
+        // 格式化價格
+        // ========================================
+
+        function formatPrice(
+            price,
+            currency
+        ) {
+
+            if (
+                price === null ||
+                price === undefined
+            ) {
+
+                return "-";
+
+            }
+
+
+            const number =
+                Number(price);
+
+
+            if (isNaN(number)) {
+
+                return price;
+
+            }
+
+
+            return number.toLocaleString(
+                "zh-TW",
+                {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2
+                }
+            )
+            + " "
+            + (currency || "");
+
+        }
+
+
+        // ========================================
+        // 取得方案期間
+        // ========================================
+
+        function formatPeriod(plan) {
+
+            const start =
+                plan.start_year
+                + " 年 "
+                + String(plan.start_month).padStart(2, "0")
+                + " 月";
+
+
+            const end =
+                plan.end_year
+                + " 年 "
+                + String(plan.end_month).padStart(2, "0")
+                + " 月";
+
+
+            return start + " ～ " + end;
+
+        }
+
+
+        // ========================================
+        // 建立方案卡片
+        // ========================================
+
+        function createPlanCard(plan) {
+
+            const status =
+                String(plan.status || "")
+                    .toLowerCase();
+
+
+            const statusName =
+                getStatusName(status);
+
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "plan-card";
+
+
+            card.innerHTML = `
+
+                <div class="plan-header">
+
+                    <h2 class="plan-name">
+                        ${escapeHtml(
+                            plan.plan_name || "-"
+                        )}
+                    </h2>
+
+                    <span
+                        class="status status-${escapeHtml(status)}"
+                    >
+                        ${escapeHtml(statusName)}
+                    </span>
+
+                </div>
+
+
+                <div class="info-list">
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            方案年限
+                        </span>
+
+                        <span class="info-value">
+                            ${escapeHtml(
+                                plan.duration_years
+                                ?? "-"
+                            )} 年
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            方案期間
+                        </span>
+
+                        <span class="info-value">
+                            ${escapeHtml(
+                                formatPeriod(plan)
+                            )}
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            方案價格
+                        </span>
+
+                        <span class="info-value price">
+                            ${escapeHtml(
+                                formatPrice(
+                                    plan.plan_price,
+                                    plan.currency
+                                )
+                            )}
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            方案貨幣
+                        </span>
+
+                        <span class="info-value">
+                            ${escapeHtml(
+                                plan.currency || "-"
+                            )}
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            方案建立日期
+                        </span>
+
+                        <span class="info-value">
+                            ${escapeHtml(
+                                formatDate(
+                                    plan.created_at
+                                )
+                            )}
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            方案更新日期
+                        </span>
+
+                        <span class="info-value">
+                            ${escapeHtml(
+                                formatDate(
+                                    plan.update_at
+                                )
+                            )}
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            `;
+
+
+            return card;
+
+        }
+
+
+        // ========================================
+        // HTML 安全處理
+        // ========================================
+
+        function escapeHtml(value) {
+
+            if (value === null ||
+                value === undefined) {
+
+                return "";
+
+            }
+
+
+            return String(value)
+
+                .replace(/&/g, "&amp;")
+
+                .replace(/</g, "&lt;")
+
+                .replace(/>/g, "&gt;")
+
+                .replace(/"/g, "&quot;")
+
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        // ========================================
+        // 載入方案
+        // ========================================
+
+        async function loadPlans(userId) {
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await supabaseClient
+
+                    .from("licenses_plan")
+
+                    .select(`
+                        plan_name,
+                        duration_years,
+                        start_year,
+                        start_month,
+                        end_year,
+                        end_month,
+                        plan_price,
+                        currency,
+                        status,
+                        created_at,
+                        update_at
+                    `)
+
+                    .eq(
+                        "owner_user",
+                        userId
+                    )
+
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                loading.style.display =
+                    "none";
+
+
+                // 沒有方案
+
+                if (
+                    !data ||
+                    data.length === 0
+                ) {
+
+                    planContainer.innerHTML = `
+
+                        <div class="empty">
+
+                            <div class="empty-title">
+                                目前沒有方案
+                            </div>
+
+                            <div class="empty-description">
+                                您目前尚未擁有任何 Money Statistics 方案。
+                            </div>
+
+                        </div>
+
+                    `;
+
+                    return;
+
+                }
+
+
+                // 顯示方案
+
+                data.forEach(
+                    function (plan) {
+
+                        planContainer.appendChild(
+                            createPlanCard(plan)
+                        );
+
+                    }
+                );
+
+            }
+            catch (error) {
+
+                console.error(error);
+
+
+                loading.style.display =
+                    "none";
+
+
+                planContainer.innerHTML = `
+
+                    <div class="error">
+
+                        <strong>
+                            無法取得方案資訊
+                        </strong>
+
+                        <br><br>
+
+                        ${escapeHtml(
+                            error.message
+                        )}
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+        // ========================================
+        // 初始化
+        // ========================================
+
+        async function initialize() {
+
+            const {
+                data: {
+                    session
+                }
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            // 沒有登入
+
+            if (!session) {
+
+                window.location.href =
+                    "login.html";
+
+                return;
+
+            }
+
+
+            // 顯示 Email
+
+            userEmail.textContent =
+                session.user.email;
+
+
+            // 載入方案
+
+            await loadPlans(
+                session.user.id
+            );
+
+        }
+
+
+        initialize();
+
+
+        // ========================================
+        // 登出
+        // ========================================
+
+        logoutButton.addEventListener(
+            "click",
+            async function () {
+
+                logoutButton.disabled = true;
+
+                logoutButton.textContent =
+                    "登出中…";
+
+
+                const {
+                    error
+                } =
+                    await supabaseClient.auth.signOut();
+
+
+                if (error) {
+
+                    console.error(error);
+
+
+                    alert(
+                        "登出失敗：" +
+                        error.message
+                    );
+
+
+                    logoutButton.disabled = false;
+
+                    logoutButton.textContent =
+                        "登出";
+
+                    return;
+
+                }
+
+
+                window.location.href =
+                    "login.html";
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
