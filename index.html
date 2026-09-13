@@ -182,8 +182,24 @@
             box-shadow:
                 0 8px 30px rgba(0, 0, 0, 0.06);
 
+                
+
         }
 
+        .clickable-card {
+            cursor: pointer;
+
+             transition:
+                  transform 0.2s,
+                  box-shadow 0.2s;
+       }
+
+        .clickable-card:hover {
+             transform: translateY(-3px);
+
+             box-shadow:
+                   0 12px 35px rgba(0, 0, 0, 0.10);
+     }
 
         .card h2 {
 
@@ -293,31 +309,21 @@
         <div class="card-container">
 
 
-            <div class="card">
+            <div
+    class="card clickable-card"
+    onclick="window.location.href='licenses_plan.html'"
+>
 
-                <h2>
-                    財務管理
-                </h2>
+    <h2>
+        方案
+    </h2>
 
-                <p>
-                    管理您的財務資料與相關統計。
-                </p>
+    <p>
+        查看目前 Money Statistics
+        使用方案與合約資訊。
+    </p>
 
-            </div>
-
-
-            <div class="card">
-
-                <h2>
-                    方案
-                </h2>
-
-                <p>
-                    查看目前 Money Statistics
-                    使用方案與合約資訊。
-                </p>
-
-            </div>
+</div>
 
 
             <div class="card">
