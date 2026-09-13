@@ -8,5 +8,10 @@ const SUPABASE_ANON_KEY = "sb_publishable_GT64xGBTDavCDwxEolZrlA_63WIx7_W";
 // 建立 Supabase Client
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
-    SUPABASE_ANON_KEY
+    SUPABASE_ANON_KEY,
+    {
+        db: {
+            schema: "licenses"
+        }
+    }
 );
