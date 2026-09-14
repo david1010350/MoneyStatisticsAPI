@@ -5,30 +5,20 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <title>
-        驗證中 - Money Statistics
-    </title>
+    <title>驗證中 - Money Statistics</title>
 
-
-    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
-    <!-- Supabase 設定 -->
     <script src="supabase.js"></script>
-
 
     <style>
 
         * {
             box-sizing: border-box;
         }
-
 
         body {
 
@@ -52,76 +42,39 @@
                 "Microsoft JhengHei",
                 sans-serif;
 
-            color: #1d1d1f;
         }
 
-
-        .container {
+        .card {
 
             width: 100%;
 
-            max-width: 420px;
+            max-width: 400px;
 
-            padding: 20px;
-        }
+            margin: 20px;
 
-
-        .card {
+            padding: 40px 30px;
 
             background: white;
 
             border-radius: 24px;
-
-            padding: 40px 30px;
 
             text-align: center;
 
             box-shadow:
                 0 8px 30px
                 rgba(0, 0, 0, 0.06);
+
         }
-
-
-        .logo {
-
-            width: 70px;
-
-            height: 70px;
-
-            margin:
-                0 auto
-                25px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-        }
-
-
-        .logo img {
-
-            width: 100%;
-
-            height: 100%;
-
-            object-fit: contain;
-        }
-
 
         h1 {
 
-            margin:
-                0
-                0
-                12px;
+            margin: 0 0 12px;
 
-            font-size: 26px;
+            font-size: 24px;
 
-            font-weight: 700;
+            color: #1d1d1f;
+
         }
-
 
         p {
 
@@ -129,11 +82,9 @@
 
             color: #6e6e73;
 
-            font-size: 15px;
-
             line-height: 1.6;
-        }
 
+        }
 
         .spinner {
 
@@ -141,65 +92,37 @@
 
             height: 32px;
 
-            margin:
-                25px auto
-                0;
+            margin: 25px auto 0;
 
-            border:
-                3px solid
-                #e5e5e7;
+            border: 3px solid #e5e5e7;
 
-            border-top-color:
-                #0071e3;
+            border-top-color: #0071e3;
 
             border-radius: 50%;
 
-            animation:
-                spin
-                0.8s
-                linear
-                infinite;
-        }
+            animation: spin 0.8s linear infinite;
 
+        }
 
         @keyframes spin {
 
-            from {
-
-                transform:
-                    rotate(0deg);
-
-            }
-
             to {
 
-                transform:
-                    rotate(360deg);
+                transform: rotate(360deg);
 
             }
 
         }
-
 
         .error {
 
             margin-top: 20px;
 
-            padding: 15px;
+            color: #d93025;
 
-            background: #fff1f0;
-
-            color: #c62828;
-
-            border-radius: 12px;
-
-            font-size: 14px;
-
-            line-height: 1.6;
         }
 
-
-        .back-button {
+        .button {
 
             display: none;
 
@@ -209,21 +132,13 @@
 
             border: none;
 
-            border-radius: 12px;
+            border-radius: 10px;
 
             background: #0071e3;
 
             color: white;
 
-            font-size: 14px;
-
             cursor: pointer;
-        }
-
-
-        .back-button:hover {
-
-            background: #0066cc;
 
         }
 
@@ -235,69 +150,37 @@
 <body>
 
 
-<div class="container">
+<div class="card">
+
+    <h1 id="title">
+        正在驗證
+    </h1>
 
 
-    <div class="card">
+    <p id="message">
+        正在確認您的密碼重設連結……
+    </p>
 
 
-        <!-- Logo -->
-
-        <div class="logo">
-
-            <!--
-            如果你有 Logo，
-            可以把下面這行改成 img
-            -->
-
-            <span
-                style="
-                    font-size: 40px;
-                    font-weight: 700;
-                    color: #0071e3;
-                "
-            >
-                M
-            </span>
-
-        </div>
+    <div
+        id="spinner"
+        class="spinner"
+    ></div>
 
 
-        <h1
-            id="title"
-        >
-            正在驗證
-        </h1>
+    <div
+        id="error"
+        class="error"
+    ></div>
 
 
-        <p
-            id="description"
-        >
-            正在確認您的登入資訊，請稍候……
-        </p>
-
-
-        <div
-            id="spinner"
-            class="spinner"
-        ></div>
-
-
-        <div
-            id="error"
-        ></div>
-
-
-        <button
-            id="backButton"
-            class="back-button"
-            onclick="goLogin()"
-        >
-            返回登入
-        </button>
-
-
-    </div>
+    <button
+        id="loginButton"
+        class="button"
+        onclick="goLogin()"
+    >
+        返回登入
+    </button>
 
 
 </div>
@@ -306,117 +189,6 @@
 <script>
 
 
-    /*
-     * Money Statistics
-     * Auth Callback
-     */
-
-
-    const title =
-        document.getElementById("title");
-
-
-    const description =
-        document.getElementById("description");
-
-
-    const spinner =
-        document.getElementById("spinner");
-
-
-    const errorBox =
-        document.getElementById("error");
-
-
-    const backButton =
-        document.getElementById("backButton");
-
-
-
-    /*
-     * 顯示錯誤
-     */
-    function showError(message) {
-
-        spinner.style.display =
-            "none";
-
-
-        title.textContent =
-            "驗證失敗";
-
-
-        description.textContent =
-            "無法完成帳號驗證。";
-
-
-        errorBox.innerHTML = `
-
-            <div class="error">
-
-                ${escapeHtml(message)}
-
-            </div>
-
-        `;
-
-
-        backButton.style.display =
-            "inline-block";
-
-    }
-
-
-
-    /*
-     * HTML 安全處理
-     */
-    function escapeHtml(value) {
-
-        if (
-            value === null ||
-            value === undefined
-        ) {
-
-            return "";
-
-        }
-
-
-        return String(value)
-
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-
-            .replace(
-                /</g,
-                "&lt;"
-            )
-
-            .replace(
-                />/g,
-                "&gt;"
-            )
-
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-
-            .replace(
-                /'/g,
-                "&#039;"
-            );
-
-    }
-
-
-
-    /*
-     * 返回登入
-     */
     function goLogin() {
 
         window.location.href =
@@ -425,242 +197,96 @@
     }
 
 
+    function showError(message) {
 
-    /*
-     * 跳轉至重設密碼
-     */
-    function goUpdatePassword() {
-
-        title.textContent =
-            "驗證成功";
+        document
+            .getElementById("spinner")
+            .style.display = "none";
 
 
-        description.textContent =
-            "正在前往重設密碼頁面……";
+        document
+            .getElementById("title")
+            .textContent =
+            "連結無效";
 
 
-        setTimeout(() => {
+        document
+            .getElementById("message")
+            .textContent =
+            "此密碼重設連結可能已失效。";
 
-            window.location.href =
-                "update-password.html";
 
-        }, 800);
+        document
+            .getElementById("error")
+            .textContent =
+            message;
+
+
+        document
+            .getElementById("loginButton")
+            .style.display =
+            "inline-block";
 
     }
 
 
-
-    /*
-     * 初始化 Auth Callback
-     */
     async function initializeAuthCallback() {
 
         try {
 
-
             /*
-             * 先取得網址 Hash
-             *
-             * Supabase Recovery Link
-             * 通常會包含：
-             *
-             * type=recovery
+             * Supabase 會自動從網址 Hash
+             * 讀取 Recovery Token
              */
-            const hashParams =
-                new URLSearchParams(
 
-                    window.location.hash.substring(1)
-
-                );
-
-
-            /*
-             * 取得網址 Query
-             */
-            const queryParams =
-                new URLSearchParams(
-
-                    window.location.search
-
-                );
-
-
-            /*
-             * 判斷是否為 Recovery
-             */
-            const type =
-
-                hashParams.get("type")
-
-                ||
-
-                queryParams.get("type");
-
-
-
-            /*
-             * 顯示 Recovery 狀態
-             */
-            if (
-                type === "recovery"
-            ) {
-
-                title.textContent =
-                    "正在驗證密碼重設";
-
-
-                description.textContent =
-                    "正在確認重設密碼連結……";
-
-            }
-
-
-
-            /*
-             * 監聽 Supabase Auth
-             */
-            const {
-
-                data: authListener
-
-            } =
-
-                supabaseClient.auth
-                    .onAuthStateChange(
-
-                        (
-                            event,
-                            session
-                        ) => {
-
-
-                            console.log(
-                                "Auth Event：",
-                                event
-                            );
-
-
-                            /*
-                             * 密碼重設
-                             */
-                            if (
-                                event ===
-                                "PASSWORD_RECOVERY"
-                            ) {
-
-                                console.log(
-                                    "Password Recovery 成功"
-                                );
-
-
-                                goUpdatePassword();
-
-                            }
-
-
-                        }
-
-                    );
-
-
-
-            /*
-             * 等待 Supabase
-             * 自動處理 URL Token
-             */
-            await new Promise(
-
-                resolve =>
-
-                    setTimeout(
-                        resolve,
-                        1000
-                    )
-
-            );
-
-
-
-            /*
-             * 再確認 Session
-             */
             const {
 
                 data: {
-
                     session
-
                 },
 
                 error
 
             } =
 
-                await supabaseClient.auth
-                    .getSession();
+            await supabaseClient
+                .auth
+                .getSession();
 
 
-
-            /*
-             * Session Error
-             */
-            if (
-                error
-            ) {
-
-                console.error(
-                    error
-                );
-
+            if (error) {
 
                 showError(
                     error.message
                 );
-
 
                 return;
 
             }
 
 
-
             /*
-             * 已經有 Session
+             * 成功取得 Recovery Session
              */
-            if (
-                session
-            ) {
+
+            if (session) {
+
+                document
+                    .getElementById("title")
+                    .textContent =
+                    "驗證成功";
 
 
-                /*
-                 * 如果網址是 Recovery
-                 */
-                if (
-                    type === "recovery"
-                ) {
-
-                    goUpdatePassword();
-
-                    return;
-
-                }
-
-
-                /*
-                 * 其他登入成功
-                 */
-                title.textContent =
-                    "登入成功";
-
-
-                description.textContent =
-                    "正在前往首頁……";
+                document
+                    .getElementById("message")
+                    .textContent =
+                    "正在前往重設密碼頁面……";
 
 
                 setTimeout(() => {
 
                     window.location.href =
-                        "index.html";
+                        "update-password.html";
 
                 }, 800);
 
@@ -670,100 +296,23 @@
             }
 
 
-
             /*
              * 沒有 Session
              */
-            if (
-                !session
-            ) {
 
-                /*
-                 * 如果是 Recovery
-                 * 但尚未取得 Session
-                 *
-                 * 再等待一次
-                 */
-                if (
-                    type === "recovery"
-                ) {
-
-
-                    await new Promise(
-
-                        resolve =>
-
-                            setTimeout(
-                                resolve,
-                                1500
-                            )
-
-                    );
-
-
-                    const {
-
-                        data: {
-
-                            session:
-                            retrySession
-
-                        }
-
-                    }
-
-                    =
-
-                    await supabaseClient.auth
-                        .getSession();
-
-
-
-                    if (
-                        retrySession
-                    ) {
-
-                        goUpdatePassword();
-
-                        return;
-
-                    }
-
-                }
-
-
-                /*
-                 * 最後顯示錯誤
-                 */
-                showError(
-
-                    "此驗證連結可能已失效，請重新申請驗證。"
-
-                );
-
-            }
+            showError(
+                "無法取得密碼重設資訊。"
+            );
 
 
         }
 
-        catch (
-            error
-        ) {
+        catch (error) {
 
-
-            console.error(
-                error
-            );
-
+            console.error(error);
 
             showError(
-
-                error.message
-
-                ||
-
                 "系統發生錯誤。"
-
             );
 
         }
@@ -771,10 +320,6 @@
     }
 
 
-
-    /*
-     * 頁面載入
-     */
     document.addEventListener(
 
         "DOMContentLoaded",
