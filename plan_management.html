@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>方案管理 - Money Statistics</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase.js"></script>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            background: #f5f5f7;
+
+            color: #1d1d1f;
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                "PingFang TC",
+                "Microsoft JhengHei",
+                sans-serif;
+        }
+
+
+        .container {
+
+            width: 100%;
+
+            max-width: 900px;
+
+            margin: 0 auto;
+
+            padding: 40px 20px 80px;
+        }
+
+
+        .back {
+
+            display: inline-block;
+
+            margin-bottom: 25px;
+
+            color: #0071e3;
+
+            text-decoration: none;
+
+            font-size: 14px;
+        }
+
+
+        h1 {
+
+            margin: 0;
+
+            font-size: 32px;
+
+            letter-spacing: -0.5px;
+        }
+
+
+        .subtitle {
+
+            margin-top: 8px;
+
+            color: #6e6e73;
+
+            font-size: 15px;
+        }
+
+
+        .section {
+
+            margin-top: 35px;
+        }
+
+
+        .section-title {
+
+            margin-bottom: 12px;
+
+            font-size: 20px;
+
+            font-weight: 700;
+        }
+
+
+        .current-plan {
+
+            padding: 28px;
+
+            background: white;
+
+            border-radius: 22px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(0, 0, 0, 0.06);
+        }
+
+
+        .current-plan-name {
+
+            font-size: 24px;
+
+            font-weight: 700;
+
+            margin-bottom: 20px;
+        }
+
+
+        .current-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 20px;
+        }
+
+
+        .current-item-label {
+
+            color: #6e6e73;
+
+            font-size: 13px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .current-item-value {
+
+            font-size: 16px;
+
+            font-weight: 600;
+        }
+
+
+        .plans {
+
+            display: grid;
+
+            gap: 14px;
+        }
+
+
+        .plan-option {
+
+            position: relative;
+        }
+
+
+        .plan-option input {
+
+            position: absolute;
+
+            opacity: 0;
+
+            pointer-events: none;
+        }
+
+
+        .plan-card {
+
+            display: block;
+
+            padding: 24px;
+
+            background: white;
+
+            border:
+                2px solid
+                transparent;
+
+            border-radius: 20px;
+
+            cursor: pointer;
+
+            transition:
+                border-color 0.2s,
+                box-shadow 0.2s,
+                transform 0.2s;
+        }
+
+
+        .plan-card:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 8px 25px
+                rgba(0, 0, 0, 0.08);
+        }
+
+
+        .plan-option input:checked
+        + .plan-card {
+
+            border-color: #0071e3;
+
+            box-shadow:
+                0 8px 25px
+                rgba(0, 113, 227, 0.12);
+        }
+
+
+        .plan-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+        }
+
+
+        .plan-name {
+
+            font-size: 19px;
+
+            font-weight: 700;
+        }
+
+
+        .plan-price {
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+
+        .plan-duration {
+
+            margin-top: 8px;
+
+            color: #6e6e73;
+
+            font-size: 14px;
+        }
+
+
+        .actions {
+
+            margin-top: 30px;
+
+            display: flex;
+
+            justify-content: flex-end;
+        }
+
+
+        .next-button {
+
+            padding:
+                13px
+                28px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: #0071e3;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+
+        .next-button:hover {
+
+            background: #0066cc;
+        }
+
+
+        .next-button:disabled {
+
+            opacity: 0.5;
+
+            cursor: default;
+        }
+
+
+        .loading {
+
+            padding: 40px;
+
+            text-align: center;
+
+            color: #6e6e73;
+        }
+
+
+        /* =========================
+           Modal
+           ========================= */
+
+
+        .modal {
+
+            position: fixed;
+
+            inset: 0;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+
+            background:
+                rgba(0, 0, 0, 0.35);
+
+            z-index: 9999;
+        }
+
+
+        .modal.show {
+
+            display: flex;
+        }
+
+
+        .modal-box {
+
+            width: 100%;
+
+            max-width: 440px;
+
+            padding: 30px;
+
+            background: white;
+
+            border-radius: 24px;
+
+            box-shadow:
+                0 20px 60px
+                rgba(0, 0, 0, 0.20);
+        }
+
+
+        .modal-title {
+
+            margin: 0 0 12px;
+
+            font-size: 22px;
+
+            font-weight: 700;
+        }
+
+
+        .modal-message {
+
+            color: #6e6e73;
+
+            line-height: 1.7;
+
+            font-size: 15px;
+        }
+
+
+        .modal-plan {
+
+            margin-top: 18px;
+
+            padding: 18px;
+
+            background: #f5f5f7;
+
+            border-radius: 14px;
+        }
+
+
+        .modal-plan-name {
+
+            font-weight: 700;
+
+            font-size: 17px;
+        }
+
+
+        .modal-plan-detail {
+
+            margin-top: 6px;
+
+            color: #6e6e73;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+
+        .modal-actions {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 25px;
+        }
+
+
+        .modal-button {
+
+            flex: 1;
+
+            padding: 12px;
+
+            border: none;
+
+            border-radius: 11px;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+
+        .cancel-button {
+
+            background: #e5e5e7;
+
+            color: #1d1d1f;
+        }
+
+
+        .confirm-button {
+
+            background: #0071e3;
+
+            color: white;
+        }
+
+
+        .modal-button:disabled {
+
+            opacity: 0.5;
+
+            cursor: default;
+        }
+
+
+        .result {
+
+            margin-top: 20px;
+
+            padding: 15px;
+
+            border-radius: 12px;
+
+            display: none;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+
+        .result.success {
+
+            display: block;
+
+            background: #eaf7ee;
+
+            color: #1e7e34;
+        }
+
+
+        .result.error {
+
+            display: block;
+
+            background: #fff1f0;
+
+            color: #c62828;
+        }
+
+
+        @media (max-width: 650px) {
+
+            .current-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .plan-header {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+                gap: 8px;
+
+            }
+
+
+            .actions {
+
+                justify-content: stretch;
+
+            }
+
+
+            .next-button {
+
+                width: 100%;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <a
+        href="index.html"
+        class="back"
+    >
+        ← 返回
+    </a>
+
+
+    <h1>
+        方案管理
+    </h1>
+
+
+    <div class="subtitle">
+        管理您的 Money Statistics 方案
+    </div>
+
+
+    <!-- =========================
+         目前方案
+         ========================= -->
+
+    <div class="section">
+
+        <div class="section-title">
+            目前使用方案
+        </div>
+
+
+        <div
+            id="currentPlan"
+            class="current-plan"
+        >
+
+            <div class="loading">
+                載入中……
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         可選方案
+         ========================= -->
+
+    <div class="section">
+
+        <div class="section-title">
+            變更方案
+        </div>
+
+
+        <div class="subtitle">
+            請選擇您希望變更的方案。
+        </div>
+
+
+        <div
+            id="plans"
+            class="plans"
+            style="margin-top: 15px;"
+        >
+
+            <div class="loading">
+                載入方案中……
+            </div>
+
+        </div>
+
+
+        <div
+            id="result"
+            class="result"
+        ></div>
+
+
+        <div class="actions">
+
+            <button
+                id="nextButton"
+                class="next-button"
+                onclick="showConfirmModal()"
+                disabled
+            >
+                下一步
+            </button>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- =========================
+     確認視窗
+     ========================= -->
+
+<div
+    id="confirmModal"
+    class="modal"
+>
+
+
+    <div class="modal-box">
+
+
+        <h2 class="modal-title">
+            確認變更方案
+        </h2>
+
+
+        <div class="modal-message">
+
+            您即將提出方案變更申請。
+
+            <br>
+
+            送出後，Money Statistics
+            將進行人工審核。
+
+        </div>
+
+
+        <div
+            id="modalPlan"
+            class="modal-plan"
+        ></div>
+
+
+        <div class="modal-actions">
+
+            <button
+                id="cancelButton"
+                class="modal-button cancel-button"
+                onclick="closeConfirmModal()"
+            >
+                取消
+            </button>
+
+
+            <button
+                id="confirmButton"
+                class="modal-button confirm-button"
+                onclick="submitPlanChange()"
+            >
+                確認變更
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+let currentUser = null;
+
+let currentLicense = null;
+
+let plans = [];
+
+let selectedPlan = null;
+
+
+
+/* =========================
+   初始化
+   ========================= */
+
+async function initialize() {
+
+    const {
+        data: {
+            session
+        }
+    } =
+        await supabaseClient
+            .auth
+            .getSession();
+
+
+    if (!session) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    currentUser =
+        session.user;
+
+
+    await loadCurrentPlan();
+
+    await loadPlans();
+
+}
+
+
+
+/* =========================
+   目前方案
+   ========================= */
+
+async function loadCurrentPlan() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .schema("licenses")
+            .from("licenses_plan")
+            .select(`
+                id,
+                owner_user,
+                plan_name,
+                duration_years,
+                start_year,
+                start_month,
+                end_year,
+                end_month,
+                plan_price,
+                currency,
+                status
+            `)
+            .eq(
+                "owner_user",
+                currentUser.email
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            )
+            .limit(1);
+
+
+    if (error) {
+
+        console.error(error);
+
+        document
+            .getElementById(
+                "currentPlan"
+            )
+            .innerHTML = `
+                <div class="loading">
+                    無法讀取目前方案。
+                </div>
+            `;
+
+        return;
+
+    }
+
+
+    if (!data || data.length === 0) {
+
+        document
+            .getElementById(
+                "currentPlan"
+            )
+            .innerHTML = `
+                <div class="loading">
+                    目前沒有方案資料。
+                </div>
+            `;
+
+        return;
+
+    }
+
+
+    currentLicense =
+        data[0];
+
+
+    document
+        .getElementById(
+            "currentPlan"
+        )
+        .innerHTML = `
+
+            <div class="current-plan-name">
+                ${escapeHtml(
+                    currentLicense.plan_name
+                )}
+            </div>
+
+
+            <div class="current-grid">
+
+
+                <div>
+
+                    <div class="current-item-label">
+                        合約期間
+                    </div>
+
+                    <div class="current-item-value">
+                        ${currentLicense.duration_years} 年
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <div class="current-item-label">
+                        合約價格
+                    </div>
+
+                    <div class="current-item-value">
+                        ${formatPrice(
+                            currentLicense.plan_price,
+                            currentLicense.currency
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <div class="current-item-label">
+                        目前狀態
+                    </div>
+
+                    <div class="current-item-value">
+                        ${getStatusText(
+                            currentLicense.status
+                        )}
+                    </div>
+
+                </div>
+
+
+            </div>
+        `;
+
+}
+
+
+
+/* =========================
+   方案列表
+   ========================= */
+
+async function loadPlans() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("plan_overview")
+            .select(`
+                id,
+                created_at,
+                plan_name,
+                duration_years,
+                price_range
+            `)
+            .order(
+                "duration_years",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(error);
+
+        document
+            .getElementById("plans")
+            .innerHTML = `
+                <div class="loading">
+                    無法讀取方案資料。
+                </div>
+            `;
+
+        return;
+
+    }
+
+
+    plans =
+        data || [];
+
+
+    renderPlans();
+
+}
+
+
+
+/* =========================
+   顯示方案
+   ========================= */
+
+function renderPlans() {
+
+    const container =
+        document.getElementById(
+            "plans"
+        );
+
+
+    if (!plans.length) {
+
+        container.innerHTML = `
+            <div class="loading">
+                目前沒有可用方案。
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        plans
+            .map(
+                (plan, index) => `
+
+                    <div
+                        class="plan-option"
+                    >
+
+                        <input
+                            type="radio"
+                            name="selectedPlan"
+                            id="plan_${index}"
+                            value="${escapeHtml(
+                                plan.id
+                            )}"
+                            onchange="selectPlan(${index})"
+                        >
+
+
+                        <label
+                            class="plan-card"
+                            for="plan_${index}"
+                        >
+
+                            <div
+                                class="plan-header"
+                            >
+
+                                <div>
+
+                                    <div
+                                        class="plan-name"
+                                    >
+                                        ${escapeHtml(
+                                            plan.plan_name
+                                        )}
+                                    </div>
+
+
+                                    <div
+                                        class="plan-duration"
+                                    >
+                                        合約期間：
+                                        ${plan.duration_years}
+                                        年
+                                    </div>
+
+                                </div>
+
+
+                                <div
+                                    class="plan-price"
+                                >
+                                    ${escapeHtml(
+                                        plan.price_range
+                                    )}
+                                </div>
+
+                            </div>
+
+                        </label>
+
+                    </div>
+
+                `
+            )
+            .join("");
+
+}
+
+
+
+/* =========================
+   選擇方案
+   ========================= */
+
+function selectPlan(index) {
+
+    selectedPlan =
+        plans[index];
+
+
+    document
+        .getElementById(
+            "nextButton"
+        )
+        .disabled = false;
+
+}
+
+
+
+/* =========================
+   顯示確認視窗
+   ========================= */
+
+function showConfirmModal() {
+
+    if (!selectedPlan) {
+
+        return;
+
+    }
+
+
+    document
+        .getElementById(
+            "modalPlan"
+        )
+        .innerHTML = `
+
+            <div class="modal-plan-name">
+
+                ${escapeHtml(
+                    selectedPlan.plan_name
+                )}
+
+            </div>
+
+
+            <div class="modal-plan-detail">
+
+                合約期間：
+                ${selectedPlan.duration_years}
+                年
+
+                <br>
+
+                合約價格：
+                ${escapeHtml(
+                    selectedPlan.price_range
+                )}
+
+            </div>
+
+        `;
+
+
+    document
+        .getElementById(
+            "confirmModal"
+        )
+        .classList
+        .add("show");
+
+}
+
+
+
+/* =========================
+   關閉確認視窗
+   ========================= */
+
+function closeConfirmModal() {
+
+    document
+        .getElementById(
+            "confirmModal"
+        )
+        .classList
+        .remove("show");
+
+}
+
+
+
+/* =========================
+   提交方案變更
+   ========================= */
+
+async function submitPlanChange() {
+
+    if (!selectedPlan) {
+
+        return;
+
+    }
+
+
+    const confirmButton =
+        document.getElementById(
+            "confirmButton"
+        );
+
+
+    const cancelButton =
+        document.getElementById(
+            "cancelButton"
+        );
+
+
+    confirmButton.disabled =
+        true;
+
+    cancelButton.disabled =
+        true;
+
+
+    confirmButton.textContent =
+        "處理中……";
+
+
+    try {
+
+
+        const {
+            data,
+            error
+        } =
+
+        await supabaseClient.functions
+            .invoke(
+                "request-plan-change",
+                {
+
+                    body: {
+
+                        plan_id:
+                            selectedPlan.id
+
+                    }
+
+                }
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        if (
+            !data ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data?.message ||
+                "方案變更申請失敗。"
+            );
+
+        }
+
+
+        closeConfirmModal();
+
+
+        const result =
+            document.getElementById(
+                "result"
+            );
+
+
+        result.className =
+            "result success";
+
+
+        result.textContent =
+            "已收到您的方案變更要求，目前正在審核中。";
+
+
+        /*
+         * 重新讀取目前方案
+         */
+
+        await loadCurrentPlan();
+
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+
+        const result =
+            document.getElementById(
+                "result"
+            );
+
+
+        result.className =
+            "result error";
+
+
+        result.textContent =
+            "方案變更申請失敗，請稍後再試。";
+
+
+    }
+
+    finally {
+
+        confirmButton.disabled =
+            false;
+
+        cancelButton.disabled =
+            false;
+
+        confirmButton.textContent =
+            "確認變更";
+
+    }
+
+}
+
+
+
+/* =========================
+   狀態文字
+   ========================= */
+
+function getStatusText(status) {
+
+    const map = {
+
+        pending:
+            "審核中",
+
+        active:
+            "使用中",
+
+        expired:
+            "已到期",
+
+        cancelled:
+            "已取消",
+
+        refunded:
+            "已退款",
+
+        suspended:
+            "已暫停"
+
+    };
+
+
+    return map[status] ||
+        status ||
+        "未知";
+
+}
+
+
+
+/* =========================
+   價格
+   ========================= */
+
+function formatPrice(
+    price,
+    currency
+) {
+
+    if (
+        price === null ||
+        price === undefined
+    ) {
+
+        return "—";
+
+    }
+
+
+    const value =
+        Number(price);
+
+
+    if (
+        Number.isNaN(value)
+    ) {
+
+        return `${price} ${currency || ""}`;
+
+    }
+
+
+    return new Intl.NumberFormat(
+        "zh-TW",
+        {
+            style:
+                "currency",
+
+            currency:
+                currency || "TWD",
+
+            maximumFractionDigits:
+                0
+        }
+    ).format(value);
+
+}
+
+
+
+/* =========================
+   HTML Escape
+   ========================= */
+
+function escapeHtml(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+/* =========================
+   啟動
+   ========================= */
+
+initialize();
+
+</script>
+
+
+</body>
+
+</html>
