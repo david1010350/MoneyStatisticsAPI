@@ -13,12 +13,14 @@
     <script src="supabase.js"></script>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
+
             font-family:
                 -apple-system,
                 BlinkMacSystemFont,
@@ -37,7 +39,9 @@
             padding: 40px 20px 60px;
         }
 
-        /* Header */
+        /* =====================================================
+           Header
+        ===================================================== */
 
         .header {
             display: flex;
@@ -86,7 +90,9 @@
             background: #d92d25;
         }
 
-        /* User */
+        /* =====================================================
+           User
+        ===================================================== */
 
         .user-info {
             margin-bottom: 30px;
@@ -94,7 +100,9 @@
             font-size: 14px;
         }
 
-        /* Loading */
+        /* =====================================================
+           Loading
+        ===================================================== */
 
         .loading {
             text-align: center;
@@ -102,14 +110,17 @@
             color: #6e6e73;
         }
 
-        /* Empty */
+        /* =====================================================
+           Empty
+        ===================================================== */
 
         .empty {
             background: white;
             border-radius: 24px;
             padding: 60px 30px;
             text-align: center;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.06);
         }
 
         .empty h2 {
@@ -122,19 +133,144 @@
             margin-bottom: 0;
         }
 
-        /* Plan */
+        /* =====================================================
+           Pending Banner
+        ===================================================== */
+
+        .pending-banner {
+            display: flex;
+
+            gap: 18px;
+
+            margin-bottom: 30px;
+
+            padding: 22px 24px;
+
+            background: #fffaf0;
+
+            border: 1px solid #f2dfb1;
+
+            border-radius: 20px;
+
+            box-shadow:
+                0 6px 24px rgba(0, 0, 0, 0.04);
+        }
+
+        .pending-icon {
+            width: 44px;
+            height: 44px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #fff4ce;
+
+            border-radius: 50%;
+
+            font-size: 21px;
+        }
+
+        .pending-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .pending-title {
+            margin: 0 0 6px;
+
+            font-size: 19px;
+            font-weight: 700;
+
+            color: #1d1d1f;
+        }
+
+        .pending-description {
+            margin: 0 0 20px;
+
+            color: #6e6e73;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+        /* =====================================================
+           Pending Plan
+        ===================================================== */
+
+        .pending-plan {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 12px;
+        }
+
+        .pending-plan-item {
+            padding: 14px 16px;
+
+            background: white;
+
+            border-radius: 14px;
+
+            border: 1px solid #eee5d2;
+        }
+
+        .pending-plan-label {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #86868b;
+
+            font-size: 13px;
+        }
+
+        .pending-plan-value {
+            display: block;
+
+            color: #1d1d1f;
+
+            font-size: 15px;
+
+            font-weight: 600;
+        }
+
+        .pending-time {
+            margin-top: 14px;
+
+            color: #86868b;
+
+            font-size: 13px;
+        }
+
+        /* =====================================================
+           Plan
+        ===================================================== */
 
         .plans {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(320px, 1fr));
+
             gap: 24px;
         }
 
         .plan-card {
             background: white;
+
             border-radius: 24px;
+
             padding: 30px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.06);
+
             transition:
                 transform 0.2s,
                 box-shadow 0.2s;
@@ -142,31 +278,46 @@
 
         .plan-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.10);
+
+            box-shadow:
+                0 12px 35px rgba(0, 0, 0, 0.10);
         }
 
         .plan-header {
             display: flex;
+
             justify-content: space-between;
+
             align-items: flex-start;
+
             gap: 15px;
+
             margin-bottom: 25px;
         }
 
         .plan-name {
             margin: 0;
+
             font-size: 24px;
+
             font-weight: 700;
         }
 
-        /* Status */
+        /* =====================================================
+           Status
+        ===================================================== */
 
         .status {
             display: inline-block;
+
             padding: 6px 12px;
+
             border-radius: 999px;
+
             font-size: 13px;
+
             font-weight: 600;
+
             white-space: nowrap;
         }
 
@@ -200,7 +351,9 @@
             color: #a15c00;
         }
 
-        /* Price */
+        /* =====================================================
+           Price
+        ===================================================== */
 
         .price {
             margin-bottom: 28px;
@@ -213,54 +366,88 @@
 
         .price-currency {
             margin-left: 6px;
+
             color: #6e6e73;
+
             font-size: 14px;
         }
 
-        /* Information */
+        /* =====================================================
+           Information
+        ===================================================== */
 
         .info-list {
-            border-top: 1px solid #e5e5e7;
+            border-top:
+                1px solid #e5e5e7;
         }
 
         .info-row {
             display: flex;
+
             justify-content: space-between;
+
             gap: 20px;
+
             padding: 15px 0;
-            border-bottom: 1px solid #e5e5e7;
+
+            border-bottom:
+                1px solid #e5e5e7;
         }
 
         .info-label {
             color: #6e6e73;
+
             font-size: 14px;
         }
 
         .info-value {
             text-align: right;
+
             font-size: 14px;
+
             font-weight: 500;
         }
 
-        /* Error */
+        /* =====================================================
+           Error
+        ===================================================== */
 
         .error {
             background: #fff1f0;
-            border: 1px solid #ffccc7;
+
+            border:
+                1px solid #ffccc7;
+
             color: #c62828;
+
             border-radius: 16px;
+
             padding: 20px;
+
             line-height: 1.6;
+        }
+
+        /* =====================================================
+           Mobile
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .pending-plan {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 600px) {
 
             .container {
-                padding: 25px 15px 40px;
+                padding:
+                    25px 15px 40px;
             }
 
             .header {
                 align-items: flex-start;
+
                 gap: 15px;
             }
 
@@ -278,19 +465,30 @@
 
             .info-row {
                 flex-direction: column;
+
                 gap: 5px;
             }
 
             .info-value {
                 text-align: left;
             }
+
+            .pending-banner {
+                padding: 18px;
+            }
         }
+
     </style>
 </head>
+
 
 <body>
 
 <div class="container">
+
+    <!-- =====================================================
+         Header
+    ====================================================== -->
 
     <div class="header">
 
@@ -303,7 +501,9 @@
                 ← 返回
             </button>
 
-            <h1>方案</h1>
+            <h1>
+                方案
+            </h1>
 
         </div>
 
@@ -317,6 +517,10 @@
     </div>
 
 
+    <!-- =====================================================
+         User
+    ====================================================== -->
+
     <div
         id="userInfo"
         class="user-info"
@@ -324,6 +528,10 @@
         載入使用者資訊中……
     </div>
 
+
+    <!-- =====================================================
+         Content
+    ====================================================== -->
 
     <div id="content">
 
@@ -339,97 +547,210 @@
 <script>
 
     /*
+     * =========================================================
      * 方案狀態中文名稱
+     * =========================================================
      */
+
     const statusNames = {
-        pending: "待生效",
-        active: "使用中",
-        expired: "已到期",
-        cancelled: "已取消",
-        refunded: "已退款",
-        suspended: "已暫停"
+
+        pending:
+            "方案變更審核中",
+
+        active:
+            "使用中",
+
+        expired:
+            "已到期",
+
+        cancelled:
+            "已取消",
+
+        refunded:
+            "已退款",
+
+        suspended:
+            "已暫停"
+
     };
 
 
     /*
+     * =========================================================
      * HTML 安全處理
+     * =========================================================
      */
+
     function escapeHtml(value) {
 
-        if (value === null || value === undefined) {
+        if (
+            value === null ||
+            value === undefined
+        ) {
             return "";
         }
 
         return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+
+            .replace(
+                /</g,
+                "&lt;"
+            )
+
+            .replace(
+                />/g,
+                "&gt;"
+            )
+
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+
+            .replace(
+                /'/g,
+                "&#039;"
+            );
     }
 
 
     /*
+     * =========================================================
      * 日期格式化
+     * =========================================================
      */
+
     function formatDate(value) {
 
         if (!value) {
             return "—";
         }
 
-        const date = new Date(value);
+        const date =
+            new Date(value);
 
-        if (isNaN(date.getTime())) {
+        if (
+            isNaN(
+                date.getTime()
+            )
+        ) {
             return escapeHtml(value);
         }
 
-        return date.toLocaleDateString("zh-TW", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit"
-        });
+        return date.toLocaleDateString(
+            "zh-TW",
+            {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+            }
+        );
     }
 
 
     /*
-     * 金額格式化
+     * =========================================================
+     * 日期時間格式化
+     * =========================================================
      */
-    function formatPrice(price) {
 
-        if (price === null || price === undefined || price === "") {
+    function formatDateTime(value) {
+
+        if (!value) {
             return "—";
         }
 
-        const number = Number(price);
+        const date =
+            new Date(value);
 
-        if (isNaN(number)) {
-            return escapeHtml(price);
+        if (
+            isNaN(
+                date.getTime()
+            )
+        ) {
+            return escapeHtml(value);
         }
 
-        return number.toLocaleString("zh-TW");
+        return date.toLocaleString(
+            "zh-TW",
+            {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
     }
 
 
     /*
-     * 取得方案資料
+     * =========================================================
+     * 金額格式化
+     * =========================================================
      */
+
+    function formatPrice(price) {
+
+        if (
+            price === null ||
+            price === undefined ||
+            price === ""
+        ) {
+            return "—";
+        }
+
+        const number =
+            Number(price);
+
+        if (
+            isNaN(number)
+        ) {
+            return escapeHtml(price);
+        }
+
+        return number.toLocaleString(
+            "zh-TW"
+        );
+    }
+
+
+    /*
+     * =========================================================
+     * 取得方案資料
+     * =========================================================
+     */
+
     async function loadPlans() {
 
         /*
+         * -----------------------------------------------------
          * 取得目前登入狀態
+         * -----------------------------------------------------
          */
+
         const {
             data: {
                 session
             },
             error: sessionError
-        } = await supabaseClient.auth.getSession();
+        } =
+            await supabaseClient
+                .auth
+                .getSession();
 
 
         /*
+         * -----------------------------------------------------
          * Session 發生錯誤
+         * -----------------------------------------------------
          */
+
         if (sessionError) {
 
             console.error(
@@ -437,10 +758,17 @@
                 sessionError
             );
 
-            document.getElementById("content").innerHTML = `
+            document.getElementById(
+                "content"
+            ).innerHTML = `
+
                 <div class="error">
-                    無法取得登入資訊，請重新登入。
+
+                    無法取得登入資訊，
+                    請重新登入。
+
                 </div>
+
             `;
 
             return;
@@ -448,69 +776,102 @@
 
 
         /*
+         * -----------------------------------------------------
          * 尚未登入
+         * -----------------------------------------------------
          */
+
         if (!session) {
 
-            window.location.href = "login.html";
+            window.location.href =
+                "login.html";
 
             return;
         }
 
 
         /*
+         * -----------------------------------------------------
          * 取得登入者 Email
          *
          * owner_user 是 text
          * 且存放 Email
+         * -----------------------------------------------------
          */
-        const userEmail = session.user.email;
+
+        const userEmail =
+            session.user.email;
 
 
         /*
+         * -----------------------------------------------------
          * 顯示目前登入帳號
+         * -----------------------------------------------------
          */
-        document.getElementById("userInfo").textContent =
-            "目前登入帳號：" + userEmail;
+
+        document.getElementById(
+            "userInfo"
+        ).textContent =
+            "目前登入帳號：" +
+            userEmail;
 
 
         /*
-         * 從 licenses Schema 的 licenses_plan
-         * 取得目前使用者的方案
+         * =====================================================
+         * 取得目前方案
+         * =====================================================
          */
+
         const {
             data,
             error
-        } = await supabaseClient
+        } =
+            await supabaseClient
 
-            .schema("licenses")
+                .schema("licenses")
 
-            .from("licenses_plan")
+                .from("licenses_plan")
 
-            .select(`
-                plan_name,
-                duration_years,
-                start_year,
-                start_month,
-                end_year,
-                end_month,
-                plan_price,
-                currency,
-                status,
-                created_at,
-                update_at
-            `)
+                .select(`
+                    id,
+                    plan_name,
+                    duration_years,
+                    start_year,
+                    start_month,
+                    end_year,
+                    end_month,
+                    plan_price,
+                    currency,
+                    status,
+                    created_at,
+                    update_at,
 
-            .eq("owner_user", userEmail)
+                    pending_plan_id,
+                    pending_plan_name,
+                    pending_duration_years,
+                    pending_price_range,
+                    plan_change_requested_at
+                `)
 
-            .order("created_at", {
-                ascending: false
-            });
+                .eq(
+                    "owner_user",
+                    userEmail
+                )
+
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
 
 
         /*
+         * =====================================================
          * 查詢錯誤
+         * =====================================================
          */
+
         if (error) {
 
             console.error(
@@ -518,12 +879,24 @@
                 error
             );
 
-            document.getElementById("content").innerHTML = `
+            document.getElementById(
+                "content"
+            ).innerHTML = `
+
                 <div class="error">
-                    <strong>無法取得方案資料</strong>
+
+                    <strong>
+                        無法取得方案資料
+                    </strong>
+
                     <br>
-                    ${escapeHtml(error.message)}
+
+                    ${escapeHtml(
+                        error.message
+                    )}
+
                 </div>
+
             `;
 
             return;
@@ -531,20 +904,32 @@
 
 
         /*
+         * =====================================================
          * 沒有方案
+         * =====================================================
          */
-        if (!data || data.length === 0) {
 
-            document.getElementById("content").innerHTML = `
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            document.getElementById(
+                "content"
+            ).innerHTML = `
+
                 <div class="empty">
 
-                    <h2>目前沒有方案</h2>
+                    <h2>
+                        目前沒有方案
+                    </h2>
 
                     <p>
                         找不到與目前登入帳號相符的方案資料。
                     </p>
 
                 </div>
+
             `;
 
             return;
@@ -552,132 +937,123 @@
 
 
         /*
-         * 建立方案卡片
+         * =====================================================
+         * 最新方案
+         * =====================================================
          */
-        const plansHtml = data.map(plan => {
 
-            const status =
-                statusNames[plan.status] || plan.status || "未知";
-
-
-            const statusClass =
-                "status-" + (
-                    plan.status || ""
-                ).toLowerCase();
+        const currentPlan =
+            data[0];
 
 
-            const startDate =
-                plan.start_year && plan.start_month
-                    ? `${plan.start_year} 年 ${plan.start_month} 月`
-                    : "—";
+        /*
+         * =====================================================
+         * Pending Banner
+         * =====================================================
+         */
+
+        let pendingBannerHtml = "";
 
 
-            const endDate =
-                plan.end_year && plan.end_month
-                    ? `${plan.end_year} 年 ${plan.end_month} 月`
-                    : "—";
+        if (
+            currentPlan.status ===
+            "pending"
+        ) {
+
+            pendingBannerHtml = `
+
+                <div class="pending-banner">
+
+                    <div class="pending-icon">
+                        ⏳
+                    </div>
 
 
-            const duration =
-                plan.duration_years !== null &&
-                plan.duration_years !== undefined
-                    ? `${plan.duration_years} 年`
-                    : "—";
+                    <div class="pending-content">
 
-
-            return `
-
-                <div class="plan-card">
-
-                    <div class="plan-header">
-
-                        <h2 class="plan-name">
-                            ${escapeHtml(plan.plan_name || "未命名方案")}
+                        <h2 class="pending-title">
+                            方案變更審核中
                         </h2>
 
-                        <span class="status ${statusClass}">
-                            ${escapeHtml(status)}
-                        </span>
 
-                    </div>
+                        <p class="pending-description">
 
+                            您已提交新的方案變更申請，
+                            目前正在等待管理員審核。
 
-                    <div class="price">
+                            <br>
 
-                        <span class="price-value">
-                            ${formatPrice(plan.plan_price)}
-                        </span>
+                            審核完成前，
+                            您目前的原方案仍維持有效。
 
-                        <span class="price-currency">
-                            ${escapeHtml(plan.currency || "")}
-                        </span>
-
-                    </div>
+                        </p>
 
 
-                    <div class="info-list">
+                        <div class="pending-plan">
 
-                        <div class="info-row">
+                            <div class="pending-plan-item">
 
-                            <span class="info-label">
-                                方案年限
-                            </span>
+                                <span class="pending-plan-label">
+                                    新方案
+                                </span>
 
-                            <span class="info-value">
-                                ${escapeHtml(duration)}
-                            </span>
+                                <span class="pending-plan-value">
 
-                        </div>
+                                    ${escapeHtml(
+                                        currentPlan.pending_plan_name ||
+                                        "—"
+                                    )}
 
+                                </span>
 
-                        <div class="info-row">
-
-                            <span class="info-label">
-                                方案開始
-                            </span>
-
-                            <span class="info-value">
-                                ${escapeHtml(startDate)}
-                            </span>
-
-                        </div>
+                            </div>
 
 
-                        <div class="info-row">
+                            <div class="pending-plan-item">
 
-                            <span class="info-label">
-                                方案結束
-                            </span>
+                                <span class="pending-plan-label">
+                                    合約期間
+                                </span>
 
-                            <span class="info-value">
-                                ${escapeHtml(endDate)}
-                            </span>
+                                <span class="pending-plan-value">
 
-                        </div>
+                                    ${escapeHtml(
+                                        currentPlan.pending_duration_years ||
+                                        "—"
+                                    )}
+
+                                </span>
+
+                            </div>
 
 
-                        <div class="info-row">
+                            <div class="pending-plan-item">
 
-                            <span class="info-label">
-                                方案建立日期
-                            </span>
+                                <span class="pending-plan-label">
+                                    合約價格
+                                </span>
 
-                            <span class="info-value">
-                                ${formatDate(plan.created_at)}
-                            </span>
+                                <span class="pending-plan-value">
+
+                                    ${escapeHtml(
+                                        currentPlan.pending_price_range ||
+                                        "—"
+                                    )}
+
+                                </span>
+
+                            </div>
 
                         </div>
 
 
-                        <div class="info-row">
+                        <div class="pending-time">
 
-                            <span class="info-label">
-                                方案更新日期
-                            </span>
+                            申請時間：
 
-                            <span class="info-value">
-                                ${formatDate(plan.update_at)}
-                            </span>
+                            ${formatDateTime(
+                                currentPlan.plan_change_requested_at
+                            )}
 
                         </div>
 
@@ -686,17 +1062,273 @@
                 </div>
 
             `;
-
-        }).join("");
+        }
 
 
         /*
-         * 顯示方案
+         * =====================================================
+         * 建立方案卡片
+         * =====================================================
          */
-        document.getElementById("content").innerHTML = `
+
+        const plansHtml =
+            data.map(
+                plan => {
+
+                    const status =
+                        statusNames[
+                            plan.status
+                        ] ||
+                        plan.status ||
+                        "未知";
+
+
+                    const statusClass =
+                        "status-" +
+                        (
+                            plan.status ||
+                            ""
+                        ).toLowerCase();
+
+
+                    const startDate =
+                        plan.start_year &&
+                        plan.start_month
+
+                            ? `${plan.start_year} 年 ${plan.start_month} 月`
+
+                            : "—";
+
+
+                    const endDate =
+                        plan.end_year &&
+                        plan.end_month
+
+                            ? `${plan.end_year} 年 ${plan.end_month} 月`
+
+                            : "—";
+
+
+                    /*
+                     * duration_years 已經包含「年」
+                     * 例如：
+                     * 1 年
+                     * 3 年
+                     * 6 年
+                     */
+
+                    const duration =
+                        plan.duration_years !== null &&
+                        plan.duration_years !== undefined
+
+                            ? String(
+                                plan.duration_years
+                            )
+
+                            : "—";
+
+
+                    const statusDescription =
+                        plan.status === "pending"
+
+                            ? "目前方案仍維持有效，等待新方案審核完成。"
+
+                            : "";
+
+
+                    return `
+
+                        <div class="plan-card">
+
+
+                            <div class="plan-header">
+
+                                <h2 class="plan-name">
+
+                                    ${escapeHtml(
+                                        plan.plan_name ||
+                                        "未命名方案"
+                                    )}
+
+                                </h2>
+
+
+                                <span
+                                    class="status ${statusClass}"
+                                >
+
+                                    ${escapeHtml(
+                                        status
+                                    )}
+
+                                </span>
+
+                            </div>
+
+
+                            ${
+                                statusDescription
+                                    ? `
+
+                                        <div
+                                            style="
+                                                margin-top: -15px;
+                                                margin-bottom: 22px;
+                                                color: #6e6e73;
+                                                font-size: 13px;
+                                                line-height: 1.5;
+                                            "
+                                        >
+
+                                            ${escapeHtml(
+                                                statusDescription
+                                            )}
+
+                                        </div>
+
+                                    `
+                                    : ""
+                            }
+
+
+                            <div class="price">
+
+                                <span class="price-value">
+
+                                    ${formatPrice(
+                                        plan.plan_price
+                                    )}
+
+                                </span>
+
+
+                                <span class="price-currency">
+
+                                    ${escapeHtml(
+                                        plan.currency ||
+                                        ""
+                                    )}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="info-list">
+
+
+                                <div class="info-row">
+
+                                    <span class="info-label">
+                                        方案年限
+                                    </span>
+
+                                    <span class="info-value">
+
+                                        ${escapeHtml(
+                                            duration
+                                        )}
+
+                                    </span>
+
+                                </div>
+
+
+                                <div class="info-row">
+
+                                    <span class="info-label">
+                                        方案開始
+                                    </span>
+
+                                    <span class="info-value">
+
+                                        ${escapeHtml(
+                                            startDate
+                                        )}
+
+                                    </span>
+
+                                </div>
+
+
+                                <div class="info-row">
+
+                                    <span class="info-label">
+                                        方案結束
+                                    </span>
+
+                                    <span class="info-value">
+
+                                        ${escapeHtml(
+                                            endDate
+                                        )}
+
+                                    </span>
+
+                                </div>
+
+
+                                <div class="info-row">
+
+                                    <span class="info-label">
+                                        方案建立日期
+                                    </span>
+
+                                    <span class="info-value">
+
+                                        ${formatDate(
+                                            plan.created_at
+                                        )}
+
+                                    </span>
+
+                                </div>
+
+
+                                <div class="info-row">
+
+                                    <span class="info-label">
+                                        方案更新日期
+                                    </span>
+
+                                    <span class="info-value">
+
+                                        ${formatDate(
+                                            plan.update_at
+                                        )}
+
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+                    `;
+
+                }
+            ).join("");
+
+
+        /*
+         * =====================================================
+         * 最終顯示
+         * =====================================================
+         */
+
+        document.getElementById(
+            "content"
+        ).innerHTML = `
+
+            ${pendingBannerHtml}
 
             <div class="plans">
+
                 ${plansHtml}
+
             </div>
 
         `;
@@ -704,13 +1336,19 @@
 
 
     /*
+     * =========================================================
      * 登出
+     * =========================================================
      */
+
     async function logout() {
 
         const {
             error
-        } = await supabaseClient.auth.signOut();
+        } =
+            await supabaseClient
+                .auth
+                .signOut();
 
 
         if (error) {
@@ -724,13 +1362,17 @@
         }
 
 
-        window.location.href = "login.html";
+        window.location.href =
+            "login.html";
     }
 
 
     /*
+     * =========================================================
      * 頁面載入
+     * =========================================================
      */
+
     document.addEventListener(
         "DOMContentLoaded",
         loadPlans
