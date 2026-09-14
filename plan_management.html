@@ -1200,32 +1200,42 @@ async function submitPlanChange() {
     try {
 
 
-        const {
-            data,
-            error
-        } =
-
-        await supabaseClient.functions
-            .invoke(
-                "request-plan-change",
-                {
-
-                    body: {
-
-                        plan_id:
-                            selectedPlan.id
-
-                    }
-
-                }
-            );
-
-
-        if (error) {
-
-            throw error;
-
+        const { data, error } = await supabaseClient.functions.invoke(
+    "request-plan-change",
+    {
+        body: {
+            plan_id: selectedPlan.id
         }
+    }
+);
+
+console.log("Function data:", data);
+console.log("Function error:", error);
+
+if (error) {
+    console.error("Function error details:", {
+        name: error.name,
+        message: error.message,
+        context: error.context
+    });
+
+    let errorMessage = error.message || "未知錯誤";
+
+    try {
+        if (error.context) {
+            const text = await error.context.text();
+            console.error("Function response:", text);
+
+            if (text) {
+                errorMessage += "\n\n" + text;
+            }
+        }
+    } catch (e) {
+        console.error("無法讀取 Function 回應:", e);
+    }
+
+    throw new Error(errorMessage);
+}
 
 
         if (
