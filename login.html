@@ -1,13 +1,21 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Money Statistics - 登入</title>
 
+
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
     <style>
 
@@ -15,12 +23,17 @@
             box-sizing: border-box;
         }
 
+
         body {
+
             margin: 0;
+
             min-height: 100vh;
 
             display: flex;
+
             justify-content: center;
+
             align-items: center;
 
             font-family:
@@ -31,74 +44,136 @@
                 sans-serif;
 
             background: #f5f5f7;
+
             color: #1d1d1f;
         }
 
+
+        /* ======================================== */
+        /* Login Container */
+        /* ======================================== */
+
         .login-container {
+
             width: 100%;
+
             max-width: 420px;
+
             padding: 24px;
         }
 
+
+        /* ======================================== */
+        /* Login Card */
+        /* ======================================== */
+
         .login-card {
+
             background: white;
+
             border-radius: 24px;
+
             padding: 40px;
 
             box-shadow:
                 0 10px 40px rgba(0, 0, 0, 0.08);
         }
 
-        .logo {
-    width: 72px;
-    height: 72px;
-    margin: 0 auto 20px;
-}
 
-.logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-}
+        /* ======================================== */
+        /* Logo */
+        /* ======================================== */
+
+        .logo {
+
+            width: 72px;
+
+            height: 72px;
+
+            margin:
+                0 auto 20px;
+        }
+
+
+        .logo img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: contain;
+
+            display: block;
+        }
+
+
+        /* ======================================== */
+        /* Title */
+        /* ======================================== */
 
         h1 {
+
             margin: 0;
+
             text-align: center;
 
             font-size: 28px;
+
             font-weight: 600;
         }
 
+
+        /* ======================================== */
+        /* Subtitle */
+        /* ======================================== */
+
         .subtitle {
+
             margin-top: 10px;
+
             margin-bottom: 32px;
 
             text-align: center;
 
             color: #86868b;
+
             font-size: 15px;
         }
 
+
+        /* ======================================== */
+        /* Form */
+        /* ======================================== */
+
         .form-group {
+
             margin-bottom: 18px;
         }
 
+
         label {
+
             display: block;
+
             margin-bottom: 8px;
 
             font-size: 14px;
+
             font-weight: 500;
         }
 
+
         input {
+
             width: 100%;
+
             height: 48px;
 
             padding: 0 14px;
 
-            border: 1px solid #d2d2d7;
+            border:
+                1px solid #d2d2d7;
+
             border-radius: 10px;
 
             background: white;
@@ -112,51 +187,78 @@
                 box-shadow 0.2s;
         }
 
+
         input:focus {
+
             border-color: #0071e3;
 
             box-shadow:
-                0 0 0 3px rgba(0, 113, 227, 0.15);
+                0 0 0 3px
+                rgba(0, 113, 227, 0.15);
         }
 
+
+        /* ======================================== */
+        /* Password */
+        /* ======================================== */
+
         .password-wrapper {
+
             position: relative;
         }
 
+
         .password-wrapper input {
+
             padding-right: 70px;
         }
 
+
         .show-password {
+
             position: absolute;
 
             right: 12px;
+
             top: 50%;
 
-            transform: translateY(-50%);
+            transform:
+                translateY(-50%);
 
             border: none;
+
             background: transparent;
 
             color: #0071e3;
 
             font-size: 14px;
+
             cursor: pointer;
         }
 
+
+        /* ======================================== */
+        /* Login Button */
+        /* ======================================== */
+
         .login-button {
+
             width: 100%;
+
             height: 48px;
 
             margin-top: 10px;
 
             border: none;
+
             border-radius: 12px;
 
             background: #0071e3;
+
             color: white;
 
             font-size: 16px;
+
             font-weight: 600;
 
             cursor: pointer;
@@ -166,20 +268,34 @@
                 transform 0.1s;
         }
 
+
         .login-button:hover {
+
             background: #0077ed;
         }
 
+
         .login-button:active {
-            transform: scale(0.98);
+
+            transform:
+                scale(0.98);
         }
 
+
         .login-button:disabled {
+
             background: #a7c9ed;
+
             cursor: not-allowed;
         }
 
+
+        /* ======================================== */
+        /* Message */
+        /* ======================================== */
+
         .message {
+
             min-height: 22px;
 
             margin-top: 16px;
@@ -189,15 +305,25 @@
             font-size: 14px;
         }
 
+
         .error {
+
             color: #d70015;
         }
 
+
         .success {
+
             color: #248a3d;
         }
 
+
+        /* ======================================== */
+        /* Footer */
+        /* ======================================== */
+
         .footer {
+
             margin-top: 28px;
 
             text-align: center;
@@ -207,130 +333,468 @@
             font-size: 12px;
         }
 
+
+        /* ======================================== */
+        /* Forgot Password */
+        /* ======================================== */
+
+        .forgot-password {
+
+            margin-top: 12px;
+        }
+
+
+        .forgot-password-button {
+
+            width: 100%;
+
+            padding: 8px 0;
+
+            border: none;
+
+            background: transparent;
+
+            color: #0071e3;
+
+            font-size: 14px;
+
+            text-align: left;
+
+            cursor: pointer;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+        }
+
+
+        .forgot-password-button:hover {
+
+            color: #005bb5;
+        }
+
+
+        #forgotPasswordArrow {
+
+            font-size: 18px;
+
+            transition:
+                transform 0.2s ease;
+        }
+
+
+        .forgot-password-content {
+
+            max-height: 0;
+
+            overflow: hidden;
+
+            opacity: 0;
+
+            padding:
+                0 16px;
+
+            background: #f5f5f7;
+
+            border-radius: 12px;
+
+            transition:
+                max-height 0.25s ease,
+                opacity 0.2s ease,
+                padding 0.25s ease;
+        }
+
+
+        .forgot-password-content.open {
+
+            max-height: 180px;
+
+            opacity: 1;
+
+            padding: 16px;
+        }
+
+
+        .forgot-password-content h3 {
+
+            margin:
+                0 0 8px;
+
+            font-size: 15px;
+
+            font-weight: 600;
+        }
+
+
+        .forgot-password-content p {
+
+            margin: 0;
+
+            color: #6e6e73;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+
+        /* ======================================== */
+        /* Windows Form Login Overlay */
+        /* ======================================== */
+
+        .windows-login-overlay {
+
+            display: none;
+
+            position: fixed;
+
+            top: 0;
+
+            left: 0;
+
+            right: 0;
+
+            bottom: 0;
+
+            background:
+                rgba(0, 0, 0, 0.35);
+
+            z-index: 9999;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 20px;
+        }
+
+
+        .windows-login-overlay.open {
+
+            display: flex;
+        }
+
+
+        /* ======================================== */
+        /* Windows Login Dialog */
+        /* ======================================== */
+
+        .windows-login-dialog {
+
+            width: 100%;
+
+            max-width: 380px;
+
+            background: white;
+
+            border-radius: 20px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 20px 60px
+                rgba(0, 0, 0, 0.18);
+        }
+
+
+        .windows-login-dialog h2 {
+
+            margin: 0;
+
+            text-align: center;
+
+            font-size: 23px;
+
+            font-weight: 600;
+
+            color: #1d1d1f;
+        }
+
+
+        .windows-login-subtitle {
+
+            margin-top: 8px;
+
+            margin-bottom: 24px;
+
+            text-align: center;
+
+            color: #86868b;
+
+            font-size: 14px;
+        }
+
+
+        .windows-login-group {
+
+            margin-bottom: 18px;
+        }
+
+
+        .windows-login-group label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 14px;
+
+            font-weight: 500;
+        }
+
+
+        .windows-login-group input {
+
+            width: 100%;
+
+            height: 46px;
+
+            padding:
+                0 13px;
+
+            border:
+                1px solid #d2d2d7;
+
+            border-radius: 10px;
+
+            font-size: 16px;
+
+            outline: none;
+        }
+
+
+        /* Email 反灰 */
+
+        .windows-login-group input[readonly] {
+
+            background: #f2f2f7;
+
+            color: #6e6e73;
+
+            cursor: not-allowed;
+        }
+
+
+        .windows-password-wrapper {
+
+            position: relative;
+        }
+
+
+        .windows-password-wrapper input {
+
+            padding-right: 65px;
+        }
+
+
+        .windows-password-wrapper button {
+
+            position: absolute;
+
+            right: 10px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            color: #0071e3;
+
+            font-size: 14px;
+
+            cursor: pointer;
+        }
+
+
+        /* ======================================== */
+        /* Windows Login Button */
+        /* ======================================== */
+
+        .windows-login-button {
+
+            width: 100%;
+
+            height: 46px;
+
+            margin-top: 4px;
+
+            border: none;
+
+            border-radius: 11px;
+
+            background: #0071e3;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+
+        .windows-login-button:hover {
+
+            background: #0077ed;
+        }
+
+
+        .windows-login-button:active {
+
+            transform:
+                scale(0.98);
+        }
+
+
+        .windows-login-button:disabled {
+
+            background: #a7c9ed;
+
+            cursor: not-allowed;
+        }
+
+
+        /* ======================================== */
+        /* Windows Login Message */
+        /* ======================================== */
+
+        .windows-login-message {
+
+            min-height: 20px;
+
+            margin-top: 14px;
+
+            text-align: center;
+
+            font-size: 14px;
+        }
+
+
+        .windows-login-message.error {
+
+            color: #d70015;
+        }
+
+
+        .windows-login-message.success {
+
+            color: #248a3d;
+        }
+
+
+        /* ======================================== */
+        /* Mobile */
+        /* ======================================== */
+
         @media (max-width: 480px) {
 
             .login-container {
+
                 padding: 16px;
             }
 
+
             .login-card {
-                padding: 30px 24px;
+
+                padding:
+                    30px 24px;
             }
+
 
             h1 {
+
                 font-size: 24px;
             }
+
+
+            .windows-login-dialog {
+
+                padding:
+                    26px 22px;
+            }
+
         }
 
-        .forgot-password {
-    margin-top: 12px;
-}
-
-.forgot-password-button {
-    width: 100%;
-    padding: 8px 0;
-    border: none;
-    background: transparent;
-    color: #0071e3;
-    font-size: 14px;
-    text-align: left;
-    cursor: pointer;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.forgot-password-button:hover {
-    color: #005bb5;
-}
-
-#forgotPasswordArrow {
-    font-size: 18px;
-    transition: transform 0.2s ease;
-}
-
-.forgot-password-content {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-
-    padding: 0 16px;
-
-    background: #f5f5f7;
-    border-radius: 12px;
-
-    transition:
-        max-height 0.25s ease,
-        opacity 0.2s ease,
-        padding 0.25s ease;
-}
-
-.forgot-password-content.open {
-    max-height: 180px;
-    opacity: 1;
-    padding: 16px;
-}
-
-.forgot-password-content h3 {
-    margin: 0 0 8px;
-    font-size: 15px;
-    font-weight: 600;
-}
-
-.forgot-password-content p {
-    margin: 0;
-    color: #6e6e73;
-    font-size: 14px;
-    line-height: 1.6;
-}
-
     </style>
+
 </head>
 
+
 <body>
+
+
+    <!-- ======================================== -->
+    <!-- Original Login Page -->
+    <!-- ======================================== -->
 
     <div class="login-container">
 
         <div class="login-card">
 
+
+            <!-- Logo -->
+
             <div class="logo">
-         <img
-        src="https://www.dropbox.com/scl/fi/33fi9fbiq8j3wnwrytefl/newMS_White.png?rlkey=dhtxhyk47citb9dfuvjjsp6zx&st=g0yv4bqk&dl=1"
-        alt="Money Statistics"
-        width="60"
-        height="60"
-          >
+
+                <img
+                    src="https://www.dropbox.com/scl/fi/33fi9fbiq8j3wnwrytefl/newMS_White.png?rlkey=dhtxhyk47citb9dfuvjjsp6zx&st=g0yv4bqk&dl=1"
+                    alt="Money Statistics"
+                    width="60"
+                    height="60"
+                >
+
             </div>
 
-            <h1>Money Statistics</h1>
+
+            <!-- Title -->
+
+            <h1>
+                Money Statistics
+            </h1>
+
+
+            <!-- Subtitle -->
 
             <div class="subtitle">
+
                 登入您的帳號
+
             </div>
+
+
+            <!-- Login Form -->
 
             <form id="loginForm">
 
+
                 <!-- Email -->
+
                 <div class="form-group">
 
                     <label for="email">
                         Email
                     </label>
 
-            <input
-                     type="email"
-                      id="email"
-                      placeholder="example@email.com"
-                      autocomplete="email"
-                      required
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="example@email.com"
+                        autocomplete="email"
+                        required
                     >
-
 
                 </div>
 
 
                 <!-- Password -->
+
                 <div class="form-group">
 
                     <label for="password">
@@ -359,32 +823,44 @@
 
                 </div>
 
+
+                <!-- Forgot Password -->
+
                 <div class="forgot-password">
 
-    <button
-        type="button"
-        class="forgot-password-button"
-        onclick="toggleForgotPassword()"
-    >
-        <span>忘記密碼？</span>
-       
-    </button>
+                    <button
+                        type="button"
+                        class="forgot-password-button"
+                        onclick="toggleForgotPassword()"
+                    >
 
-    <div
-        id="forgotPasswordContent"
-        class="forgot-password-content"
-    >
-        <h3>忘記密碼？</h3>
+                        <span>
+                            忘記密碼？
+                        </span>
 
-        <p>
-            如果你忘記帳號的密碼，請聯絡 Money Statistics 來進行排解。
-        </p>
-    </div>
+                    </button>
 
-</div>
+
+                    <div
+                        id="forgotPasswordContent"
+                        class="forgot-password-content"
+                    >
+
+                        <h3>
+                            忘記密碼？
+                        </h3>
+
+                        <p>
+                            如果你忘記帳號的密碼，請聯絡 Money Statistics 來進行排解。
+                        </p>
+
+                    </div>
+
+                </div>
 
 
                 <!-- Login -->
+
                 <button
                     type="submit"
                     class="login-button"
@@ -393,121 +869,328 @@
                     登入
                 </button>
 
+
             </form>
 
 
             <!-- Message -->
+
             <div
                 id="message"
                 class="message"
             ></div>
 
 
+            <!-- Footer -->
+
             <div class="footer">
-                Copyright © <span id="copyrightYear"></span> David Kao.
+
+                Copyright ©
+                <span id="copyrightYear"></span>
+                David Kao.
+
             </div>
+
 
         </div>
 
     </div>
 
 
+
+    <!-- ======================================== -->
+    <!-- Windows Form Login Dialog -->
+    <!-- ======================================== -->
+
+    <div
+        id="windowsLoginOverlay"
+        class="windows-login-overlay"
+    >
+
+        <div class="windows-login-dialog">
+
+
+            <h2>
+                請輸入密碼來繼續
+            </h2>
+
+
+            <div class="windows-login-subtitle">
+
+                請輸入您的帳號密碼
+
+            </div>
+
+
+            <!-- Email -->
+
+            <div class="windows-login-group">
+
+                <label for="windowsEmail">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="windowsEmail"
+                    readonly
+                >
+
+            </div>
+
+
+            <!-- Password -->
+
+            <div class="windows-login-group">
+
+                <label for="windowsPassword">
+                    密碼
+                </label>
+
+                <div class="windows-password-wrapper">
+
+                    <input
+                        type="password"
+                        id="windowsPassword"
+                        placeholder="輸入您的密碼"
+                        autocomplete="current-password"
+                    >
+
+                    <button
+                        type="button"
+                        id="windowsShowPassword"
+                    >
+                        顯示
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Login -->
+
+            <button
+                type="button"
+                id="windowsLoginButton"
+                class="windows-login-button"
+            >
+                登入
+            </button>
+
+
+            <!-- Message -->
+
+            <div
+                id="windowsLoginMessage"
+                class="windows-login-message"
+            ></div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ======================================== -->
     <!-- Supabase Client -->
+    <!-- ======================================== -->
+
     <script src="supabase.js"></script>
 
 
+
     <script>
+
 
         // ========================================
         // DOM
         // ========================================
 
-        const loginForm = document.getElementById("loginForm");
-        const emailInput = document.getElementById("email");
-        const passwordInput = document.getElementById("password");
-        const loginButton = document.getElementById("loginButton");
-        const message = document.getElementById("message");
-        const showPasswordButton = document.getElementById("showPassword");
-
-// ========================================
-// 判斷是否由 Windows Form 開啟
-// ========================================
-
-const urlParams = new URLSearchParams(
-    window.location.search
-);
-
-const windowsMode =
-    urlParams.get("source") === "windows";
-
-const emailFromWindows =
-    urlParams.get("email");
+        const loginForm =
+            document.getElementById(
+                "loginForm"
+            );
 
 
-// ========================================
-// Windows Form 登入模式
-// ========================================
-
-if (windowsMode && emailFromWindows) {
-
-    // 填入 Email
-    emailInput.value =
-        emailFromWindows;
+        const emailInput =
+            document.getElementById(
+                "email"
+            );
 
 
-    // Email 設為唯讀
-    emailInput.readOnly = true;
+        const passwordInput =
+            document.getElementById(
+                "password"
+            );
 
 
-    // 修改頁面標題
-    document.querySelector("h1").textContent =
-        "請輸入密碼來繼續";
+        const loginButton =
+            document.getElementById(
+                "loginButton"
+            );
 
 
-    // 修改副標題
-    document.querySelector(".subtitle").textContent =
-        "請輸入您的帳號密碼";
+        const message =
+            document.getElementById(
+                "message"
+            );
 
 
-}
+        const showPasswordButton =
+            document.getElementById(
+                "showPassword"
+            );
 
 
-// ========================================
-// 檢查是否已經登入
-// ========================================
 
-async function checkSession() {
+        // ========================================
+        // Windows Form Mode
+        // ========================================
 
-    // 如果是從 Windows Form 進入
-    // 不要因為瀏覽器已有 Session 就直接跳過密碼
-    if (windowsMode) {
-        return;
-    }
+        const urlParams =
+            new URLSearchParams(
+                window.location.search
+            );
 
 
-    const {
-        data: {
-            session
+        const windowsMode =
+            urlParams.get(
+                "source"
+            ) === "windows";
+
+
+        const emailFromWindows =
+            urlParams.get(
+                "email"
+            );
+
+
+
+        // ========================================
+        // Windows Form Login DOM
+        // ========================================
+
+        const windowsLoginOverlay =
+            document.getElementById(
+                "windowsLoginOverlay"
+            );
+
+
+        const windowsEmailInput =
+            document.getElementById(
+                "windowsEmail"
+            );
+
+
+        const windowsPasswordInput =
+            document.getElementById(
+                "windowsPassword"
+            );
+
+
+        const windowsLoginButton =
+            document.getElementById(
+                "windowsLoginButton"
+            );
+
+
+        const windowsLoginMessage =
+            document.getElementById(
+                "windowsLoginMessage"
+            );
+
+
+        const windowsShowPassword =
+            document.getElementById(
+                "windowsShowPassword"
+            );
+
+
+
+        // ========================================
+        // Windows Form 開啟登入視窗
+        // ========================================
+
+        if (
+            windowsMode &&
+            emailFromWindows
+        ) {
+
+            // 填入 Email
+
+            windowsEmailInput.value =
+                emailFromWindows;
+
+
+            // 開啟登入視窗
+
+            windowsLoginOverlay.classList.add(
+                "open"
+            );
+
+
+            // 自動將游標放到密碼欄位
+
+            setTimeout(
+                function () {
+
+                    windowsPasswordInput.focus();
+
+                },
+                100
+            );
+
         }
-    } = await supabaseClient.auth.getSession();
 
 
-    if (session) {
 
-        window.location.href = "index.html";
+        // ========================================
+        // 檢查一般網頁 Session
+        // ========================================
 
-    }
+        async function checkSession() {
 
-}
+            /*
+             * Windows Form 模式下
+             * 必須重新輸入密碼。
+             *
+             * 因此不能使用原本的 Session
+             * 直接跳轉到 index.html。
+             */
 
-checkSession();
+            if (windowsMode) {
 
+                return;
+
+            }
+
+
+            const {
+                data: {
+                    session
+                }
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            if (session) {
+
+                window.location.href =
+                    "index.html";
+
+            }
+
+        }
 
 
         checkSession();
 
 
+
         // ========================================
+        // 原本登入頁：
         // 顯示 / 隱藏密碼
         // ========================================
 
@@ -515,18 +1198,25 @@ checkSession();
             "click",
             function () {
 
-                if (passwordInput.type === "password") {
+                if (
+                    passwordInput.type ===
+                    "password"
+                ) {
 
-                    passwordInput.type = "text";
+                    passwordInput.type =
+                        "text";
 
-                    showPasswordButton.textContent = "隱藏";
+                    showPasswordButton.textContent =
+                        "隱藏";
 
                 }
                 else {
 
-                    passwordInput.type = "password";
+                    passwordInput.type =
+                        "password";
 
-                    showPasswordButton.textContent = "顯示";
+                    showPasswordButton.textContent =
+                        "顯示";
 
                 }
 
@@ -534,8 +1224,9 @@ checkSession();
         );
 
 
+
         // ========================================
-        // 登入
+        // 原本登入頁登入
         // ========================================
 
         loginForm.addEventListener(
@@ -548,18 +1239,27 @@ checkSession();
                 const email =
                     emailInput.value.trim();
 
+
                 const password =
                     passwordInput.value;
 
 
                 // 清除訊息
-                message.textContent = "";
-                message.className = "message";
+
+                message.textContent =
+                    "";
+
+                message.className =
+                    "message";
 
 
                 // Loading
-                loginButton.disabled = true;
-                loginButton.textContent = "登入中…";
+
+                loginButton.disabled =
+                    true;
+
+                loginButton.textContent =
+                    "登入中…";
 
 
                 try {
@@ -567,13 +1267,17 @@ checkSession();
                     const {
                         data,
                         error
-                    } = await supabaseClient.auth.signInWithPassword({
+                    } =
+                        await supabaseClient.auth
+                            .signInWithPassword({
 
-                        email: email,
+                                email:
+                                    email,
 
-                        password: password
+                                password:
+                                    password
 
-                    });
+                            });
 
 
                     if (error) {
@@ -585,12 +1289,14 @@ checkSession();
 
                     // 登入成功
 
-                    message.textContent = "登入成功，正在進入 Money Statistics…";
+                    message.textContent =
+                        "登入成功，正在進入 Money Statistics…";
+
+
                     message.className =
                         "message success";
 
 
-                    // 稍微停留一下讓使用者看到訊息
                     setTimeout(
                         function () {
 
@@ -608,14 +1314,19 @@ checkSession();
 
 
                     message.textContent =
-                        "登入失敗：" + error.message;
+                        "登入失敗：" +
+                        error.message;
+
 
                     message.className =
                         "message error";
 
 
-                    loginButton.disabled = false;
-                    loginButton.textContent = "登入";
+                    loginButton.disabled =
+                        false;
+
+                    loginButton.textContent =
+                        "登入";
 
                 }
 
@@ -623,38 +1334,222 @@ checkSession();
         );
 
 
+
+        // ========================================
+        // Windows Form：
+        // 顯示 / 隱藏密碼
+        // ========================================
+
+        windowsShowPassword.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    windowsPasswordInput.type ===
+                    "password"
+                ) {
+
+                    windowsPasswordInput.type =
+                        "text";
+
+                    windowsShowPassword.textContent =
+                        "隱藏";
+
+                }
+                else {
+
+                    windowsPasswordInput.type =
+                        "password";
+
+                    windowsShowPassword.textContent =
+                        "顯示";
+
+                }
+
+            }
+        );
+
+
+
+        // ========================================
+        // Windows Form：
+        // 登入
+        // ========================================
+
+        windowsLoginButton.addEventListener(
+            "click",
+            async function () {
+
+
+                const email =
+                    windowsEmailInput.value.trim();
+
+
+                const password =
+                    windowsPasswordInput.value;
+
+
+                // 清除訊息
+
+                windowsLoginMessage.textContent =
+                    "";
+
+                windowsLoginMessage.className =
+                    "windows-login-message";
+
+
+                // 檢查密碼
+
+                if (!password) {
+
+                    windowsLoginMessage.textContent =
+                        "請輸入密碼。";
+
+
+                    windowsLoginMessage.className =
+                        "windows-login-message error";
+
+
+                    windowsPasswordInput.focus();
+
+                    return;
+
+                }
+
+
+                // Loading
+
+                windowsLoginButton.disabled =
+                    true;
+
+                windowsLoginButton.textContent =
+                    "登入中…";
+
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } =
+                        await supabaseClient.auth
+                            .signInWithPassword({
+
+                                email:
+                                    email,
+
+                                password:
+                                    password
+
+                            });
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    // 登入成功
+
+                    windowsLoginMessage.textContent =
+                        "登入成功，正在進入 Money Statistics…";
+
+
+                    windowsLoginMessage.className =
+                        "windows-login-message success";
+
+
+                    setTimeout(
+                        function () {
+
+                            window.location.href =
+                                "index.html";
+
+                        },
+                        500
+                    );
+
+                }
+                catch (error) {
+
+                    console.error(error);
+
+
+                    windowsLoginMessage.textContent =
+                        "登入失敗：" +
+                        error.message;
+
+
+                    windowsLoginMessage.className =
+                        "windows-login-message error";
+
+
+                    windowsLoginButton.disabled =
+                        false;
+
+                    windowsLoginButton.textContent =
+                        "登入";
+
+                }
+
+            }
+        );
+
+
+
+        // ========================================
+        // Forgot Password
+        // ========================================
+
         function toggleForgotPassword() {
 
-    const content =
-        document.getElementById("forgotPasswordContent");
 
-    const arrow =
-        document.getElementById("forgotPasswordArrow");
-
-    const isOpen =
-        content.classList.contains("open");
+            const content =
+                document.getElementById(
+                    "forgotPasswordContent"
+                );
 
 
-    if (isOpen) {
-
-        content.classList.remove("open");
-
-        arrow.style.transform = "rotate(0deg)";
-
-    } else {
-
-        content.classList.add("open");
-
-        arrow.style.transform = "rotate(180deg)";
-    }
-}
+            const isOpen =
+                content.classList.contains(
+                    "open"
+                );
 
 
-        document.getElementById("copyrightYear").textContent =
-    new Date().getFullYear();
+            if (isOpen) {
 
-    
+                content.classList.remove(
+                    "open"
+                );
+
+            }
+            else {
+
+                content.classList.add(
+                    "open"
+                );
+
+            }
+
+        }
+
+
+
+        // ========================================
+        // Copyright Year
+        // ========================================
+
+        document.getElementById(
+            "copyrightYear"
+        ).textContent =
+            new Date().getFullYear();
+
+
     </script>
 
+
 </body>
+
 </html>
