@@ -318,13 +318,14 @@
                         Email
                     </label>
 
-                    <input
-                        type="email"
-                        id="email"
-                        placeholder="example@email.com"
-                        autocomplete="email"
-                        required
+            <input
+                     type="email"
+                      id="email"
+                      placeholder="example@email.com"
+                      autocomplete="email"
+                      required
                     >
+
 
                 </div>
 
@@ -428,27 +429,79 @@
         const message = document.getElementById("message");
         const showPasswordButton = document.getElementById("showPassword");
 
+// ========================================
+// 判斷是否由 Windows Form 開啟
+// ========================================
 
-        // ========================================
-        // 檢查是否已經登入
-        // ========================================
+const urlParams = new URLSearchParams(
+    window.location.search
+);
 
-        async function checkSession() {
+const windowsMode =
+    urlParams.get("source") === "windows";
 
-            const {
-                data: {
-                    session
-                }
-            } = await supabaseClient.auth.getSession();
+const emailFromWindows =
+    urlParams.get("email");
 
 
-            if (session) {
+// ========================================
+// Windows Form 登入模式
+// ========================================
 
-                window.location.href = "index.html";
+if (windowsMode && emailFromWindows) {
 
-            }
+    // 填入 Email
+    emailInput.value =
+        emailFromWindows;
 
+
+    // Email 設為唯讀
+    emailInput.readOnly = true;
+
+
+    // 修改頁面標題
+    document.querySelector("h1").textContent =
+        "請輸入密碼來繼續";
+
+
+    // 修改副標題
+    document.querySelector(".subtitle").textContent =
+        "請輸入您的帳號密碼";
+
+
+}
+
+
+// ========================================
+// 檢查是否已經登入
+// ========================================
+
+async function checkSession() {
+
+    // 如果是從 Windows Form 進入
+    // 不要因為瀏覽器已有 Session 就直接跳過密碼
+    if (windowsMode) {
+        return;
+    }
+
+
+    const {
+        data: {
+            session
         }
+    } = await supabaseClient.auth.getSession();
+
+
+    if (session) {
+
+        window.location.href = "index.html";
+
+    }
+
+}
+
+checkSession();
+
 
 
         checkSession();
