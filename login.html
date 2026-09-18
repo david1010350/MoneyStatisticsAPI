@@ -1110,6 +1110,93 @@
 
 
         // ========================================
+        // Session 設定
+        // ========================================
+
+        const SESSION_KEY =
+            "moneyStatisticsSessionExpire";
+
+
+        const SESSION_DURATION =
+            30 * 60 * 1000;
+
+
+
+        // ========================================
+        // 建立 Money Statistics Session
+        // ========================================
+
+        function startMoneyStatisticsSession() {
+
+            const expireTime =
+                Date.now() +
+                SESSION_DURATION;
+
+
+            sessionStorage.setItem(
+                SESSION_KEY,
+                expireTime.toString()
+            );
+
+        }
+
+
+
+        // ========================================
+        // 清除 Money Statistics Session
+        // ========================================
+
+        function clearMoneyStatisticsSession() {
+
+            sessionStorage.removeItem(
+                SESSION_KEY
+            );
+
+        }
+
+
+
+        // ========================================
+        // 取得 Session 到期時間
+        // ========================================
+
+        function getMoneyStatisticsSessionExpire() {
+
+            const value =
+                sessionStorage.getItem(
+                    SESSION_KEY
+                );
+
+
+            if (!value) {
+
+                return null;
+
+            }
+
+
+            const expireTime =
+                Number(value);
+
+
+            if (
+                !Number.isFinite(
+                    expireTime
+                )
+            ) {
+
+                return null;
+
+            }
+
+
+            return expireTime;
+
+        }
+
+
+
+        // ========================================
         // Windows Form 開啟登入視窗
         // ========================================
 
@@ -1156,7 +1243,7 @@
              * Windows Form 模式下
              * 必須重新輸入密碼。
              *
-             * 因此不能使用原本的 Session
+             * 因此不能使用原本的 Supabase Session
              * 直接跳轉到 index.html。
              */
 
@@ -1167,18 +1254,98 @@
             }
 
 
-            const {
-                data: {
-                    session
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient.auth.getSession();
+
+
+                if (error) {
+
+                    console.error(
+                        "取得 Session 失敗：",
+                        error
+                    );
+
+                    return;
+
                 }
-            } =
-                await supabaseClient.auth.getSession();
 
 
-            if (session) {
+                // ========================================
+                // 沒有 Supabase Session
+                // ========================================
+
+                if (!data.session) {
+
+                    clearMoneyStatisticsSession();
+
+                    return;
+
+                }
+
+
+                // ========================================
+                // 取得 Money Statistics Session
+                // ========================================
+
+                const expireTime =
+                    getMoneyStatisticsSessionExpire();
+
+
+                // ========================================
+                // 沒有 Money Statistics Session
+                //
+                // 代表可能是其他地方登入，
+                // 或目前 Session 已失效。
+                // ========================================
+
+                if (!expireTime) {
+
+                    await supabaseClient.auth.signOut();
+
+                    clearMoneyStatisticsSession();
+
+                    return;
+
+                }
+
+
+                // ========================================
+                // Session 已經過期
+                // ========================================
+
+                if (
+                    Date.now() >=
+                    expireTime
+                ) {
+
+                    await supabaseClient.auth.signOut();
+
+                    clearMoneyStatisticsSession();
+
+                    return;
+
+                }
+
+
+                // ========================================
+                // Session 仍然有效
+                // ========================================
 
                 window.location.href =
                     "index.html";
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Session 檢查發生錯誤：",
+                    error
+                );
 
             }
 
@@ -1287,7 +1454,13 @@
                     }
 
 
+                    // ====================================
                     // 登入成功
+                    // 建立 30 分鐘 Session
+                    // ====================================
+
+                    startMoneyStatisticsSession();
+
 
                     message.textContent =
                         "登入成功，正在進入 Money Statistics…";
@@ -1451,7 +1624,13 @@
                     }
 
 
-                    // 登入成功
+                    // ====================================
+                    // Windows Form 登入成功
+                    // 建立 30 分鐘 Session
+                    // ====================================
+
+                    startMoneyStatisticsSession();
+
 
                     windowsLoginMessage.textContent =
                         "登入成功，正在進入 Money Statistics…";
