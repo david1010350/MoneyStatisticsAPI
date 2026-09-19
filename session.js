@@ -16,7 +16,7 @@ const SESSION_DURATION =
 
 function getLoginPageUrl() {
 
-    return "/MoneyStatisticsAPI/logon.html";
+    return "/MoneyStatisticsAPI/login.html";
 }
 
 
