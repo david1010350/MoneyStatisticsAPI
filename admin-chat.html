@@ -1875,6 +1875,7 @@ async function loadMessages(roomId) {
         error
     } =
         await supabaseClient
+        .schema("public")
             .from("chat_messages")
             .select("*")
             .eq(
@@ -2044,6 +2045,7 @@ async function markMessagesAsRead(roomId) {
         error
     } =
         await supabaseClient
+        .schema("public")
             .from("chat_messages")
             .update({
                 is_read: true
@@ -2177,6 +2179,7 @@ async function sendMessage() {
             error
         } =
             await supabaseClient
+            .schema("public")
                 .from("chat_messages")
                 .insert({
 
@@ -2629,6 +2632,7 @@ async function closeCurrentChat() {
             error: deleteError
         } =
             await supabaseClient
+            .schema("public")
                 .from("chat_messages")
                 .delete()
                 .eq(
