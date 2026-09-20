@@ -1,23 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>Money Statistics - 客服</title>
 
-    <title>
-        Money Statistics - 客服聊天室
-    </title>
-
-
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+    <script src="./supabase.js"></script>
 
     <style>
 
@@ -25,631 +15,1596 @@
             box-sizing: border-box;
         }
 
-
         body {
-
             margin: 0;
-
-            min-height: 100vh;
-
             font-family:
                 -apple-system,
                 BlinkMacSystemFont,
+                "SF Pro Display",
+                "SF Pro Text",
                 "Segoe UI",
-                "Microsoft JhengHei",
+                Arial,
                 sans-serif;
 
             background: #f5f5f7;
-
             color: #1d1d1f;
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-
         }
 
+        /* =========================================================
+           Header
+        ========================================================= */
 
-        /* ======================================== */
-        /* Chat Container */
-        /* ======================================== */
+        .header {
+            height: 64px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
 
-        .chat-container {
-
-            width: 100%;
-
-            max-width: 700px;
-
-            height: 700px;
-
-            background: white;
-
-            border-radius: 24px;
-
-            box-shadow:
-                0 10px 40px
-                rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid #e5e5e7;
 
             display: flex;
+            align-items: center;
+            justify-content: space-between;
 
+            padding: 0 24px;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .user-email {
+            color: #6e6e73;
+            font-size: 14px;
+        }
+
+        .logout-button {
+            border: none;
+            background: transparent;
+            color: #0071e3;
+
+            font-size: 14px;
+            cursor: pointer;
+
+            padding: 7px 10px;
+            border-radius: 8px;
+        }
+
+        .logout-button:hover {
+            background: #f0f0f2;
+        }
+
+        /* =========================================================
+           Main
+        ========================================================= */
+
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 20px 50px;
+        }
+
+        .chat-card {
+            height: calc(100vh - 150px);
+            min-height: 520px;
+
+            background: #ffffff;
+
+            border: 1px solid #e5e5e7;
+            border-radius: 18px;
+
+            box-shadow:
+                0 4px 20px rgba(0, 0, 0, 0.05);
+
+            display: flex;
             flex-direction: column;
 
             overflow: hidden;
-
         }
 
-
-        /* ======================================== */
-        /* Header */
-        /* ======================================== */
+        /* =========================================================
+           Chat Header
+        ========================================================= */
 
         .chat-header {
-
-            height: 72px;
-
-            padding:
-                0 24px;
-
-            border-bottom:
-                1px solid #e5e5e5;
+            height: 70px;
 
             display: flex;
-
             align-items: center;
 
+            padding: 0 22px;
+
+            border-bottom: 1px solid #e5e5e7;
+
+            flex-shrink: 0;
         }
 
+        .support-icon {
+            width: 42px;
+            height: 42px;
 
-        .chat-header-title {
+            border-radius: 50%;
+
+            background: #0071e3;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
             font-size: 20px;
 
-            font-weight: 600;
-
+            margin-right: 13px;
         }
 
+        .support-title {
+            font-size: 17px;
+            font-weight: 600;
+        }
 
-        .chat-header-status {
+        .support-status {
+            margin-top: 3px;
 
-            margin-left: 10px;
+            color: #86868b;
 
             font-size: 13px;
-
-            color: #34c759;
-
         }
 
+        .status-dot {
+            display: inline-block;
 
-        /* ======================================== */
-        /* Messages */
-        /* ======================================== */
+            width: 7px;
+            height: 7px;
 
-        .chat-messages {
+            background: #34c759;
 
+            border-radius: 50%;
+
+            margin-right: 5px;
+        }
+
+        /* =========================================================
+           Messages
+        ========================================================= */
+
+        .messages {
             flex: 1;
-
-            padding: 24px;
 
             overflow-y: auto;
 
+            padding: 24px 22px;
+
+            background: #fbfbfd;
+        }
+
+        .message-row {
             display: flex;
 
-            flex-direction: column;
+            margin-bottom: 14px;
 
-            gap: 12px;
-
-            background: #f5f5f7;
-
+            width: 100%;
         }
 
+        .message-row.user {
+            justify-content: flex-end;
+        }
 
-        .message {
+        .message-row.admin {
+            justify-content: flex-start;
+        }
 
-            max-width: 75%;
+        .message-content {
+            max-width: min(72%, 620px);
+        }
 
-            padding:
-                10px 14px;
+        .message-bubble {
+            padding: 11px 15px;
 
-            border-radius: 16px;
+            border-radius: 18px;
 
             font-size: 15px;
-
-            line-height: 1.5;
+            line-height: 1.55;
 
             word-break: break-word;
-
+            white-space: pre-wrap;
         }
 
-
-        .message.user {
-
-            align-self: flex-end;
-
+        .message-row.user .message-bubble {
             background: #0071e3;
-
             color: white;
 
             border-bottom-right-radius: 5px;
-
         }
 
-
-        .message.admin {
-
-            align-self: flex-start;
-
-            background: white;
-
+        .message-row.admin .message-bubble {
+            background: #e9e9eb;
             color: #1d1d1f;
 
             border-bottom-left-radius: 5px;
-
         }
 
-
         .message-time {
-
             margin-top: 4px;
 
             font-size: 11px;
 
-            opacity: 0.65;
-
+            color: #86868b;
         }
 
+        .message-row.user .message-time {
+            text-align: right;
+        }
 
-        /* ======================================== */
-        /* Input */
-        /* ======================================== */
+        .message-row.admin .message-time {
+            text-align: left;
+        }
 
-        .chat-input-area {
+        /* =========================================================
+           Empty State
+        ========================================================= */
 
-            padding: 16px;
-
-            border-top:
-                1px solid #e5e5e5;
+        .empty-state {
+            height: 100%;
 
             display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-direction: column;
+
+            color: #86868b;
+
+            text-align: center;
+        }
+
+        .empty-icon {
+            width: 58px;
+            height: 58px;
+
+            border-radius: 50%;
+
+            background: #f0f0f2;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 25px;
+
+            margin-bottom: 14px;
+        }
+
+        .empty-title {
+            color: #1d1d1f;
+
+            font-size: 17px;
+            font-weight: 600;
+
+            margin-bottom: 6px;
+        }
+
+        .empty-description {
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           Input
+        ========================================================= */
+
+        .input-area {
+            border-top: 1px solid #e5e5e7;
+
+            padding: 14px 16px;
+
+            background: #ffffff;
+
+            display: flex;
+            align-items: flex-end;
 
             gap: 10px;
 
-            background: white;
-
+            flex-shrink: 0;
         }
 
-
-        #messageInput {
-
+        .message-input {
             flex: 1;
 
-            height: 44px;
+            resize: none;
 
-            padding:
-                0 14px;
+            min-height: 44px;
+            max-height: 130px;
 
-            border:
-                1px solid #d2d2d7;
+            border: 1px solid #d2d2d7;
 
-            border-radius: 12px;
+            border-radius: 13px;
 
+            padding: 11px 13px;
+
+            font-family: inherit;
             font-size: 15px;
 
             outline: none;
 
+            background: #ffffff;
+
+            transition:
+                border-color 0.15s,
+                box-shadow 0.15s;
         }
 
-
-        #messageInput:focus {
-
+        .message-input:focus {
             border-color: #0071e3;
 
             box-shadow:
-                0 0 0 3px
-                rgba(0, 113, 227, 0.12);
-
+                0 0 0 3px rgba(0, 113, 227, 0.12);
         }
 
+        .send-button {
+            height: 44px;
 
-        #sendButton {
-
-            width: 80px;
+            padding: 0 18px;
 
             border: none;
 
             border-radius: 12px;
 
             background: #0071e3;
+            color: white;
 
+            font-size: 15px;
+            font-weight: 500;
+
+            cursor: pointer;
+
+            transition:
+                background 0.15s,
+                opacity 0.15s;
+        }
+
+        .send-button:hover {
+            background: #0077ed;
+        }
+
+        .send-button:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        /* =========================================================
+           Closed State
+        ========================================================= */
+
+        .closed-banner {
+            display: none;
+
+            padding: 13px 18px;
+
+            background: #f5f5f7;
+
+            border-top: 1px solid #e5e5e7;
+
+            color: #6e6e73;
+
+            text-align: center;
+
+            font-size: 14px;
+        }
+
+        .closed-banner.show {
+            display: block;
+        }
+
+        /* =========================================================
+           Modal
+        ========================================================= */
+
+        .modal-overlay {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0, 0, 0, 0.35);
+
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+
+            align-items: center;
+            justify-content: center;
+
+            z-index: 1000;
+
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 390px;
+
+            background: white;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.18);
+
+            padding: 28px 26px 22px;
+
+            text-align: center;
+        }
+
+        .modal-icon {
+            width: 52px;
+            height: 52px;
+
+            margin: 0 auto 15px;
+
+            border-radius: 50%;
+
+            background: #f5f5f7;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 23px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+
+            margin-bottom: 9px;
+        }
+
+        .modal-message {
+            font-size: 14px;
+
+            line-height: 1.6;
+
+            color: #6e6e73;
+
+            margin-bottom: 23px;
+        }
+
+        .modal-button {
+            width: 100%;
+
+            height: 44px;
+
+            border: none;
+
+            border-radius: 11px;
+
+            background: #0071e3;
             color: white;
 
             font-size: 15px;
 
-            font-weight: 600;
-
             cursor: pointer;
-
         }
 
+        /* =========================================================
+           Loading
+        ========================================================= */
 
-        #sendButton:hover {
+        .loading {
+            color: #86868b;
 
-            background: #0077ed;
-
-        }
-
-
-        #sendButton:disabled {
-
-            background: #a7c9ed;
-
-            cursor: not-allowed;
-
-        }
-
-
-        /* ======================================== */
-        /* Error */
-        /* ======================================== */
-
-        .error-message {
-
-            padding: 10px 20px;
+            font-size: 14px;
 
             text-align: center;
 
-            color: #d70015;
-
-            font-size: 13px;
-
-            display: none;
-
+            padding: 30px;
         }
 
+        /* =========================================================
+           Mobile
+        ========================================================= */
 
-        /* ======================================== */
-        /* Mobile */
-        /* ======================================== */
+        @media (max-width: 700px) {
 
-        @media (max-width: 720px) {
-
-            body {
-
-                align-items: stretch;
-
+            .header {
+                padding: 0 15px;
             }
 
+            .header-title {
+                font-size: 18px;
+            }
 
-            .chat-container {
+            .user-email {
+                display: none;
+            }
 
-                height: 100vh;
+            .page {
+                padding: 0;
+            }
+
+            .chat-card {
+                height: calc(100vh - 64px);
+
+                min-height: 0;
 
                 border-radius: 0;
 
+                border-left: none;
+                border-right: none;
+
+                box-shadow: none;
             }
 
+            .message-content {
+                max-width: 82%;
+            }
+
+            .messages {
+                padding: 20px 14px;
+            }
+
+            .input-area {
+                padding: 10px;
+            }
+
+            .send-button {
+                padding: 0 15px;
+            }
         }
 
     </style>
-
 </head>
-
 
 <body>
 
+    <!-- =========================================================
+         Header
+    ========================================================= -->
 
-    <div class="chat-container">
+    <header class="header">
 
-
-        <!-- Header -->
-
-        <div class="chat-header">
-
-            <div class="chat-header-title">
-
-                Money Statistics 支援
-
-            </div>
-
-            <div
-                id="connectionStatus"
-                class="chat-header-status"
-            >
-                ● 已連線
-            </div>
-
+        <div class="header-title">
+            Money Statistics
         </div>
 
+        <div class="header-right">
 
-        <!-- Error -->
-
-        <div
-            id="errorMessage"
-            class="error-message"
-        ></div>
-
-
-        <!-- Messages -->
-
-        <div
-            id="chatMessages"
-            class="chat-messages"
-        ></div>
-
-
-        <!-- Input -->
-
-        <div class="chat-input-area">
-
-            <input
-                type="text"
-                id="messageInput"
-                placeholder="輸入訊息…"
-                autocomplete="off"
-            >
+            <span
+                id="userEmail"
+                class="user-email">
+                載入中...
+            </span>
 
             <button
-                type="button"
-                id="sendButton"
-            >
-                送出
+                id="logoutButton"
+                class="logout-button">
+                登出
             </button>
 
         </div>
 
+    </header>
+
+
+    <!-- =========================================================
+         Main
+    ========================================================= -->
+
+    <main class="page">
+
+        <section class="chat-card">
+
+            <!-- Chat Header -->
+
+            <div class="chat-header">
+
+                <div class="support-icon">
+                    💬
+                </div>
+
+                <div>
+
+                    <div class="support-title">
+                        Money Statistics 客服
+                    </div>
+
+                    <div
+                        id="supportStatus"
+                        class="support-status">
+
+                        <span class="status-dot"></span>
+                        線上客服
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Messages -->
+
+            <div
+                id="messages"
+                class="messages">
+
+                <div class="loading">
+                    正在載入聊天室...
+                </div>
+
+            </div>
+
+
+            <!-- Closed Banner -->
+
+            <div
+                id="closedBanner"
+                class="closed-banner">
+
+                此聊天室已結束。
+                若您需要協助，請重新輸入訊息建立新的客服聊天室。
+
+            </div>
+
+
+            <!-- Input -->
+
+            <div class="input-area">
+
+                <textarea
+                    id="messageInput"
+                    class="message-input"
+                    placeholder="輸入訊息..."
+                    rows="1"></textarea>
+
+                <button
+                    id="sendButton"
+                    class="send-button">
+
+                    傳送
+
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================================
+         Session Expired Modal
+    ========================================================= -->
+
+    <div
+        id="sessionModal"
+        class="modal-overlay">
+
+        <div class="modal">
+
+            <div class="modal-icon">
+                🔒
+            </div>
+
+            <div class="modal-title">
+                工作階段已結束
+            </div>
+
+            <div class="modal-message">
+
+                為了保護您的帳號安全，
+                此次工作階段已經結束。
+
+                <br>
+
+                請重新登入 Money Statistics。
+
+            </div>
+
+            <button
+                id="sessionConfirmButton"
+                class="modal-button">
+
+                確定
+
+            </button>
+
+        </div>
 
     </div>
 
 
-    <!-- ======================================== -->
-    <!-- Supabase Client -->
-    <!-- ======================================== -->
-
-    <script src="supabase.js"></script>
-
-
     <script>
 
-        // ==========================================================
-        // DOM
-        // ==========================================================
+        // =========================================================
+        // Supabase
+        // =========================================================
 
-        const chatMessages =
-            document.getElementById(
-                "chatMessages"
+        const SUPABASE_URL =
+            "https://hztxqrfuqgdktxaushfo.supabase.co";
+
+        const SUPABASE_ANON_KEY =
+            window.SUPABASE_ANON_KEY;
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_ANON_KEY
             );
 
 
-        const messageInput =
-            document.getElementById(
-                "messageInput"
-            );
+        // =========================================================
+        // Session
+        // =========================================================
+
+        const MONEY_STATISTICS_SESSION_KEY =
+            "moneyStatisticsSessionExpire";
+
+        const SESSION_DURATION =
+            30 * 60 * 1000;
 
 
-        const sendButton =
-            document.getElementById(
-                "sendButton"
-            );
-
-
-        const errorMessage =
-            document.getElementById(
-                "errorMessage"
-            );
-
-
-        const connectionStatus =
-            document.getElementById(
-                "connectionStatus"
-            );
-
-
-        // ==========================================================
-        // Current User
-        // ==========================================================
+        // =========================================================
+        // State
+        // =========================================================
 
         let currentUser = null;
 
+        let currentRoom = null;
 
-        // ==========================================================
-        // 顯示錯誤
-        // ==========================================================
+        let realtimeChannel = null;
 
-        function showError(message) {
+        let sessionTimer = null;
 
-            errorMessage.textContent =
-                message;
-
-            errorMessage.style.display =
-                "block";
-
-        }
+        let loadingMessages = false;
 
 
-        // ==========================================================
-        // 取得目前登入者
-        // ==========================================================
+        // =========================================================
+        // DOM
+        // =========================================================
 
-        async function loadCurrentUser() {
+        const userEmail =
+            document.getElementById("userEmail");
 
-            try {
+        const messages =
+            document.getElementById("messages");
 
-                const {
-                    data,
-                    error
-                } =
-                    await supabaseClient.auth.getUser();
+        const messageInput =
+            document.getElementById("messageInput");
+
+        const sendButton =
+            document.getElementById("sendButton");
+
+        const logoutButton =
+            document.getElementById("logoutButton");
+
+        const closedBanner =
+            document.getElementById("closedBanner");
+
+        const supportStatus =
+            document.getElementById("supportStatus");
+
+        const sessionModal =
+            document.getElementById("sessionModal");
+
+        const sessionConfirmButton =
+            document.getElementById("sessionConfirmButton");
 
 
-                if (error) {
+        // =========================================================
+        // Start
+        // =========================================================
 
-                    throw error;
+        document.addEventListener(
+            "DOMContentLoaded",
+            async function () {
+
+                try {
+
+                    await checkSession();
+
+                } catch (error) {
+
+                    console.error(
+                        "初始化失敗：",
+                        error
+                    );
+
+                    redirectToLogin();
 
                 }
-
-
-                if (!data.user) {
-
-                    window.location.href =
-                        "logon.html";
-
-                    return false;
-
-                }
-
-
-                currentUser =
-                    data.user;
-
-
-                return true;
 
             }
-            catch (error) {
+        );
 
-                console.error(error);
 
-                showError(
-                    "無法取得登入資訊。"
+        // =========================================================
+        // Check Session
+        // =========================================================
+
+        async function checkSession() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth.getSession();
+
+            if (
+                error ||
+                !data ||
+                !data.session ||
+                !data.session.user
+            ) {
+
+                redirectToLogin();
+
+                return;
+
+            }
+
+            currentUser =
+                data.session.user;
+
+            userEmail.textContent =
+                currentUser.email || "";
+
+
+            // -----------------------------------------------------
+            // 30 分鐘工作階段
+            // -----------------------------------------------------
+
+            let expireTime =
+                sessionStorage.getItem(
+                    MONEY_STATISTICS_SESSION_KEY
                 );
 
-                return false;
+
+            if (!expireTime) {
+
+                expireTime =
+                    Date.now() +
+                    SESSION_DURATION;
+
+                sessionStorage.setItem(
+                    MONEY_STATISTICS_SESSION_KEY,
+                    expireTime.toString()
+                );
+
+            }
+
+
+            if (
+                Date.now() >=
+                Number(expireTime)
+            ) {
+
+                showSessionExpired();
+
+                return;
+
+            }
+
+
+            startSessionTimer(
+                Number(expireTime)
+            );
+
+
+            await initializeChat();
+
+        }
+
+
+        // =========================================================
+        // Session Timer
+        // =========================================================
+
+        function startSessionTimer(
+            expireTime
+        ) {
+
+            if (sessionTimer) {
+
+                clearTimeout(
+                    sessionTimer
+                );
+
+            }
+
+
+            const remaining =
+                expireTime -
+                Date.now();
+
+
+            if (remaining <= 0) {
+
+                showSessionExpired();
+
+                return;
+
+            }
+
+
+            sessionTimer =
+                setTimeout(
+                    function () {
+
+                        showSessionExpired();
+
+                    },
+                    remaining
+                );
+
+        }
+
+
+        // =========================================================
+        // Session Expired
+        // =========================================================
+
+        function showSessionExpired() {
+
+            if (sessionTimer) {
+
+                clearTimeout(
+                    sessionTimer
+                );
+
+                sessionTimer = null;
+
+            }
+
+
+            messageInput.disabled = true;
+
+            sendButton.disabled = true;
+
+
+            sessionModal.classList.add(
+                "show"
+            );
+
+        }
+
+
+        sessionConfirmButton.addEventListener(
+            "click",
+            async function () {
+
+                sessionStorage.removeItem(
+                    MONEY_STATISTICS_SESSION_KEY
+                );
+
+
+                await supabaseClient.auth.signOut();
+
+
+                redirectToLogin();
+
+            }
+        );
+
+
+        // =========================================================
+        // Redirect Login
+        // =========================================================
+
+        function redirectToLogin() {
+
+            window.location.href =
+                "login.html";
+
+        }
+
+
+        // =========================================================
+        // Initialize Chat
+        // =========================================================
+
+        async function initializeChat() {
+
+            await loadOrCreateRoom();
+
+            if (currentRoom) {
+
+                await loadMessages();
+
+                subscribeRealtime();
 
             }
 
         }
 
 
-        // ==========================================================
-        // 顯示訊息
-        // ==========================================================
+        // =========================================================
+        // Load / Create Room
+        // =========================================================
 
-        function displayMessage(message) {
+        async function loadOrCreateRoom() {
 
-            const messageElement =
+            if (!currentUser) {
+
+                return;
+
+            }
+
+
+            // -----------------------------------------------------
+            // 找目前使用者的開啟聊天室
+            // -----------------------------------------------------
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("chat_rooms")
+                    .select("*")
+                    .eq(
+                        "user_id",
+                        currentUser.id
+                    )
+                    .eq(
+                        "status",
+                        "open"
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    )
+                    .limit(1);
+
+
+            if (error) {
+
+                console.error(
+                    "讀取聊天室失敗：",
+                    error
+                );
+
+                showError(
+                    "無法載入客服聊天室。"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                data &&
+                data.length > 0
+            ) {
+
+                currentRoom =
+                    data[0];
+
+                setChatOpenState();
+
+                return;
+
+            }
+
+
+            // -----------------------------------------------------
+            // 沒有聊天室
+            // 不立即建立空聊天室
+            // -----------------------------------------------------
+
+            currentRoom = null;
+
+            setChatWaitingState();
+
+        }
+
+
+        // =========================================================
+        // Create Room
+        // =========================================================
+
+        async function createRoom() {
+
+            if (!currentUser) {
+
+                return null;
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("chat_rooms")
+                    .insert({
+
+                        user_id:
+                            currentUser.id,
+
+                        user_email:
+                            currentUser.email,
+
+                        status:
+                            "open",
+
+                        unread_count:
+                            0,
+
+                        last_message:
+                            null,
+
+                        last_message_at:
+                            null
+
+                    })
+                    .select()
+                    .single();
+
+
+            if (error) {
+
+                console.error(
+                    "建立聊天室失敗：",
+                    error
+                );
+
+                return null;
+
+            }
+
+
+            currentRoom =
+                data;
+
+
+            setChatOpenState();
+
+
+            subscribeRealtime();
+
+
+            return currentRoom;
+
+        }
+
+
+        // =========================================================
+        // Waiting State
+        // =========================================================
+
+        function setChatWaitingState() {
+
+            closedBanner.classList.remove(
+                "show"
+            );
+
+            messageInput.disabled =
+                false;
+
+            sendButton.disabled =
+                false;
+
+
+            messages.innerHTML = `
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        💬
+                    </div>
+
+                    <div class="empty-title">
+                        需要協助嗎？
+                    </div>
+
+                    <div class="empty-description">
+                        請輸入訊息，我們會為您建立客服聊天室。
+                    </div>
+
+                </div>
+
+            `;
+
+            supportStatus.innerHTML = `
+                <span class="status-dot"></span>
+                線上客服
+            `;
+
+        }
+
+
+        // =========================================================
+        // Open State
+        // =========================================================
+
+        function setChatOpenState() {
+
+            closedBanner.classList.remove(
+                "show"
+            );
+
+            messageInput.disabled =
+                false;
+
+            sendButton.disabled =
+                false;
+
+
+            supportStatus.innerHTML = `
+                <span class="status-dot"></span>
+                線上客服
+            `;
+
+        }
+
+
+        // =========================================================
+        // Closed State
+        // =========================================================
+
+        function setChatClosedState() {
+
+            messageInput.disabled =
+                false;
+
+            sendButton.disabled =
+                false;
+
+            closedBanner.classList.add(
+                "show"
+            );
+
+
+            supportStatus.innerHTML =
+                "聊天室已結束";
+
+
+            messages.innerHTML = `
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        ✓
+                    </div>
+
+                    <div class="empty-title">
+                        聊天室已結束
+                    </div>
+
+                    <div class="empty-description">
+                        您可以輸入新的訊息開始新的客服對話。
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        // =========================================================
+        // Load Messages
+        // =========================================================
+
+        async function loadMessages() {
+
+            if (
+                !currentRoom ||
+                loadingMessages
+            ) {
+
+                return;
+
+            }
+
+
+            loadingMessages = true;
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("chat_messages")
+                    .select("*")
+                    .eq(
+                        "room_id",
+                        currentRoom.id
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+            loadingMessages = false;
+
+
+            if (error) {
+
+                console.error(
+                    "讀取訊息失敗：",
+                    error
+                );
+
+                showError(
+                    "無法載入聊天訊息。"
+                );
+
+                return;
+
+            }
+
+
+            renderMessages(
+                data || []
+            );
+
+
+            await markMessagesAsRead();
+
+        }
+
+
+        // =========================================================
+        // Render Messages
+        // =========================================================
+
+        function renderMessages(
+            messageList
+        ) {
+
+            if (
+                !messageList ||
+                messageList.length === 0
+            ) {
+
+                messages.innerHTML = `
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            💬
+                        </div>
+
+                        <div class="empty-title">
+                            開始與客服聊天
+                        </div>
+
+                        <div class="empty-description">
+                            請輸入您的問題，我們會盡快回覆。
+                        </div>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            messages.innerHTML = "";
+
+
+            messageList.forEach(
+                function (message) {
+
+                    appendMessage(
+                        message,
+                        false
+                    );
+
+                }
+            );
+
+
+            scrollMessagesToBottom();
+
+        }
+
+
+        // =========================================================
+        // Append Message
+        // =========================================================
+
+        function appendMessage(
+            message,
+            scroll = true
+        ) {
+
+            const isUser =
+                message.sender_type ===
+                "user";
+
+
+            const row =
                 document.createElement(
                     "div"
                 );
 
+            row.className =
+                "message-row " +
+                (
+                    isUser
+                        ? "user"
+                        : "admin"
+                );
 
-            messageElement.className =
-                "message user";
+
+            const content =
+                document.createElement(
+                    "div"
+                );
+
+            content.className =
+                "message-content";
 
 
-            messageElement.textContent =
+            const bubble =
+                document.createElement(
+                    "div"
+                );
+
+            bubble.className =
+                "message-bubble";
+
+
+            bubble.textContent =
                 message.message;
 
 
-            const timeElement =
+            const time =
                 document.createElement(
                     "div"
                 );
 
-
-            timeElement.className =
+            time.className =
                 "message-time";
 
 
-            const date =
-                new Date(
+            time.textContent =
+                formatMessageTime(
                     message.created_at
                 );
 
 
-            timeElement.textContent =
-                date.toLocaleString(
-                    "zh-TW",
-                    {
-                        hour: "2-digit",
-                        minute: "2-digit"
-                    }
-                );
+            content.appendChild(
+                bubble
+            );
 
+            content.appendChild(
+                time
+            );
 
-            messageElement.appendChild(
-                timeElement
+            row.appendChild(
+                content
+            );
+
+            messages.appendChild(
+                row
             );
 
 
-            chatMessages.appendChild(
-                messageElement
-            );
+            if (scroll) {
 
+                scrollMessagesToBottom();
 
-            chatMessages.scrollTop =
-                chatMessages.scrollHeight;
+            }
 
         }
 
 
-        // ==========================================================
-        // 讀取歷史訊息
-        // ==========================================================
+        // =========================================================
+        // Format Time
+        // =========================================================
 
-        async function loadMessages() {
+        function formatMessageTime(
+            value
+        ) {
 
-            try {
+            if (!value) {
 
-                const {
-                    data,
-                    error
-                } =
-                    await supabaseClient
-                         .schema("public")
-                        .from("chat_messages")
-                        .select("*")
-                        .eq(
-                            "user_id",
-                            currentUser.id
-                        )
-                        .order(
-                            "created_at",
-                            {
-                                ascending: true
-                            }
-                        );
+                return "";
+
+            }
 
 
-                if (error) {
+            const date =
+                new Date(value);
 
-                    throw error;
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return "";
+
+            }
+
+
+            return date.toLocaleTimeString(
+                "zh-TW",
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+
+        }
+
+
+        // =========================================================
+        // Scroll
+        // =========================================================
+
+        function scrollMessagesToBottom() {
+
+            requestAnimationFrame(
+                function () {
+
+                    messages.scrollTop =
+                        messages.scrollHeight;
+
+                }
+            );
+
+        }
+
+
+        // =========================================================
+        // Send Message
+        // =========================================================
+
+        sendButton.addEventListener(
+            "click",
+            sendMessage
+        );
+
+
+        messageInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+                    sendMessage();
 
                 }
 
-
-                chatMessages.innerHTML =
-                    "";
-
-
-                data.forEach(
-                    function (message) {
-
-                        displayMessage(
-                            message
-                        );
-
-                    }
-                );
-
             }
-            catch (error) {
+        );
 
-                console.error(error);
-
-                showError(
-                    "無法載入聊天紀錄：" +
-                    error.message
-                );
-
-            }
-
-        }
-
-
-        // ==========================================================
-        // 發送訊息
-        // ==========================================================
 
         async function sendMessage() {
 
@@ -664,178 +1619,539 @@
             }
 
 
-            sendButton.disabled =
-                true;
-
-
-            try {
-
-                const {
-                    error
-                } =
-                    await supabaseClient
-                       .schema("public")
-                        .from("chat_messages")
-                        .insert({
-
-                            user_id:
-                                currentUser.id,
-
-                            user_email:
-                                currentUser.email,
-
-                            message:
-                                text
-
-                        });
-
-
-                if (error) {
-
-                    throw error;
-
-                }
-
-
-                messageInput.value =
-                    "";
-
-            }
-            catch (error) {
-
-                console.error(error);
-
-                showError(
-                    "訊息傳送失敗：" +
-                    error.message
-                );
-
-            }
-            finally {
-
-                sendButton.disabled =
-                    false;
-
-                messageInput.focus();
-
-            }
-
-        }
-
-
-        // ==========================================================
-        // Realtime
-        // ==========================================================
-
-        function subscribeRealtime() {
-
-            supabaseClient
-                .channel(
-                    "chat-messages"
-                )
-                .on(
-                    "postgres_changes",
-                    {
-                        event: "INSERT",
-                        schema: "public",
-                        table: "chat_messages",
-                        filter:
-                            "user_id=eq." +
-                            currentUser.id
-                    },
-                    function (payload) {
-
-                        displayMessage(
-                            payload.new
-                        );
-
-                    }
-                )
-                .subscribe(
-                    function (status) {
-
-                        if (
-                            status ===
-                            "SUBSCRIBED"
-                        ) {
-
-                            connectionStatus.textContent =
-                                "● 即時連線";
-
-                        }
-
-                    }
-                );
-
-        }
-
-
-        // ==========================================================
-        // Button
-        // ==========================================================
-
-        sendButton.addEventListener(
-            "click",
-            sendMessage
-        );
-
-
-        // ==========================================================
-        // Enter
-        // ==========================================================
-
-        messageInput.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (
-                    event.key ===
-                    "Enter"
-                ) {
-
-                    event.preventDefault();
-
-                    sendMessage();
-
-                }
-
-            }
-        );
-
-
-        // ==========================================================
-        // 初始化
-        // ==========================================================
-
-        async function initializeChat() {
-
-            const loggedIn =
-                await loadCurrentUser();
-
-
-            if (!loggedIn) {
+            if (!currentUser) {
 
                 return;
 
             }
 
 
-            await loadMessages();
+            // -----------------------------------------------------
+            // 如果沒有開啟聊天室
+            // 建立新聊天室
+            // -----------------------------------------------------
+
+            if (
+                !currentRoom ||
+                currentRoom.status !== "open"
+            ) {
+
+                const room =
+                    await createRoom();
 
 
-            subscribeRealtime();
+                if (!room) {
+
+                    showError(
+                        "無法建立客服聊天室。"
+                    );
+
+                    return;
+
+                }
 
 
-            messageInput.focus();
+                messages.innerHTML = "";
+
+            }
+
+
+            sendButton.disabled =
+                true;
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("chat_messages")
+                    .insert({
+
+                        room_id:
+                            currentRoom.id,
+
+                        sender_id:
+                            currentUser.id,
+
+                        sender_email:
+                            currentUser.email,
+
+                        sender_type:
+                            "user",
+
+                        message:
+                            text,
+
+                        is_read:
+                            false
+
+                    })
+                    .select()
+                    .single();
+
+
+            sendButton.disabled =
+                false;
+
+
+            if (error) {
+
+                console.error(
+                    "傳送訊息失敗：",
+                    error
+                );
+
+                showError(
+                    "訊息傳送失敗，請稍後再試。"
+                );
+
+                return;
+
+            }
+
+
+            messageInput.value = "";
+
+            autoResizeTextarea();
+
+
+            // -----------------------------------------------------
+            // Realtime 通常會自動顯示
+            // 這裡不再手動 append
+            // -----------------------------------------------------
 
         }
 
 
-        initializeChat();
+        // =========================================================
+        // Update Room Last Message
+        // =========================================================
+
+        async function updateRoomPreview(
+            text
+        ) {
+
+            if (!currentRoom) {
+
+                return;
+
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("chat_rooms")
+                    .update({
+
+                        last_message:
+                            text,
+
+                        last_message_at:
+                            new Date().toISOString()
+
+                    })
+                    .eq(
+                        "id",
+                        currentRoom.id
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "更新聊天室資訊失敗：",
+                    error
+                );
+
+            }
+
+        }
+
+
+        // =========================================================
+        // Mark Messages Read
+        // =========================================================
+
+        async function markMessagesAsRead() {
+
+            if (!currentRoom) {
+
+                return;
+
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("chat_messages")
+                    .update({
+                        is_read: true
+                    })
+                    .eq(
+                        "room_id",
+                        currentRoom.id
+                    )
+                    .eq(
+                        "sender_type",
+                        "admin"
+                    )
+                    .eq(
+                        "is_read",
+                        false
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "更新已讀狀態失敗：",
+                    error
+                );
+
+            }
+
+
+            await supabaseClient
+                .from("chat_rooms")
+                .update({
+                    unread_count: 0
+                })
+                .eq(
+                    "id",
+                    currentRoom.id
+                );
+
+        }
+
+
+        // =========================================================
+        // Realtime
+        // =========================================================
+
+        function subscribeRealtime() {
+
+            if (!currentRoom) {
+
+                return;
+
+            }
+
+
+            if (realtimeChannel) {
+
+                supabaseClient.removeChannel(
+                    realtimeChannel
+                );
+
+            }
+
+
+            realtimeChannel =
+                supabaseClient
+                    .channel(
+                        "user-chat-" +
+                        currentRoom.id
+                    )
+
+                    // ------------------------------------------------
+                    // 新訊息
+                    // ------------------------------------------------
+
+                    .on(
+                        "postgres_changes",
+                        {
+                            event: "INSERT",
+
+                            schema: "public",
+
+                            table: "chat_messages",
+
+                            filter:
+                                "room_id=eq." +
+                                currentRoom.id
+                        },
+
+                        async function (
+                            payload
+                        ) {
+
+                            const message =
+                                payload.new;
+
+
+                            // ----------------------------------------
+                            // 避免自己的訊息重複顯示
+                            // ----------------------------------------
+
+                            const isOwnMessage =
+                                message.sender_id ===
+                                currentUser.id;
+
+
+                            if (
+                                !isOwnMessage
+                            ) {
+
+                                appendMessage(
+                                    message,
+                                    true
+                                );
+
+                            }
+
+
+                            // ----------------------------------------
+                            // 管理員訊息自動標記已讀
+                            // ----------------------------------------
+
+                            if (
+                                message.sender_type ===
+                                "admin"
+                            ) {
+
+                                await supabaseClient
+                                    .from(
+                                        "chat_messages"
+                                    )
+                                    .update({
+                                        is_read: true
+                                    })
+                                    .eq(
+                                        "id",
+                                        message.id
+                                    );
+
+
+                                await supabaseClient
+                                    .from(
+                                        "chat_rooms"
+                                    )
+                                    .update({
+                                        unread_count: 0
+                                    })
+                                    .eq(
+                                        "id",
+                                        currentRoom.id
+                                    );
+
+                            }
+
+                        }
+                    )
+
+                    // ------------------------------------------------
+                    // 聊天室更新
+                    // ------------------------------------------------
+
+                    .on(
+                        "postgres_changes",
+                        {
+                            event: "UPDATE",
+
+                            schema: "public",
+
+                            table: "chat_rooms",
+
+                            filter:
+                                "id=eq." +
+                                currentRoom.id
+                        },
+
+                        async function (
+                            payload
+                        ) {
+
+                            currentRoom =
+                                payload.new;
+
+
+                            // ----------------------------------------
+                            // 管理員結束聊天室
+                            // ----------------------------------------
+
+                            if (
+                                currentRoom.status ===
+                                "closed"
+                            ) {
+
+                                setChatClosedState();
+
+
+                                if (
+                                    realtimeChannel
+                                ) {
+
+                                    await supabaseClient
+                                        .removeChannel(
+                                            realtimeChannel
+                                        );
+
+                                    realtimeChannel =
+                                        null;
+
+                                }
+
+                            }
+
+                        }
+                    )
+
+                    .subscribe();
+
+        }
+
+
+        // =========================================================
+        // Textarea Auto Resize
+        // =========================================================
+
+        messageInput.addEventListener(
+            "input",
+            autoResizeTextarea
+        );
+
+
+        function autoResizeTextarea() {
+
+            messageInput.style.height =
+                "auto";
+
+
+            messageInput.style.height =
+                Math.min(
+                    messageInput.scrollHeight,
+                    130
+                ) + "px";
+
+        }
+
+
+        // =========================================================
+        // Logout
+        // =========================================================
+
+        logoutButton.addEventListener(
+            "click",
+            async function () {
+
+                if (realtimeChannel) {
+
+                    await supabaseClient
+                        .removeChannel(
+                            realtimeChannel
+                        );
+
+                    realtimeChannel =
+                        null;
+
+                }
+
+
+                if (sessionTimer) {
+
+                    clearTimeout(
+                        sessionTimer
+                    );
+
+                    sessionTimer =
+                        null;
+
+                }
+
+
+                sessionStorage.removeItem(
+                    MONEY_STATISTICS_SESSION_KEY
+                );
+
+
+                await supabaseClient.auth.signOut();
+
+
+                redirectToLogin();
+
+            }
+        );
+
+
+        // =========================================================
+        // Error
+        // =========================================================
+
+        function showError(
+            message
+        ) {
+
+            messages.innerHTML = `
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        ⚠️
+                    </div>
+
+                    <div class="empty-title">
+                        發生錯誤
+                    </div>
+
+                    <div class="empty-description">
+                        ${escapeHtml(message)}
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        // =========================================================
+        // Escape HTML
+        // =========================================================
+
+        function escapeHtml(
+            value
+        ) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.textContent =
+                value;
+
+            return div.innerHTML;
+
+        }
+
+
+        // =========================================================
+        // Auth State Change
+        // =========================================================
+
+        supabaseClient.auth.onAuthStateChange(
+            function (
+                event,
+                session
+            ) {
+
+                if (
+                    event === "SIGNED_OUT"
+                ) {
+
+                    redirectToLogin();
+
+                }
+
+            }
+        );
 
     </script>
 
-
 </body>
-
 </html>
