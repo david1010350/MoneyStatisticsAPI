@@ -1153,6 +1153,7 @@ async function checkAdmin(userId) {
         error
     } =
         await supabaseClient
+        .schema("public")
             .from("admin_users")
             .select(
                 "user_id,email"
