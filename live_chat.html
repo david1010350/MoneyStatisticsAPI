@@ -596,6 +596,7 @@
                     error
                 } =
                     await supabaseClient
+                         .schema("public")
                         .from("chat_messages")
                         .select("*")
                         .eq(
