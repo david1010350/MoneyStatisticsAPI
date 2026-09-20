@@ -1314,6 +1314,7 @@
                 error
             } =
                 await supabaseClient
+                .schema("public")
                     .from("chat_messages")
                     .select("*")
                     .eq(
@@ -1653,6 +1654,7 @@
                 error
             } =
                 await supabaseClient
+                .schema("public")
                     .from("chat_messages")
                     .insert({
 
@@ -1777,6 +1779,7 @@
                 error
             } =
                 await supabaseClient
+                .schema("public")
                     .from("chat_messages")
                     .update({
                         is_read: true
@@ -1905,6 +1908,7 @@
                             ) {
 
                                 await supabaseClient
+                                .schema("public")
                                     .from(
                                         "chat_messages"
                                     )
