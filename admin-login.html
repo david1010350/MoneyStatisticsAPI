@@ -3,12 +3,12 @@
 <html lang="zh-Hant">
 <head>
 
-```
 <meta charset="UTF-8">
 
 <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+
 >
 
 <title>Money Statistics 管理員登入</title>
@@ -19,342 +19,321 @@
 
 <style>
 
-    * {
-        box-sizing: border-box;
-    }
+* {
+    box-sizing: border-box;
+}
 
-    body {
-        margin: 0;
-        min-height: 100vh;
+body {
+    margin: 0;
+    min-height: 100vh;
 
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-        background: #f5f5f7;
+    background: #f5f5f7;
 
-        font-family:
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            sans-serif;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 
-        color: #1d1d1f;
-    }
+    color: #1d1d1f;
+}
 
-    .login-container {
+.login-container {
+    width: 100%;
+    max-width: 420px;
 
-        width: 100%;
-        max-width: 420px;
+    padding: 40px;
 
-        padding: 40px;
+    background: #ffffff;
 
-        background: #ffffff;
+    border-radius: 20px;
 
-        border-radius: 20px;
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.08);
+}
 
-        box-shadow:
-            0 10px 40px rgba(0, 0, 0, 0.08);
-    }
+.logo {
+    width: 64px;
+    height: 64px;
 
-    .logo {
+    margin: 0 auto 24px;
 
-        width: 64px;
-        height: 64px;
+    display: block;
 
-        margin: 0 auto 24px;
+    object-fit: contain;
+}
 
-        display: block;
+h1 {
+    margin: 0;
 
-        object-fit: contain;
-    }
+    text-align: center;
 
-    h1 {
+    font-size: 26px;
 
-        margin: 0;
+    font-weight: 600;
+}
 
-        text-align: center;
+.subtitle {
+    margin-top: 8px;
+    margin-bottom: 32px;
 
-        font-size: 26px;
+    text-align: center;
 
-        font-weight: 600;
-    }
+    color: #86868b;
 
-    .subtitle {
+    font-size: 14px;
+}
 
-        margin-top: 8px;
+.admin-badge {
+    display: table;
 
-        margin-bottom: 32px;
+    margin: 0 auto 24px;
 
-        text-align: center;
+    padding: 6px 12px;
 
-        color: #86868b;
+    border-radius: 20px;
 
-        font-size: 14px;
-    }
+    background: #f2f2f7;
 
-    .admin-badge {
+    color: #555;
 
-        display: table;
+    font-size: 13px;
+}
 
-        margin: 0 auto 24px;
+label {
+    display: block;
 
-        padding: 6px 12px;
+    margin-bottom: 8px;
 
-        border-radius: 20px;
+    font-size: 14px;
 
-        background: #f2f2f7;
+    color: #555;
+}
 
-        color: #555;
+input {
+    width: 100%;
+    height: 46px;
 
-        font-size: 13px;
-    }
+    padding: 0 14px;
 
-    label {
+    margin-bottom: 18px;
 
-        display: block;
+    border: 1px solid #d2d2d7;
 
-        margin-bottom: 8px;
+    border-radius: 10px;
 
-        font-size: 14px;
+    outline: none;
 
-        color: #555;
-    }
+    font-size: 15px;
 
-    input {
+    background: #fff;
 
-        width: 100%;
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
 
-        height: 46px;
+input:focus {
+    border-color: #007aff;
 
-        padding: 0 14px;
+    box-shadow:
+        0 0 0 3px rgba(0, 122, 255, 0.12);
+}
 
-        margin-bottom: 18px;
+.password-container {
+    position: relative;
+}
 
-        border: 1px solid #d2d2d7;
+.password-container input {
+    padding-right: 48px;
+}
 
-        border-radius: 10px;
+.password-toggle {
+    position: absolute;
 
-        outline: none;
+    right: 12px;
+    top: 0;
 
-        font-size: 15px;
+    height: 46px;
 
-        background: #fff;
+    border: none;
 
-        transition:
-            border-color 0.2s,
-            box-shadow 0.2s;
-    }
+    background: transparent;
 
-    input:focus {
+    cursor: pointer;
 
-        border-color: #007aff;
+    color: #007aff;
 
-        box-shadow:
-            0 0 0 3px rgba(0, 122, 255, 0.12);
-    }
+    font-size: 13px;
+}
 
-    .password-container {
+.login-button {
+    width: 100%;
+    height: 46px;
 
-        position: relative;
-    }
+    margin-top: 8px;
 
-    .password-container input {
+    border: none;
 
-        padding-right: 48px;
-    }
+    border-radius: 10px;
 
-    .password-toggle {
+    background: #007aff;
 
-        position: absolute;
+    color: white;
 
-        right: 12px;
-        top: 0;
+    font-size: 16px;
 
-        height: 46px;
+    font-weight: 500;
 
-        border: none;
+    cursor: pointer;
+}
 
-        background: transparent;
+.login-button:hover {
+    background: #006fe6;
+}
 
-        cursor: pointer;
+.login-button:disabled {
+    background: #b8b8bd;
 
-        color: #007aff;
+    cursor: not-allowed;
+}
 
-        font-size: 13px;
-    }
+.message {
+    min-height: 20px;
 
-    .login-button {
+    margin-top: 18px;
 
-        width: 100%;
+    text-align: center;
 
-        height: 46px;
+    font-size: 14px;
 
-        margin-top: 8px;
+    color: #d93025;
+}
 
-        border: none;
+.back-link {
+    display: block;
 
-        border-radius: 10px;
+    margin-top: 24px;
 
-        background: #007aff;
+    text-align: center;
 
-        color: white;
+    color: #007aff;
 
-        font-size: 16px;
+    text-decoration: none;
 
-        font-weight: 500;
+    font-size: 14px;
+}
 
-        cursor: pointer;
-    }
+.back-link:hover {
+    text-decoration: underline;
+}
 
-    .login-button:hover {
+footer {
+    position: fixed;
 
-        background: #006fe6;
-    }
+    bottom: 20px;
 
-    .login-button:disabled {
+    left: 0;
+    right: 0;
 
-        background: #b8b8bd;
+    text-align: center;
 
-        cursor: not-allowed;
-    }
+    font-size: 12px;
 
-    .message {
-
-        min-height: 20px;
-
-        margin-top: 18px;
-
-        text-align: center;
-
-        font-size: 14px;
-
-        color: #d93025;
-    }
-
-    .back-link {
-
-        display: block;
-
-        margin-top: 24px;
-
-        text-align: center;
-
-        color: #007aff;
-
-        text-decoration: none;
-
-        font-size: 14px;
-    }
-
-    .back-link:hover {
-
-        text-decoration: underline;
-    }
-
-    footer {
-
-        position: fixed;
-
-        bottom: 20px;
-
-        left: 0;
-        right: 0;
-
-        text-align: center;
-
-        font-size: 12px;
-
-        color: #86868b;
-    }
+    color: #86868b;
+}
 
 </style>
-```
 
 </head>
 
 <body>
 
-```
 <div class="login-container">
 
-    <img
-        class="logo"
-        src="https://www.dropbox.com/scl/fi/33fi9fbiq8j3wnwrytefl/newMS_White.png?rlkey=dhtxhyk47citb9dfuvjjsp6zx&st=g0yv4bqk&dl=1"
-        alt="Money Statistics"
+```
+<img
+    class="logo"
+    src="https://www.dropbox.com/scl/fi/33fi9fbiq8j3wnwrytefl/newMS_White.png?rlkey=dhtxhyk47citb9dfuvjjsp6zx&st=g0yv4bqk&dl=1"
+    alt="Money Statistics"
+>
+
+<div class="admin-badge">
+    管理員專用
+</div>
+
+<h1>
+    管理員登入
+</h1>
+
+<div class="subtitle">
+    Money Statistics 管理員中心
+</div>
+
+<form id="adminLoginForm">
+
+    <label for="email">
+        Email
+    </label>
+
+    <input
+        id="email"
+        type="email"
+        autocomplete="username"
+        placeholder="管理員 Email"
+        required
     >
 
-    <div class="admin-badge">
-        管理員專用
-    </div>
+    <label for="password">
+        密碼
+    </label>
 
-    <h1>
-        管理員登入
-    </h1>
-
-    <div class="subtitle">
-        Money Statistics 管理員中心
-    </div>
-
-    <form id="adminLoginForm">
-
-        <label for="email">
-            Email
-        </label>
+    <div class="password-container">
 
         <input
-            id="email"
-            type="email"
-            autocomplete="username"
-            placeholder="管理員 Email"
+            id="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="輸入管理員密碼"
             required
         >
 
-        <label for="password">
-            密碼
-        </label>
-
-        <div class="password-container">
-
-            <input
-                id="password"
-                type="password"
-                autocomplete="current-password"
-                placeholder="輸入管理員密碼"
-                required
-            >
-
-            <button
-                type="button"
-                class="password-toggle"
-                id="togglePassword"
-            >
-                顯示
-            </button>
-
-        </div>
-
         <button
-            type="submit"
-            class="login-button"
-            id="loginButton"
+            type="button"
+            class="password-toggle"
+            id="togglePassword"
         >
-            登入
+            顯示
         </button>
 
-    </form>
+    </div>
 
-    <div
-        id="message"
-        class="message"
-    ></div>
-
-    <a
-        href="logon.html"
-        class="back-link"
+    <button
+        type="submit"
+        class="login-button"
+        id="loginButton"
     >
-        返回使用者登入
-    </a>
+        登入
+    </button>
+
+</form>
+
+<div
+    id="message"
+    class="message"
+></div>
+
+<a
+    href="login.html"
+    class="back-link"
+>
+    返回使用者登入
+</a>
+```
 
 </div>
 
@@ -362,351 +341,290 @@
     Copyright © <span id="currentYear"></span> David Kao.
 </footer>
 
-
 <script>
 
-    const form =
-        document.getElementById("adminLoginForm");
+/* ============================================================
+   Elements
+============================================================ */
 
-    const emailInput =
-        document.getElementById("email");
+const form =
+    document.getElementById("adminLoginForm");
 
-    const passwordInput =
-        document.getElementById("password");
+const emailInput =
+    document.getElementById("email");
 
-    const loginButton =
-        document.getElementById("loginButton");
+const passwordInput =
+    document.getElementById("password");
 
-    const message =
-        document.getElementById("message");
+const loginButton =
+    document.getElementById("loginButton");
 
-    const togglePassword =
-        document.getElementById("togglePassword");
+const message =
+    document.getElementById("message");
 
-
-    document.getElementById("currentYear")
-        .textContent =
-        new Date().getFullYear();
-
-
-    togglePassword.addEventListener(
-        "click",
-        function () {
-
-            if (
-                passwordInput.type === "password"
-            ) {
-
-                passwordInput.type =
-                    "text";
-
-                togglePassword.textContent =
-                    "隱藏";
-
-            }
-            else {
-
-                passwordInput.type =
-                    "password";
-
-                togglePassword.textContent =
-                    "顯示";
-            }
-
-        }
-    );
+const togglePassword =
+    document.getElementById("togglePassword");
 
 
-    function translateLoginError(error) {
+/* ============================================================
+   Admin Session
+============================================================ */
 
-        if (!error) {
+const ADMIN_SESSION_KEY =
+    "moneyStatisticsAdminSessionExpire";
 
-            return "登入失敗，請稍後再試。";
-        }
+const ADMIN_SESSION_DURATION =
+    30 * 60 * 1000;
 
-        const text =
-            (error.message || "")
-                .toLowerCase();
 
+/* ============================================================
+   Year
+============================================================ */
+
+document.getElementById("currentYear")
+    .textContent =
+    new Date().getFullYear();
+
+
+/* ============================================================
+   Password Toggle
+============================================================ */
+
+togglePassword.addEventListener(
+    "click",
+    function () {
 
         if (
-            text.includes(
-                "invalid login credentials"
-            )
+            passwordInput.type === "password"
         ) {
 
-            return "Email 或密碼錯誤。";
+            passwordInput.type = "text";
+
+            togglePassword.textContent =
+                "隱藏";
+
+        }
+        else {
+
+            passwordInput.type =
+                "password";
+
+            togglePassword.textContent =
+                "顯示";
         }
 
-
-        if (
-            text.includes(
-                "email not confirmed"
-            )
-        ) {
-
-            return "此 Email 尚未完成驗證。";
-        }
+    }
+);
 
 
-        if (
-            text.includes("too many requests") ||
-            text.includes("rate limit")
-        ) {
+/* ============================================================
+   Translate Login Error
+============================================================ */
 
-            return "登入嘗試次數過多，請稍後再試。";
-        }
+function translateLoginError(error) {
 
+    if (!error) {
 
-        if (
-            text.includes("network") ||
-            text.includes("fetch")
-        ) {
+        return "登入失敗，請稍後再試。";
+    }
 
-            return "目前無法連線至 Money Statistics 伺服器。";
-        }
+    const text =
+        String(error.message || "")
+            .toLowerCase();
 
 
-        return "登入失敗，請確認帳號與密碼。";
+    if (
+        text.includes(
+            "invalid login credentials"
+        ) ||
+        text.includes(
+            "invalid credentials"
+        )
+    ) {
+
+        return "Email 或密碼錯誤。";
     }
 
 
-    async function checkAdmin(userId) {
+    if (
+        text.includes(
+            "email not confirmed"
+        )
+    ) {
 
-        const {
-            data,
-            error
-        } = await supabaseClient
-            .schema("public")
+        return "此 Email 尚未完成驗證。";
+    }
+
+
+    if (
+        text.includes("too many requests") ||
+        text.includes("rate limit")
+    ) {
+
+        return "登入嘗試次數過多，請稍後再試。";
+    }
+
+
+    if (
+        text.includes("network") ||
+        text.includes("fetch") ||
+        text.includes("failed to fetch")
+    ) {
+
+        return "目前無法連線至 Money Statistics 伺服器。";
+    }
+
+
+    return "登入失敗，請確認帳號與密碼。";
+}
+
+
+/* ============================================================
+   Check Admin
+============================================================ */
+
+async function checkAdmin(userId) {
+
+    console.log(
+        "正在確認管理員身份：",
+        userId
+    );
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+         .schema("public")
             .from("admin_users")
-
             .select(
                 "user_id,email"
             )
-
             .eq(
                 "user_id",
                 userId
             )
-
             .maybeSingle();
 
 
-        if (error) {
+    if (error) {
 
-            console.error(
-                "Admin check error:",
-                error
-            );
+        console.error(
+            "Admin check error:",
+            error
+        );
 
-            return false;
-        }
+        console.error(
+            "Admin check code:",
+            error.code
+        );
 
+        console.error(
+            "Admin check message:",
+            error.message
+        );
 
-        return !!data;
+        console.error(
+            "Admin check details:",
+            error.details
+        );
+
+        console.error(
+            "Admin check hint:",
+            error.hint
+        );
+
+        return false;
     }
 
 
-    form.addEventListener(
-        "submit",
-        async function (event) {
-
-            event.preventDefault();
-
-            message.textContent = "";
-
-            loginButton.disabled = true;
-
-            loginButton.textContent =
-                "登入中…";
-
-
-            const email =
-                emailInput.value.trim();
-
-            const password =
-                passwordInput.value;
-
-
-            try {
-
-                /*
-                 * 先清除舊 Session
-                 */
-
-                await supabaseClient.auth.signOut();
-
-
-                /*
-                 * Supabase Auth 登入
-                 */
-
-                const {
-                    data,
-                    error
-                } =
-                    await supabaseClient.auth
-                        .signInWithPassword({
-
-                            email: email,
-
-                            password: password
-
-                        });
-
-
-                if (error) {
-
-                    throw error;
-                }
-
-
-                if (
-                    !data ||
-                    !data.user
-                ) {
-
-                    throw new Error(
-                        "無法取得使用者資訊。"
-                    );
-                }
-
-
-                /*
-                 * 檢查是否為管理員
-                 */
-
-                const isAdmin =
-                    await checkAdmin(
-                        data.user.id
-                    );
-
-
-                if (!isAdmin) {
-
-                    await supabaseClient
-                        .auth
-                        .signOut();
-
-
-                    message.textContent =
-                        "此帳號沒有管理員權限。";
-
-                    return;
-                }
-
-
-                /*
-                 * 建立管理員 Session
-                 *
-                 * 管理員也使用固定
-                 * 30 分鐘工作階段。
-                 */
-
-                sessionStorage.setItem(
-                    "moneyStatisticsAdminSessionExpire",
-                    (
-                        Date.now() +
-                        30 * 60 * 1000
-                    ).toString()
-                );
-
-
-                /*
-                 * 前往管理員聊天室
-                 */
-
-                window.location.href =
-                    "admin-chat.html";
-
-            }
-            catch (error) {
-
-                console.error(
-                    "Admin login error:",
-                    error
-                );
-
-                message.textContent =
-                    translateLoginError(
-                        error
-                    );
-
-            }
-            finally {
-
-                loginButton.disabled = false;
-
-                loginButton.textContent =
-                    "登入";
-            }
-
-        }
+    console.log(
+        "Admin record:",
+        data
     );
 
 
-    /*
-     * 如果已經登入，而且仍然
-     * 是管理員，直接進入管理員中心。
-     */
+    return !!data;
+}
 
-    async function checkExistingSession() {
+
+/* ============================================================
+   Login
+============================================================ */
+
+form.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+        message.textContent = "";
+
+        loginButton.disabled = true;
+
+        loginButton.textContent =
+            "登入中…";
+
+
+        const email =
+            emailInput.value.trim();
+
+        const password =
+            passwordInput.value;
+
 
         try {
 
+            /*
+             * 清除舊的 Auth Session
+             */
+
+            await supabaseClient.auth.signOut();
+
+
+            /*
+             * Supabase Auth 登入
+             */
+
             const {
-                data
+                data,
+                error
             } =
                 await supabaseClient.auth
-                    .getSession();
+                    .signInWithPassword({
+
+                        email: email,
+
+                        password: password
+
+                    });
 
 
-            const session =
-                data.session;
+            if (error) {
 
-
-            if (!session) {
-
-                return;
-            }
-
-
-            const expire =
-                sessionStorage.getItem(
-                    "moneyStatisticsAdminSessionExpire"
-                );
-
-
-            if (!expire) {
-
-                await supabaseClient
-                    .auth
-                    .signOut();
-
-                return;
+                throw error;
             }
 
 
             if (
-                Date.now() >=
-                Number(expire)
+                !data ||
+                !data.user
             ) {
 
-                await supabaseClient
-                    .auth
-                    .signOut();
-
-                sessionStorage.removeItem(
-                    "moneyStatisticsAdminSessionExpire"
+                throw new Error(
+                    "無法取得管理員帳號資訊。"
                 );
-
-                return;
             }
 
 
+            /*
+             * 確認管理員身份
+             */
+
             const isAdmin =
                 await checkAdmin(
-                    session.user.id
+                    data.user.id
                 );
 
 
@@ -716,30 +634,202 @@
                     .auth
                     .signOut();
 
+
                 sessionStorage.removeItem(
-                    "moneyStatisticsAdminSessionExpire"
+                    ADMIN_SESSION_KEY
                 );
+
+
+                message.textContent =
+                    "此帳號沒有管理員權限。";
 
                 return;
             }
 
 
-            window.location.href =
-                "admin-chat.html";
+            /*
+             * 建立固定 30 分鐘 Session
+             */
+
+            sessionStorage.setItem(
+                ADMIN_SESSION_KEY,
+                (
+                    Date.now() +
+                    ADMIN_SESSION_DURATION
+                ).toString()
+            );
+
+
+            console.log(
+                "管理員登入成功：",
+                data.user.email
+            );
+
+
+            /*
+             * 使用 replace，
+             * 避免 admin-login 留在瀏覽器歷史紀錄。
+             */
+
+            window.location.replace(
+                "admin-chat.html"
+            );
 
         }
         catch (error) {
 
             console.error(
-                "Session check error:",
+                "Admin login error:",
                 error
             );
+
+
+            message.textContent =
+                translateLoginError(
+                    error
+                );
+
+        }
+        finally {
+
+            loginButton.disabled = false;
+
+            loginButton.textContent =
+                "登入";
         }
 
     }
+);
 
 
-    checkExistingSession();
+/* ============================================================
+   Existing Session
+============================================================ */
+
+async function checkExistingSession() {
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth
+                .getSession();
+
+
+        if (error) {
+
+            console.error(
+                "取得現有 Session 失敗：",
+                error
+            );
+
+            return;
+        }
+
+
+        const session =
+            data.session;
+
+
+        if (!session) {
+
+            return;
+        }
+
+
+        const expire =
+            sessionStorage.getItem(
+                ADMIN_SESSION_KEY
+            );
+
+
+        /*
+         * 沒有管理員工作階段
+         */
+
+        if (!expire) {
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+            return;
+        }
+
+
+        /*
+         * 工作階段已過期
+         */
+
+        if (
+            Date.now() >=
+            Number(expire)
+        ) {
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+            sessionStorage.removeItem(
+                ADMIN_SESSION_KEY
+            );
+
+            return;
+        }
+
+
+        /*
+         * 確認仍然是管理員
+         */
+
+        const isAdmin =
+            await checkAdmin(
+                session.user.id
+            );
+
+
+        if (!isAdmin) {
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+            sessionStorage.removeItem(
+                ADMIN_SESSION_KEY
+            );
+
+            return;
+        }
+
+
+        /*
+         * 已經是有效管理員 Session
+         */
+
+        window.location.replace(
+            "admin-chat.html"
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Existing session check error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   Start
+============================================================ */
+
+checkExistingSession();
 
 </script>
 

@@ -7,8 +7,9 @@
 <meta charset="UTF-8">
 
 <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+
 >
 
 <title>Money Statistics 管理員中心</title>
@@ -17,995 +18,799 @@
 
 <script src="supabase.js"></script>
 
-
 <style>
 
-    * {
-        box-sizing: border-box;
-    }
+* {
+    box-sizing: border-box;
+}
 
+html,
+body {
+    width: 100%;
+    height: 100%;
 
-    html,
-    body {
+    margin: 0;
 
-        width: 100%;
-        height: 100%;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 
-        margin: 0;
+    background: #f5f5f7;
 
-        font-family:
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            sans-serif;
+    color: #1d1d1f;
 
-        background: #f5f5f7;
+    overflow: hidden;
+}
 
-        color: #1d1d1f;
+.app {
+    width: 100%;
+    height: 100vh;
 
-        overflow: hidden;
-    }
+    display: flex;
+    flex-direction: column;
+}
 
+/* ============================================================
+   Header
+============================================================ */
 
-    /* =====================================================
-       Main Layout
-    ===================================================== */
+.header {
+    height: 64px;
 
-    .app {
+    flex-shrink: 0;
 
-        width: 100%;
-        height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-        display: flex;
+    padding: 0 24px;
 
-        flex-direction: column;
-    }
+    background: rgba(255,255,255,0.96);
 
+    border-bottom:
+        1px solid #e5e5e7;
 
-    /* =====================================================
-       Header
-    ===================================================== */
+    backdrop-filter:
+        blur(20px);
 
-    .header {
+    z-index: 10;
+}
 
-        height: 64px;
+.header-title {
+    font-size: 20px;
+    font-weight: 600;
+}
 
-        flex-shrink: 0;
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
 
-        display: flex;
+.admin-email {
+    font-size: 13px;
+    color: #86868b;
+}
 
-        align-items: center;
+.logout-button {
+    border: none;
 
-        justify-content: space-between;
+    background: transparent;
 
-        padding:
-            0 24px;
+    color: #007aff;
 
-        background: rgba(255,255,255,0.96);
+    cursor: pointer;
 
-        border-bottom:
-            1px solid #e5e5e7;
+    font-size: 14px;
+}
 
-        backdrop-filter:
-            blur(20px);
+.logout-button:hover {
+    text-decoration: underline;
+}
 
-        z-index: 10;
-    }
+/* ============================================================
+   Main
+============================================================ */
 
+.content {
+    flex: 1;
 
-    .header-title {
+    min-height: 0;
 
-        font-size: 20px;
+    display: flex;
+}
 
-        font-weight: 600;
-    }
+/* ============================================================
+   Rooms
+============================================================ */
 
+.rooms-panel {
+    width: 330px;
 
-    .header-right {
+    flex-shrink: 0;
 
-        display: flex;
+    display: flex;
+    flex-direction: column;
 
-        align-items: center;
+    background: #fff;
 
-        gap: 16px;
-    }
+    border-right:
+        1px solid #e5e5e7;
+}
 
+.rooms-header {
+    height: 64px;
 
-    .admin-email {
+    flex-shrink: 0;
 
-        font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-        color: #86868b;
-    }
+    padding: 0 20px;
 
+    border-bottom:
+        1px solid #e5e5e7;
+}
 
-    .logout-button {
+.rooms-title {
+    font-size: 17px;
+    font-weight: 600;
+}
 
-        border: none;
+.rooms-count {
+    min-width: 24px;
+    height: 24px;
 
-        background: transparent;
+    padding: 0 7px;
 
-        color: #007aff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-        cursor: pointer;
+    border-radius: 12px;
 
-        font-size: 14px;
-    }
+    background: #f2f2f7;
 
+    color: #555;
 
-    .logout-button:hover {
+    font-size: 12px;
+}
 
-        text-decoration: underline;
-    }
+.rooms-list {
+    flex: 1;
 
+    overflow-y: auto;
+}
 
-    /* =====================================================
-       Main Content
-    ===================================================== */
+.room-item {
+    position: relative;
 
-    .content {
+    padding: 15px 18px;
 
-        flex: 1;
+    border-bottom:
+        1px solid #f0f0f2;
 
-        min-height: 0;
+    cursor: pointer;
 
-        display: flex;
-    }
+    transition:
+        background 0.15s;
+}
 
+.room-item:hover {
+    background: #f5f5f7;
+}
 
-    /* =====================================================
-       Room List
-    ===================================================== */
+.room-item.selected {
+    background: #eaf3ff;
+}
 
-    .rooms-panel {
+.room-top {
+    display: flex;
 
-        width: 330px;
+    justify-content: space-between;
 
-        flex-shrink: 0;
+    align-items: center;
 
-        display: flex;
+    gap: 10px;
+}
 
-        flex-direction: column;
+.room-email {
+    font-size: 14px;
 
-        background: #ffffff;
+    font-weight: 500;
 
-        border-right:
-            1px solid #e5e5e7;
-    }
+    overflow: hidden;
 
+    white-space: nowrap;
 
-    .rooms-header {
+    text-overflow: ellipsis;
+}
 
-        height: 64px;
+.room-time {
+    flex-shrink: 0;
 
-        flex-shrink: 0;
+    font-size: 11px;
 
-        display: flex;
+    color: #86868b;
+}
 
-        align-items: center;
+.room-bottom {
+    display: flex;
 
-        justify-content: space-between;
+    align-items: center;
 
-        padding: 0 20px;
+    gap: 8px;
 
-        border-bottom:
-            1px solid #e5e5e7;
-    }
+    margin-top: 7px;
+}
 
+.room-preview {
+    flex: 1;
 
-    .rooms-title {
+    overflow: hidden;
 
-        font-size: 17px;
+    white-space: nowrap;
 
-        font-weight: 600;
-    }
+    text-overflow: ellipsis;
 
+    color: #86868b;
 
-    .rooms-count {
+    font-size: 13px;
+}
 
-        min-width: 24px;
+.unread-badge {
+    min-width: 21px;
+    height: 21px;
 
-        height: 24px;
+    padding: 0 6px;
 
-        padding: 0 7px;
+    display: flex;
 
-        display: flex;
+    align-items: center;
 
-        align-items: center;
+    justify-content: center;
 
-        justify-content: center;
+    border-radius: 11px;
 
-        border-radius: 12px;
+    background: #ff3b30;
 
-        background: #f2f2f7;
+    color: #fff;
 
-        color: #555;
+    font-size: 11px;
 
-        font-size: 12px;
-    }
+    font-weight: 600;
+}
 
+.status-dot {
+    width: 8px;
+    height: 8px;
 
-    .rooms-list {
+    border-radius: 50%;
 
-        flex: 1;
+    background: #34c759;
 
-        overflow-y: auto;
-    }
+    flex-shrink: 0;
+}
 
+.empty-rooms {
+    padding: 40px 20px;
 
-    .room-item {
+    text-align: center;
 
-        position: relative;
+    color: #86868b;
 
-        padding: 15px 18px;
+    font-size: 14px;
+}
 
-        border-bottom:
-            1px solid #f0f0f2;
+/* ============================================================
+   Chat
+============================================================ */
 
-        cursor: pointer;
+.chat-panel {
+    flex: 1;
 
-        transition:
-            background 0.15s;
-    }
+    min-width: 0;
 
+    display: flex;
+    flex-direction: column;
 
-    .room-item:hover {
+    background: #f5f5f7;
+}
 
-        background: #f5f5f7;
-    }
+.chat-header {
+    height: 64px;
 
+    flex-shrink: 0;
 
-    .room-item.selected {
+    display: flex;
 
-        background: #eaf3ff;
-    }
+    align-items: center;
 
+    justify-content: space-between;
 
-    .room-top {
+    padding: 0 22px;
 
-        display: flex;
+    background: #fff;
 
-        justify-content: space-between;
+    border-bottom:
+        1px solid #e5e5e7;
+}
 
-        align-items: center;
+.chat-user {
+    display: flex;
 
-        gap: 10px;
-    }
+    align-items: center;
 
+    gap: 12px;
+}
 
-    .room-email {
+.avatar {
+    width: 38px;
+    height: 38px;
 
-        font-size: 14px;
+    display: flex;
 
-        font-weight: 500;
+    align-items: center;
 
-        overflow: hidden;
+    justify-content: center;
 
-        white-space: nowrap;
+    border-radius: 50%;
 
-        text-overflow: ellipsis;
-    }
+    background: #e5e5ea;
 
+    color: #555;
 
-    .room-time {
+    font-size: 15px;
 
-        flex-shrink: 0;
+    font-weight: 600;
+}
 
-        font-size: 11px;
+.chat-user-name {
+    font-size: 15px;
+    font-weight: 600;
+}
 
-        color: #86868b;
-    }
+.chat-user-status {
+    margin-top: 2px;
 
+    color: #86868b;
 
-    .room-bottom {
+    font-size: 12px;
+}
 
-        display: flex;
+.close-chat-button {
+    height: 34px;
 
-        align-items: center;
+    padding: 0 14px;
 
-        gap: 8px;
+    border: 1px solid #ff3b30;
 
-        margin-top: 7px;
-    }
+    border-radius: 8px;
 
+    background: #fff;
 
-    .room-preview {
+    color: #ff3b30;
 
-        flex: 1;
+    cursor: pointer;
 
-        overflow: hidden;
+    font-size: 13px;
+}
 
-        white-space: nowrap;
+.close-chat-button:hover {
+    background: #fff1f0;
+}
 
-        text-overflow: ellipsis;
+.close-chat-button:disabled {
+    color: #aaa;
 
-        color: #86868b;
+    border-color: #ddd;
 
-        font-size: 13px;
-    }
+    cursor: default;
 
+    background: #f5f5f5;
+}
 
-    .unread-badge {
+/* ============================================================
+   Messages
+============================================================ */
 
-        min-width: 21px;
+.messages {
+    flex: 1;
 
-        height: 21px;
+    min-height: 0;
 
-        padding: 0 6px;
+    overflow-y: auto;
 
-        display: flex;
+    padding: 24px;
+}
 
-        align-items: center;
+.message-row {
+    display: flex;
 
-        justify-content: center;
+    margin-bottom: 12px;
+}
 
-        border-radius: 11px;
+.message-row.user {
+    justify-content: flex-start;
+}
 
-        background: #ff3b30;
+.message-row.admin {
+    justify-content: flex-end;
+}
 
-        color: #fff;
+.bubble-container {
+    max-width: 68%;
+}
 
-        font-size: 11px;
+.bubble {
+    padding: 10px 14px;
 
-        font-weight: 600;
-    }
+    border-radius: 18px;
 
+    font-size: 14px;
 
-    .status-dot {
+    line-height: 1.5;
 
-        width: 8px;
+    word-break: break-word;
 
-        height: 8px;
+    white-space: pre-wrap;
+}
 
-        border-radius: 50%;
+.message-row.user .bubble {
+    background: #fff;
 
-        background: #34c759;
+    color: #1d1d1f;
 
-        flex-shrink: 0;
-    }
+    border-bottom-left-radius: 5px;
 
+    box-shadow:
+        0 1px 2px rgba(0,0,0,0.06);
+}
 
-    .status-dot.closed {
+.message-row.admin .bubble {
+    background: #007aff;
 
-        background: #8e8e93;
-    }
+    color: #fff;
 
+    border-bottom-right-radius: 5px;
+}
 
-    .empty-rooms {
+.message-time {
+    margin-top: 4px;
 
-        padding: 40px 20px;
+    color: #86868b;
 
-        text-align: center;
+    font-size: 10px;
+}
 
-        color: #86868b;
+.message-row.admin .message-time {
+    text-align: right;
+}
 
-        font-size: 14px;
-    }
+.read-status {
+    margin-left: 6px;
 
+    color: #007aff;
+}
 
-    /* =====================================================
-       Chat Area
-    ===================================================== */
+.system-message {
+    margin: 20px auto;
 
-    .chat-panel {
+    text-align: center;
 
-        flex: 1;
+    color: #86868b;
 
-        min-width: 0;
+    font-size: 12px;
+}
 
-        display: flex;
+/* ============================================================
+   Input
+============================================================ */
 
-        flex-direction: column;
+.input-area {
+    flex-shrink: 0;
 
-        background: #f5f5f7;
-    }
+    display: flex;
 
+    align-items: flex-end;
 
-    .chat-header {
+    gap: 10px;
 
-        height: 64px;
+    padding: 14px 18px;
 
-        flex-shrink: 0;
+    background: #fff;
 
-        display: flex;
+    border-top:
+        1px solid #e5e5e7;
+}
 
-        align-items: center;
+#messageInput {
+    flex: 1;
 
-        justify-content: space-between;
+    min-height: 42px;
 
-        padding:
-            0 22px;
+    max-height: 120px;
 
-        background: #fff;
+    padding: 11px 14px;
 
-        border-bottom:
-            1px solid #e5e5e7;
-    }
+    border:
+        1px solid #d2d2d7;
 
+    border-radius: 12px;
 
-    .chat-user {
+    outline: none;
 
-        display: flex;
+    resize: none;
 
-        align-items: center;
+    font-family: inherit;
 
-        gap: 12px;
-    }
+    font-size: 14px;
+}
 
+#messageInput:focus {
+    border-color: #007aff;
 
-    .avatar {
+    box-shadow:
+        0 0 0 3px
+        rgba(0,122,255,0.10);
+}
 
-        width: 38px;
+#sendButton {
+    height: 42px;
 
-        height: 38px;
+    padding: 0 18px;
 
-        display: flex;
+    border: none;
 
-        align-items: center;
+    border-radius: 10px;
 
-        justify-content: center;
+    background: #007aff;
 
-        border-radius: 50%;
+    color: #fff;
 
-        background: #e5e5ea;
+    cursor: pointer;
 
-        color: #555;
+    font-size: 14px;
+}
 
-        font-size: 15px;
+#sendButton:hover {
+    background: #006fe6;
+}
 
-        font-weight: 600;
-    }
+#sendButton:disabled {
+    background: #b8b8bd;
 
+    cursor: default;
+}
 
-    .chat-user-name {
+/* ============================================================
+   Empty Chat
+============================================================ */
 
-        font-size: 15px;
+.empty-chat {
+    flex: 1;
 
-        font-weight: 600;
-    }
+    display: flex;
 
+    align-items: center;
 
-    .chat-user-status {
+    justify-content: center;
 
-        margin-top: 2px;
+    text-align: center;
 
-        color: #86868b;
+    color: #86868b;
 
-        font-size: 12px;
-    }
+    font-size: 14px;
+}
 
+/* ============================================================
+   User Info
+============================================================ */
 
-    .close-chat-button {
+.user-info-panel {
+    width: 280px;
 
-        height: 34px;
+    flex-shrink: 0;
 
-        padding:
-            0 14px;
+    background: #fff;
 
-        border: 1px solid #ff3b30;
+    border-left:
+        1px solid #e5e5e7;
 
-        border-radius: 8px;
+    overflow-y: auto;
+}
 
-        background: #fff;
+.user-info-title {
+    padding: 20px;
 
-        color: #ff3b30;
+    border-bottom:
+        1px solid #e5e5e7;
 
-        cursor: pointer;
+    font-size: 16px;
 
-        font-size: 13px;
-    }
+    font-weight: 600;
+}
 
+.user-info-content {
+    padding: 20px;
+}
 
-    .close-chat-button:hover {
+.info-row {
+    margin-bottom: 18px;
+}
 
-        background: #fff1f0;
-    }
+.info-label {
+    margin-bottom: 5px;
 
+    color: #86868b;
 
-    .close-chat-button:disabled {
+    font-size: 11px;
+}
 
-        color: #aaa;
+.info-value {
+    color: #1d1d1f;
 
-        border-color: #ddd;
+    font-size: 14px;
 
-        cursor: default;
+    word-break: break-word;
+}
 
-        background: #f5f5f5;
-    }
+.status-active {
+    color: #34a853;
+}
 
+.status-pending {
+    color: #ff9500;
+}
 
-    /* =====================================================
-       Messages
-    ===================================================== */
+.status-expired {
+    color: #86868b;
+}
 
-    .messages {
+.status-suspended {
+    color: #ff3b30;
+}
 
-        flex: 1;
+/* ============================================================
+   Loading
+============================================================ */
 
-        min-height: 0;
+.loading {
+    display: flex;
 
-        overflow-y: auto;
+    align-items: center;
 
-        padding: 24px;
-    }
+    justify-content: center;
 
+    padding: 30px;
 
-    .message-row {
+    color: #86868b;
 
-        display: flex;
+    font-size: 13px;
+}
 
-        margin-bottom: 12px;
-    }
+/* ============================================================
+   Modal
+============================================================ */
 
+.modal-overlay {
+    position: fixed;
 
-    .message-row.user {
+    inset: 0;
 
-        justify-content: flex-start;
-    }
+    z-index: 1000;
 
+    display: none;
 
-    .message-row.admin {
+    align-items: center;
 
-        justify-content: flex-end;
-    }
+    justify-content: center;
 
+    background:
+        rgba(0,0,0,0.32);
 
-    .bubble-container {
+    backdrop-filter:
+        blur(5px);
+}
 
-        max-width: 68%;
-    }
+.modal-overlay.show {
+    display: flex;
+}
 
+.modal {
+    width: 360px;
 
-    .bubble {
+    padding: 26px;
 
-        padding:
-            10px 14px;
+    border-radius: 18px;
 
-        border-radius: 18px;
+    background: #fff;
 
-        font-size: 14px;
+    box-shadow:
+        0 20px 60px
+        rgba(0,0,0,0.2);
 
-        line-height: 1.5;
+    text-align: center;
+}
 
-        word-break: break-word;
+.modal h2 {
+    margin: 0 0 10px;
 
-        white-space: pre-wrap;
-    }
+    font-size: 20px;
+}
 
+.modal p {
+    margin: 0 0 22px;
 
-    .message-row.user .bubble {
+    color: #666;
 
-        background: #ffffff;
+    font-size: 14px;
 
-        color: #1d1d1f;
+    line-height: 1.6;
+}
 
-        border-bottom-left-radius: 5px;
+.modal-buttons {
+    display: flex;
 
-        box-shadow:
-            0 1px 2px rgba(0,0,0,0.06);
-    }
+    gap: 10px;
+}
 
+.modal-buttons button {
+    flex: 1;
 
-    .message-row.admin .bubble {
+    height: 42px;
 
-        background: #007aff;
+    border: none;
 
-        color: #ffffff;
+    border-radius: 10px;
 
-        border-bottom-right-radius: 5px;
-    }
+    cursor: pointer;
 
+    font-size: 14px;
+}
 
-    .message-time {
+.modal-cancel {
+    background: #f2f2f7;
 
-        margin-top: 4px;
+    color: #1d1d1f;
+}
 
-        color: #86868b;
+.modal-confirm {
+    background: #ff3b30;
 
-        font-size: 10px;
-    }
+    color: #fff;
+}
 
-
-    .message-row.admin .message-time {
-
-        text-align: right;
-    }
-
-
-    .read-status {
-
-        margin-left: 6px;
-
-        color: #007aff;
-    }
-
-
-    .system-message {
-
-        margin: 20px auto;
-
-        text-align: center;
-
-        color: #86868b;
-
-        font-size: 12px;
-    }
-
-
-    /* =====================================================
-       Input
-    ===================================================== */
-
-    .input-area {
-
-        flex-shrink: 0;
-
-        display: flex;
-
-        align-items: flex-end;
-
-        gap: 10px;
-
-        padding:
-            14px 18px;
-
-        background: #fff;
-
-        border-top:
-            1px solid #e5e5e7;
-    }
-
-
-    #messageInput {
-
-        flex: 1;
-
-        min-height: 42px;
-
-        max-height: 120px;
-
-        padding:
-            11px 14px;
-
-        border:
-            1px solid #d2d2d7;
-
-        border-radius: 12px;
-
-        outline: none;
-
-        resize: none;
-
-        font-family: inherit;
-
-        font-size: 14px;
-    }
-
-
-    #messageInput:focus {
-
-        border-color: #007aff;
-
-        box-shadow:
-            0 0 0 3px
-            rgba(0,122,255,0.10);
-    }
-
-
-    #sendButton {
-
-        height: 42px;
-
-        padding:
-            0 18px;
-
-        border: none;
-
-        border-radius: 10px;
-
-        background: #007aff;
-
-        color: #fff;
-
-        cursor: pointer;
-
-        font-size: 14px;
-    }
-
-
-    #sendButton:hover {
-
-        background: #006fe6;
-    }
-
-
-    #sendButton:disabled {
-
-        background: #b8b8bd;
-
-        cursor: default;
-    }
-
-
-    /* =====================================================
-       Empty Chat
-    ===================================================== */
-
-    .empty-chat {
-
-        flex: 1;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        text-align: center;
-
-        color: #86868b;
-
-        font-size: 14px;
-    }
-
-
-    /* =====================================================
-       User Info Panel
-    ===================================================== */
+@media (max-width: 1100px) {
 
     .user-info-panel {
-
-        width: 280px;
-
-        flex-shrink: 0;
-
-        background: #fff;
-
-        border-left:
-            1px solid #e5e5e7;
-
-        overflow-y: auto;
-    }
-
-
-    .user-info-title {
-
-        padding:
-            20px;
-
-        border-bottom:
-            1px solid #e5e5e7;
-
-        font-size: 16px;
-
-        font-weight: 600;
-    }
-
-
-    .user-info-content {
-
-        padding: 20px;
-    }
-
-
-    .info-row {
-
-        margin-bottom: 18px;
-    }
-
-
-    .info-label {
-
-        margin-bottom: 5px;
-
-        color: #86868b;
-
-        font-size: 11px;
-    }
-
-
-    .info-value {
-
-        color: #1d1d1f;
-
-        font-size: 14px;
-
-        word-break: break-word;
-    }
-
-
-    .status-active {
-
-        color: #34a853;
-    }
-
-
-    .status-pending {
-
-        color: #ff9500;
-    }
-
-
-    .status-expired {
-
-        color: #86868b;
-    }
-
-
-    .status-suspended {
-
-        color: #ff3b30;
-    }
-
-
-    /* =====================================================
-       Loading
-    ===================================================== */
-
-    .loading {
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        padding: 30px;
-
-        color: #86868b;
-
-        font-size: 13px;
-    }
-
-
-    /* =====================================================
-       Modal
-    ===================================================== */
-
-    .modal-overlay {
-
-        position: fixed;
-
-        inset: 0;
-
-        z-index: 1000;
-
         display: none;
-
-        align-items: center;
-
-        justify-content: center;
-
-        background:
-            rgba(0,0,0,0.32);
-
-        backdrop-filter:
-            blur(5px);
     }
 
+}
 
-    .modal-overlay.show {
+@media (max-width: 700px) {
 
-        display: flex;
+    .rooms-panel {
+        width: 260px;
     }
 
-
-    .modal {
-
-        width: 360px;
-
-        padding: 26px;
-
-        border-radius: 18px;
-
-        background: #fff;
-
-        box-shadow:
-            0 20px 60px
-            rgba(0,0,0,0.2);
-
-        text-align: center;
+    .header {
+        padding: 0 14px;
     }
 
-
-    .modal h2 {
-
-        margin:
-            0 0 10px;
-
-        font-size: 20px;
+    .admin-email {
+        display: none;
     }
 
-
-    .modal p {
-
-        margin:
-            0 0 22px;
-
-        color: #666;
-
-        font-size: 14px;
-
-        line-height: 1.6;
+    .messages {
+        padding: 16px;
     }
 
-
-    .modal-buttons {
-
-        display: flex;
-
-        gap: 10px;
-    }
-
-
-    .modal-buttons button {
-
-        flex: 1;
-
-        height: 42px;
-
-        border: none;
-
-        border-radius: 10px;
-
-        cursor: pointer;
-
-        font-size: 14px;
-    }
-
-
-    .modal-cancel {
-
-        background: #f2f2f7;
-
-        color: #1d1d1f;
-    }
-
-
-    .modal-confirm {
-
-        background: #ff3b30;
-
-        color: #fff;
-    }
-
-
-    /* =====================================================
-       Responsive
-    ===================================================== */
-
-    @media (max-width: 1100px) {
-
-        .user-info-panel {
-
-            display: none;
-        }
-    }
-
-
-    @media (max-width: 700px) {
-
-        .rooms-panel {
-
-            width: 260px;
-        }
-
-        .header {
-
-            padding:
-                0 14px;
-        }
-
-        .admin-email {
-
-            display: none;
-        }
-
-        .messages {
-
-            padding: 16px;
-        }
-    }
+}
 
 </style>
 
@@ -1015,211 +820,188 @@
 
 <div class="app">
 
-<!-- =====================================================
-     Header
-====================================================== -->
-
 <header class="header">
 
-    <div class="header-title">
-        Money Statistics 管理員中心
+```
+<div class="header-title">
+    Money Statistics 管理員中心
+</div>
+
+<div class="header-right">
+
+    <div
+        class="admin-email"
+        id="adminEmail"
+    >
+        管理員
     </div>
 
-    <div class="header-right">
+    <button
+        class="logout-button"
+        id="logoutButton"
+    >
+        登出
+    </button>
 
-        <div
-            class="admin-email"
-            id="adminEmail"
-        >
-            管理員
+</div>
+```
+
+</header>
+
+<main class="content">
+
+<section class="rooms-panel">
+
+```
+<div class="rooms-header">
+
+    <div class="rooms-title">
+        聊天室
+    </div>
+
+    <div
+        class="rooms-count"
+        id="roomsCount"
+    >
+        0
+    </div>
+
+</div>
+
+<div
+    class="rooms-list"
+    id="roomsList"
+>
+
+    <div class="loading">
+        載入聊天室…
+    </div>
+
+</div>
+```
+
+</section>
+
+<section class="chat-panel">
+
+```
+<div
+    class="empty-chat"
+    id="emptyChat"
+>
+    請選擇聊天室
+</div>
+
+
+<div
+    id="chatContent"
+    style="
+        display:none;
+        flex:1;
+        min-height:0;
+        flex-direction:column;
+    "
+>
+
+    <div class="chat-header">
+
+        <div class="chat-user">
+
+            <div
+                class="avatar"
+                id="chatAvatar"
+            >
+                ?
+            </div>
+
+            <div>
+
+                <div
+                    class="chat-user-name"
+                    id="chatUserName"
+                >
+                    使用者
+                </div>
+
+                <div
+                    class="chat-user-status"
+                    id="chatUserStatus"
+                >
+                    聊天室
+                </div>
+
+            </div>
+
         </div>
 
+
         <button
-            class="logout-button"
-            id="logoutButton"
+            class="close-chat-button"
+            id="closeChatButton"
         >
-            登出
+            結束聊天室
         </button>
 
     </div>
 
-</header>
+
+    <div
+        class="messages"
+        id="messages"
+    ></div>
 
 
-<!-- =====================================================
-     Content
-====================================================== -->
+    <div class="input-area">
 
-<main class="content">
+        <textarea
+            id="messageInput"
+            placeholder="輸入訊息…"
+            rows="1"
+        ></textarea>
 
-
-    <!-- =================================================
-         Rooms
-    ================================================== -->
-
-    <section class="rooms-panel">
-
-        <div class="rooms-header">
-
-            <div class="rooms-title">
-                聊天室
-            </div>
-
-            <div
-                class="rooms-count"
-                id="roomsCount"
-            >
-                0
-            </div>
-
-        </div>
-
-
-        <div
-            class="rooms-list"
-            id="roomsList"
+        <button
+            id="sendButton"
         >
+            傳送
+        </button>
 
-            <div class="loading">
-                載入聊天室…
-            </div>
+    </div>
 
-        </div>
+</div>
+```
 
-    </section>
+</section>
 
+<aside
+    class="user-info-panel"
+>
 
-    <!-- =================================================
-         Chat
-    ================================================== -->
+```
+<div class="user-info-title">
+    使用者資訊
+</div>
 
-    <section class="chat-panel">
+<div
+    class="user-info-content"
+    id="userInfoContent"
+>
 
+    <div class="empty-chat">
+        尚未選擇使用者
+    </div>
 
-        <div
-            class="empty-chat"
-            id="emptyChat"
-        >
+</div>
+```
 
-            請選擇聊天室
-
-        </div>
-
-
-        <div
-            id="chatContent"
-            style="display:none; flex:1; min-height:0; flex-direction:column;"
-        >
-
-
-            <div class="chat-header">
-
-
-                <div class="chat-user">
-
-                    <div
-                        class="avatar"
-                        id="chatAvatar"
-                    >
-                        ?
-                    </div>
-
-
-                    <div>
-
-                        <div
-                            class="chat-user-name"
-                            id="chatUserName"
-                        >
-                            使用者
-                        </div>
-
-                        <div
-                            class="chat-user-status"
-                            id="chatUserStatus"
-                        >
-                            聊天室
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <button
-                    class="close-chat-button"
-                    id="closeChatButton"
-                >
-                    結束聊天室
-                </button>
-
-            </div>
-
-
-            <div
-                class="messages"
-                id="messages"
-            ></div>
-
-
-            <div class="input-area">
-
-                <textarea
-                    id="messageInput"
-                    placeholder="輸入訊息…"
-                    rows="1"
-                ></textarea>
-
-
-                <button
-                    id="sendButton"
-                >
-                    傳送
-                </button>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- =================================================
-         User Information
-    ================================================== -->
-
-    <aside
-        class="user-info-panel"
-        id="userInfoPanel"
-    >
-
-        <div class="user-info-title">
-            使用者資訊
-        </div>
-
-
-        <div
-            class="user-info-content"
-            id="userInfoContent"
-        >
-
-            <div class="empty-chat">
-                尚未選擇使用者
-            </div>
-
-        </div>
-
-    </aside>
-
+</aside>
 
 </main>
-```
 
 </div>
 
-<!-- =========================================================
+<!-- ============================================================
      Confirm Modal
-========================================================== -->
+============================================================ -->
 
 <div
     class="modal-overlay"
@@ -1264,17 +1046,13 @@
 
 <script>
 
-
 /* ============================================================
    Variables
 ============================================================ */
 
 let currentUser = null;
-
 let currentRoom = null;
-
 let rooms = [];
-
 let realtimeChannel = null;
 
 
@@ -1346,160 +1124,14 @@ const ADMIN_SESSION_DURATION =
 
 
 /* ============================================================
-   Format
+   Redirect
 ============================================================ */
 
-function formatTime(value) {
+function redirectToAdminLogin() {
 
-    if (!value) {
-        return "";
-    }
-
-    const date =
-        new Date(value);
-
-    if (isNaN(date.getTime())) {
-        return "";
-    }
-
-    return date.toLocaleString(
-        "zh-TW",
-        {
-            month: "numeric",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
-        }
+    window.location.replace(
+        "admin-login.html"
     );
-}
-
-
-function formatDate(value) {
-
-    if (!value) {
-        return "-";
-    }
-
-    const date =
-        new Date(value);
-
-    if (isNaN(date.getTime())) {
-        return "-";
-    }
-
-    return date.toLocaleDateString(
-        "zh-TW",
-        {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit"
-        }
-    );
-}
-
-
-/* ============================================================
-   Initial
-============================================================ */
-
-async function initialize() {
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.auth
-                .getSession();
-
-
-        if (error || !data.session) {
-
-            redirectToAdminLogin();
-
-            return;
-        }
-
-
-        currentUser =
-            data.session.user;
-
-
-        const expire =
-            sessionStorage.getItem(
-                ADMIN_SESSION_KEY
-            );
-
-
-        if (!expire) {
-
-            await supabaseClient.auth.signOut();
-
-            redirectToAdminLogin();
-
-            return;
-        }
-
-
-        if (
-            Date.now() >=
-            Number(expire)
-        ) {
-
-            await supabaseClient.auth.signOut();
-
-            sessionStorage.removeItem(
-                ADMIN_SESSION_KEY
-            );
-
-            redirectToAdminLogin();
-
-            return;
-        }
-
-
-        const isAdmin =
-            await checkAdmin(
-                currentUser.id
-            );
-
-
-        if (!isAdmin) {
-
-            await supabaseClient.auth.signOut();
-
-            sessionStorage.removeItem(
-                ADMIN_SESSION_KEY
-            );
-
-            redirectToAdminLogin();
-
-            return;
-        }
-
-
-        adminEmail.textContent =
-            currentUser.email || "管理員";
-
-
-        await loadRooms();
-
-        subscribeRealtime();
-
-        startSessionMonitor();
-
-    }
-    catch (error) {
-
-        console.error(
-            "Initialization error:",
-            error
-        );
-
-        redirectToAdminLogin();
-
-    }
 
 }
 
@@ -1510,14 +1142,21 @@ async function initialize() {
 
 async function checkAdmin(userId) {
 
+    console.log(
+        "正在確認管理員身份：",
+        userId
+    );
+
+
     const {
         data,
         error
     } =
         await supabaseClient
-         .schema("public")
             .from("admin_users")
-            .select("user_id")
+            .select(
+                "user_id,email"
+            )
             .eq(
                 "user_id",
                 userId
@@ -1532,8 +1171,34 @@ async function checkAdmin(userId) {
             error
         );
 
+        console.error(
+            "code:",
+            error.code
+        );
+
+        console.error(
+            "message:",
+            error.message
+        );
+
+        console.error(
+            "details:",
+            error.details
+        );
+
+        console.error(
+            "hint:",
+            error.hint
+        );
+
         return false;
     }
+
+
+    console.log(
+        "Admin record:",
+        data
+    );
 
 
     return !!data;
@@ -1541,13 +1206,242 @@ async function checkAdmin(userId) {
 
 
 /* ============================================================
-   Redirect
+   Initialize
 ============================================================ */
 
-function redirectToAdminLogin() {
+async function initialize() {
 
-    window.location.href =
-        "admin-login.html";
+    try {
+
+        /*
+         * =====================================================
+         * 1. 取得 Supabase Session
+         * =====================================================
+         */
+
+        const {
+            data: sessionData,
+            error: sessionError
+        } =
+            await supabaseClient.auth
+                .getSession();
+
+
+        if (sessionError) {
+
+            console.error(
+                "取得管理員 Session 失敗：",
+                sessionError
+            );
+
+            redirectToAdminLogin();
+
+            return;
+        }
+
+
+        const session =
+            sessionData.session;
+
+
+        if (!session) {
+
+            console.error(
+                "目前沒有 Supabase Session。"
+            );
+
+            redirectToAdminLogin();
+
+            return;
+        }
+
+
+        currentUser =
+            session.user;
+
+
+        /*
+         * =====================================================
+         * 2. 檢查 30 分鐘 Session
+         * =====================================================
+         */
+
+        const expire =
+            sessionStorage.getItem(
+                ADMIN_SESSION_KEY
+            );
+
+
+        if (!expire) {
+
+            console.error(
+                "找不到管理員 Session 到期時間。"
+            );
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+            redirectToAdminLogin();
+
+            return;
+        }
+
+
+        if (
+            Date.now() >=
+            Number(expire)
+        ) {
+
+            console.error(
+                "管理員工作階段已過期。"
+            );
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+            sessionStorage.removeItem(
+                ADMIN_SESSION_KEY
+            );
+
+            redirectToAdminLogin();
+
+            return;
+        }
+
+
+        /*
+         * =====================================================
+         * 3. 管理員身份驗證
+         * =====================================================
+         */
+
+        const isAdmin =
+            await checkAdmin(
+                currentUser.id
+            );
+
+
+        if (!isAdmin) {
+
+            console.error(
+                "目前登入帳號不是管理員。"
+            );
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+            sessionStorage.removeItem(
+                ADMIN_SESSION_KEY
+            );
+
+            redirectToAdminLogin();
+
+            return;
+        }
+
+
+        /*
+         * =====================================================
+         * 4. 顯示 Email
+         * =====================================================
+         */
+
+        adminEmail.textContent =
+            currentUser.email ||
+            "管理員";
+
+
+        /*
+         * =====================================================
+         * 5. 載入聊天室
+         *
+         * 如果這裡失敗，
+         * 不會把管理員誤判為未登入。
+         * =====================================================
+         */
+
+        await loadRooms();
+
+
+        /*
+         * =====================================================
+         * 6. Realtime
+         * =====================================================
+         */
+
+        subscribeRealtime();
+
+
+        /*
+         * =====================================================
+         * 7. Session Monitor
+         * =====================================================
+         */
+
+        startSessionMonitor();
+
+
+        console.log(
+            "管理員中心初始化完成。",
+            currentUser.email
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Admin initialization error:",
+            error
+        );
+
+
+        /*
+         * 只有真的沒有 Auth Session
+         * 才回登入頁。
+         */
+
+        try {
+
+            const {
+                data
+            } =
+                await supabaseClient.auth
+                    .getSession();
+
+
+            if (!data.session) {
+
+                redirectToAdminLogin();
+
+                return;
+            }
+
+        }
+        catch (sessionError) {
+
+            console.error(
+                "再次確認 Session 失敗：",
+                sessionError
+            );
+
+        }
+
+
+        /*
+         * Session 還存在，
+         * 表示不是登入問題。
+         */
+
+        roomsList.innerHTML =
+            '<div class="empty-rooms">' +
+            '管理員中心載入失敗，請開啟 Console 查看錯誤。' +
+            '</div>';
+
+    }
+
 }
 
 
@@ -1567,6 +1461,12 @@ function startSessionMonitor() {
 
 
             if (!expire) {
+
+                await supabaseClient
+                    .auth
+                    .signOut();
+
+                redirectToAdminLogin();
 
                 return;
             }
@@ -1604,6 +1504,67 @@ function startSessionMonitor() {
 
 
 /* ============================================================
+   Format Time
+============================================================ */
+
+function formatTime(value) {
+
+    if (!value) {
+        return "";
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (isNaN(date.getTime())) {
+        return "";
+    }
+
+
+    return date.toLocaleString(
+        "zh-TW",
+        {
+            month: "numeric",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+
+}
+
+
+function formatDate(value) {
+
+    if (!value) {
+        return "-";
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (isNaN(date.getTime())) {
+        return "-";
+    }
+
+
+    return date.toLocaleDateString(
+        "zh-TW",
+        {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }
+    );
+
+}
+
+
+/* ============================================================
    Load Rooms
 ============================================================ */
 
@@ -1618,6 +1579,7 @@ async function loadRooms() {
         error
     } =
         await supabaseClient
+         .schema("public")
             .from("chat_rooms")
             .select("*")
             .eq(
@@ -1640,9 +1602,26 @@ async function loadRooms() {
             error
         );
 
+        console.error(
+            "code:",
+            error.code
+        );
+
+        console.error(
+            "message:",
+            error.message
+        );
+
+        console.error(
+            "details:",
+            error.details
+        );
 
         roomsList.innerHTML =
-            '<div class="empty-rooms">無法載入聊天室</div>';
+            '<div class="empty-rooms">' +
+            '無法載入聊天室。<br><br>' +
+            '請開啟 F12 → Console 查看錯誤。' +
+            '</div>';
 
         return;
     }
@@ -1717,7 +1696,8 @@ function renderRooms() {
                 "room-email";
 
             email.textContent =
-                room.user_email || "未知使用者";
+                room.user_email ||
+                "未知使用者";
 
 
             const time =
@@ -1733,7 +1713,6 @@ function renderRooms() {
 
 
             top.appendChild(email);
-
             top.appendChild(time);
 
 
@@ -1763,7 +1742,6 @@ function renderRooms() {
 
 
             bottom.appendChild(dot);
-
             bottom.appendChild(preview);
 
 
@@ -1795,7 +1773,6 @@ function renderRooms() {
 
 
             item.appendChild(top);
-
             item.appendChild(bottom);
 
 
@@ -1853,7 +1830,8 @@ async function openRoom(room) {
 
 
     chatUserStatus.textContent =
-        "聊天室 #" + room.id;
+        "聊天室 #" +
+        room.id;
 
 
     closeChatButton.disabled =
@@ -1986,7 +1964,6 @@ function renderMessage(message) {
     const container =
         document.createElement("div");
 
-
     container.className =
         "bubble-container";
 
@@ -1994,10 +1971,8 @@ function renderMessage(message) {
     const bubble =
         document.createElement("div");
 
-
     bubble.className =
         "bubble";
-
 
     bubble.textContent =
         message.message || "";
@@ -2006,10 +1981,8 @@ function renderMessage(message) {
     const time =
         document.createElement("div");
 
-
     time.className =
         "message-time";
-
 
     time.textContent =
         formatTime(
@@ -2038,23 +2011,12 @@ function renderMessage(message) {
     }
 
 
-    container.appendChild(
-        bubble
-    );
+    container.appendChild(bubble);
+    container.appendChild(time);
 
-    container.appendChild(
-        time
-    );
+    row.appendChild(container);
 
-
-    row.appendChild(
-        container
-    );
-
-
-    messages.appendChild(
-        row
-    );
+    messages.appendChild(row);
 
 }
 
@@ -2067,6 +2029,7 @@ function scrollMessagesToBottom() {
 
     messages.scrollTop =
         messages.scrollHeight;
+
 }
 
 
@@ -2109,15 +2072,30 @@ async function markMessagesAsRead(roomId) {
     }
 
 
-    await supabaseClient
-        .from("chat_rooms")
-        .update({
-            unread_count: 0
-        })
-        .eq(
-            "id",
-            roomId
+    const {
+        error: roomError
+    } =
+        await supabaseClient
+         .schema("public")
+            .from("chat_rooms")
+            .update({
+                unread_count: 0
+            })
+            .eq(
+                "id",
+                roomId
+            );
+
+
+    if (roomError) {
+
+        console.error(
+            "Update unread count error:",
+            roomError
         );
+
+        return;
+    }
 
 
     const room =
@@ -2147,7 +2125,6 @@ async function markMessagesAsRead(roomId) {
 async function sendMessage() {
 
     if (!currentRoom) {
-
         return;
     }
 
@@ -2157,7 +2134,6 @@ async function sendMessage() {
 
 
     if (!text) {
-
         return;
     }
 
@@ -2180,6 +2156,11 @@ async function sendMessage() {
             sessionError ||
             !sessionData.session
         ) {
+
+            console.error(
+                "管理員 Session 已失效。",
+                sessionError
+            );
 
             redirectToAdminLogin();
 
@@ -2221,6 +2202,31 @@ async function sendMessage() {
 
         if (error) {
 
+            console.error(
+                "Send message error:",
+                error
+            );
+
+            console.error(
+                "code:",
+                error.code
+            );
+
+            console.error(
+                "message:",
+                error.message
+            );
+
+            console.error(
+                "details:",
+                error.details
+            );
+
+            console.error(
+                "hint:",
+                error.hint
+            );
+
             throw error;
         }
 
@@ -2233,6 +2239,7 @@ async function sendMessage() {
             error: roomError
         } =
             await supabaseClient
+             .schema("public")
                 .from("chat_rooms")
                 .update({
 
@@ -2275,8 +2282,9 @@ async function sendMessage() {
             error
         );
 
+
         alert(
-            "訊息傳送失敗，請稍後再試。"
+            "訊息傳送失敗，請查看 F12 → Console。"
         );
 
     }
@@ -2308,7 +2316,9 @@ async function loadUserInfo(
     if (!userId) {
 
         userInfoContent.innerHTML =
-            '<div class="empty-chat">沒有使用者資料</div>';
+            '<div class="empty-chat">' +
+            '沒有使用者資料' +
+            '</div>';
 
         return;
     }
@@ -2341,15 +2351,15 @@ async function loadUserInfo(
 
         userInfoContent.innerHTML =
             '<div class="info-row">' +
-            '<div class="info-label">Email</div>' +
-            '<div class="info-value">' +
-            escapeHtml(email || "-") +
-            '</div>' +
+                '<div class="info-label">Email</div>' +
+                '<div class="info-value">' +
+                    escapeHtml(email || "-") +
+                '</div>' +
             '</div>' +
 
             '<div class="info-row">' +
-            '<div class="info-label">方案</div>' +
-            '<div class="info-value">無法載入</div>' +
+                '<div class="info-label">方案</div>' +
+                '<div class="info-value">無法載入</div>' +
             '</div>';
 
         return;
@@ -2361,10 +2371,10 @@ async function loadUserInfo(
 
     html +=
         '<div class="info-row">' +
-        '<div class="info-label">Email</div>' +
-        '<div class="info-value">' +
-        escapeHtml(email || "-") +
-        '</div>' +
+            '<div class="info-label">Email</div>' +
+            '<div class="info-value">' +
+                escapeHtml(email || "-") +
+            '</div>' +
         '</div>';
 
 
@@ -2372,79 +2382,79 @@ async function loadUserInfo(
 
         html +=
             '<div class="info-row">' +
-            '<div class="info-label">目前方案</div>' +
-            '<div class="info-value">' +
-            escapeHtml(
-                data.plan_name || "-"
-            ) +
-            '</div>' +
+                '<div class="info-label">目前方案</div>' +
+                '<div class="info-value">' +
+                    escapeHtml(
+                        data.plan_name || "-"
+                    ) +
+                '</div>' +
             '</div>';
 
 
         html +=
             '<div class="info-row">' +
-            '<div class="info-label">合約期間</div>' +
-            '<div class="info-value">' +
-            escapeHtml(
-                data.duration_years || "-"
-            ) +
-            '</div>' +
+                '<div class="info-label">合約期間</div>' +
+                '<div class="info-value">' +
+                    escapeHtml(
+                        data.duration_years || "-"
+                    ) +
+                '</div>' +
             '</div>';
 
 
         html +=
             '<div class="info-row">' +
-            '<div class="info-label">開始日期</div>' +
-            '<div class="info-value">' +
-            formatYearMonth(
-                data.start_year,
-                data.start_month
-            ) +
-            '</div>' +
+                '<div class="info-label">開始日期</div>' +
+                '<div class="info-value">' +
+                    formatYearMonth(
+                        data.start_year,
+                        data.start_month
+                    ) +
+                '</div>' +
             '</div>';
 
 
         html +=
             '<div class="info-row">' +
-            '<div class="info-label">結束日期</div>' +
-            '<div class="info-value">' +
-            formatYearMonth(
-                data.end_year,
-                data.end_month
-            ) +
-            '</div>' +
+                '<div class="info-label">結束日期</div>' +
+                '<div class="info-value">' +
+                    formatYearMonth(
+                        data.end_year,
+                        data.end_month
+                    ) +
+                '</div>' +
             '</div>';
 
 
         html +=
             '<div class="info-row">' +
-            '<div class="info-label">方案價格</div>' +
-            '<div class="info-value">' +
-            escapeHtml(
-                (
-                    data.currency || ""
-                ) +
-                " " +
-                (
-                    data.plan_price || "-"
-                )
-            ) +
-            '</div>' +
+                '<div class="info-label">方案價格</div>' +
+                '<div class="info-value">' +
+                    escapeHtml(
+                        (
+                            data.currency || ""
+                        ) +
+                        " " +
+                        (
+                            data.plan_price || "-"
+                        )
+                    ) +
+                '</div>' +
             '</div>';
 
 
         html +=
             '<div class="info-row">' +
-            '<div class="info-label">狀態</div>' +
-            '<div class="info-value ' +
-            getStatusClass(
-                data.status
-            ) +
-            '">' +
-            translateStatus(
-                data.status
-            ) +
-            '</div>' +
+                '<div class="info-label">狀態</div>' +
+                '<div class="info-value ' +
+                    getStatusClass(
+                        data.status
+                    ) +
+                '">' +
+                    translateStatus(
+                        data.status
+                    ) +
+                '</div>' +
             '</div>';
 
     }
@@ -2452,10 +2462,10 @@ async function loadUserInfo(
 
         html +=
             '<div class="info-row">' +
-            '<div class="info-label">方案</div>' +
-            '<div class="info-value">' +
-            '目前沒有方案資料' +
-            '</div>' +
+                '<div class="info-label">方案</div>' +
+                '<div class="info-value">' +
+                    '目前沒有方案資料' +
+                '</div>' +
             '</div>';
 
     }
@@ -2473,7 +2483,6 @@ function formatYearMonth(
 ) {
 
     if (!year || !month) {
-
         return "-";
     }
 
@@ -2514,7 +2523,6 @@ function translateStatus(status) {
 
         default:
             return status || "-";
-
     }
 
 }
@@ -2541,7 +2549,6 @@ function getStatusClass(status) {
 
         default:
             return "";
-
     }
 
 }
@@ -2564,16 +2571,14 @@ function escapeHtml(value) {
 
 
 /* ============================================================
-   End Chat
+   End Chat Modal
 ============================================================ */
 
 function showCloseModal() {
 
     if (!currentRoom) {
-
         return;
     }
-
 
     confirmModal.classList.add(
         "show"
@@ -2592,13 +2597,12 @@ function hideCloseModal() {
 
 
 /* ============================================================
-   Delete Messages + Close Room
+   Close Chat
 ============================================================ */
 
 async function closeCurrentChat() {
 
     if (!currentRoom) {
-
         return;
     }
 
@@ -2617,9 +2621,7 @@ async function closeCurrentChat() {
     try {
 
         /*
-         * =====================================================
-         * 1. 刪除聊天室所有訊息
-         * =====================================================
+         * 1. 刪除訊息
          */
 
         const {
@@ -2646,17 +2648,14 @@ async function closeCurrentChat() {
 
 
         /*
-         * =====================================================
-         * 2. 保留聊天室本身
-         *
-         *    只改成 closed
-         * =====================================================
+         * 2. 關閉聊天室
          */
 
         const {
             error: updateError
         } =
             await supabaseClient
+             .schema("public")
                 .from("chat_rooms")
                 .update({
 
@@ -2694,9 +2693,7 @@ async function closeCurrentChat() {
 
 
         /*
-         * =====================================================
          * 3. 清除目前畫面
-         * =====================================================
          */
 
         currentRoom = null;
@@ -2721,9 +2718,7 @@ async function closeCurrentChat() {
 
 
         /*
-         * =====================================================
-         * 4. 重新載入聊天室
-         * =====================================================
+         * 4. 重新載入
          */
 
         await loadRooms();
@@ -2746,7 +2741,7 @@ async function closeCurrentChat() {
 
 
         alert(
-            "結束聊天室失敗，聊天內容尚未完整處理。"
+            "結束聊天室失敗，請查看 F12 → Console。"
         );
 
     }
@@ -2786,9 +2781,9 @@ function subscribeRealtime() {
             )
 
 
-            /* -----------------------------------------------
-               新訊息
-            ------------------------------------------------ */
+            /*
+             * 新訊息
+             */
 
             .on(
                 "postgres_changes",
@@ -2802,10 +2797,6 @@ function subscribeRealtime() {
                     const message =
                         payload.new;
 
-
-                    /*
-                     * 如果目前正在看的聊天室
-                     */
 
                     if (
                         currentRoom &&
@@ -2824,12 +2815,6 @@ function subscribeRealtime() {
                         scrollMessagesToBottom();
 
 
-                        /*
-                         * 使用者訊息進來後，
-                         * 管理員目前正在聊天室，
-                         * 直接標記已讀。
-                         */
-
                         if (
                             message.sender_type ===
                             "user"
@@ -2844,25 +2829,22 @@ function subscribeRealtime() {
                     }
 
 
-                    /*
-                     * 更新聊天室列表
-                     */
-
                     await loadRooms();
 
                 }
             )
 
 
-            /* -----------------------------------------------
-               聊天室更新
-            ------------------------------------------------ */
+            /*
+             * 聊天室更新
+             */
 
             .on(
                 "postgres_changes",
                 {
                     event: "UPDATE",
                     schema: "public",
+                    shema:"public",
                     table: "chat_rooms"
                 },
                 async function () {
@@ -2873,9 +2855,9 @@ function subscribeRealtime() {
             )
 
 
-            /* -----------------------------------------------
-               訊息刪除
-            ------------------------------------------------ */
+            /*
+             * 訊息刪除
+             */
 
             .on(
                 "postgres_changes",
@@ -2885,11 +2867,6 @@ function subscribeRealtime() {
                     table: "chat_messages"
                 },
                 function (payload) {
-
-                    /*
-                     * 如果目前聊天室正在刪除訊息，
-                     * 重新整理目前畫面。
-                     */
 
                     if (
                         currentRoom &&
@@ -2941,7 +2918,7 @@ sendButton.addEventListener(
 
 
 /* ============================================================
-   Enter to Send
+   Enter
 ============================================================ */
 
 messageInput.addEventListener(
@@ -2964,7 +2941,7 @@ messageInput.addEventListener(
 
 
 /* ============================================================
-   Textarea Auto Height
+   Textarea
 ============================================================ */
 
 messageInput.addEventListener(
@@ -3027,7 +3004,7 @@ modalConfirm.addEventListener(
 
 
 /* ============================================================
-   Click Overlay
+   Modal Overlay
 ============================================================ */
 
 confirmModal.addEventListener(
@@ -3062,7 +3039,6 @@ logoutButton.addEventListener(
 
 
         if (!confirmed) {
-
             return;
         }
 
@@ -3076,13 +3052,15 @@ logoutButton.addEventListener(
                         realtimeChannel
                     );
 
+                realtimeChannel =
+                    null;
+
             }
 
 
             await supabaseClient
                 .auth
                 .signOut();
-
 
         }
         catch (error) {
@@ -3100,68 +3078,9 @@ logoutButton.addEventListener(
             );
 
 
-            window.location.href =
-                "admin-login.html";
-
-        }
-
-    }
-);
-
-
-/* ============================================================
-   Visibility
-============================================================ */
-
-document.addEventListener(
-    "visibilitychange",
-    async function () {
-
-        if (
-            document.visibilityState !==
-            "visible"
-        ) {
-
-            return;
-        }
-
-
-        const {
-            data
-        } =
-            await supabaseClient.auth
-                .getSession();
-
-
-        if (!data.session) {
-
-            redirectToAdminLogin();
-
-            return;
-        }
-
-
-        const expire =
-            sessionStorage.getItem(
-                ADMIN_SESSION_KEY
+            window.location.replace(
+                "admin-login.html"
             );
-
-
-        if (
-            !expire ||
-            Date.now() >=
-            Number(expire)
-        ) {
-
-            await supabaseClient
-                .auth
-                .signOut();
-
-            sessionStorage.removeItem(
-                ADMIN_SESSION_KEY
-            );
-
-            redirectToAdminLogin();
 
         }
 
@@ -3178,5 +3097,4 @@ initialize();
 </script>
 
 </body>
-
 </html>
