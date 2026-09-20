@@ -1041,6 +1041,7 @@
                 error
             } =
                 await supabaseClient
+                 .schema("public")
                     .from("chat_rooms")
                     .select("*")
                     .eq(
@@ -1121,6 +1122,7 @@
                 error
             } =
                 await supabaseClient
+                 .schema("public")
                     .from("chat_rooms")
                     .insert({
 
@@ -1729,6 +1731,7 @@
                 error
             } =
                 await supabaseClient
+                 .schema("public")
                     .from("chat_rooms")
                     .update({
 
@@ -1803,6 +1806,7 @@
 
 
             await supabaseClient
+             .schema("public")
                 .from("chat_rooms")
                 .update({
                     unread_count: 0
@@ -1914,6 +1918,7 @@
 
 
                                 await supabaseClient
+                                 .schema("public")
                                     .from(
                                         "chat_rooms"
                                     )
