@@ -1,0 +1,3181 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hant">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Money Statistics 管理員中心</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
+
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+
+    html,
+    body {
+
+        width: 100%;
+        height: 100%;
+
+        margin: 0;
+
+        font-family:
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            sans-serif;
+
+        background: #f5f5f7;
+
+        color: #1d1d1f;
+
+        overflow: hidden;
+    }
+
+
+    /* =====================================================
+       Main Layout
+    ===================================================== */
+
+    .app {
+
+        width: 100%;
+        height: 100vh;
+
+        display: flex;
+
+        flex-direction: column;
+    }
+
+
+    /* =====================================================
+       Header
+    ===================================================== */
+
+    .header {
+
+        height: 64px;
+
+        flex-shrink: 0;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        padding:
+            0 24px;
+
+        background: rgba(255,255,255,0.96);
+
+        border-bottom:
+            1px solid #e5e5e7;
+
+        backdrop-filter:
+            blur(20px);
+
+        z-index: 10;
+    }
+
+
+    .header-title {
+
+        font-size: 20px;
+
+        font-weight: 600;
+    }
+
+
+    .header-right {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 16px;
+    }
+
+
+    .admin-email {
+
+        font-size: 13px;
+
+        color: #86868b;
+    }
+
+
+    .logout-button {
+
+        border: none;
+
+        background: transparent;
+
+        color: #007aff;
+
+        cursor: pointer;
+
+        font-size: 14px;
+    }
+
+
+    .logout-button:hover {
+
+        text-decoration: underline;
+    }
+
+
+    /* =====================================================
+       Main Content
+    ===================================================== */
+
+    .content {
+
+        flex: 1;
+
+        min-height: 0;
+
+        display: flex;
+    }
+
+
+    /* =====================================================
+       Room List
+    ===================================================== */
+
+    .rooms-panel {
+
+        width: 330px;
+
+        flex-shrink: 0;
+
+        display: flex;
+
+        flex-direction: column;
+
+        background: #ffffff;
+
+        border-right:
+            1px solid #e5e5e7;
+    }
+
+
+    .rooms-header {
+
+        height: 64px;
+
+        flex-shrink: 0;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        padding: 0 20px;
+
+        border-bottom:
+            1px solid #e5e5e7;
+    }
+
+
+    .rooms-title {
+
+        font-size: 17px;
+
+        font-weight: 600;
+    }
+
+
+    .rooms-count {
+
+        min-width: 24px;
+
+        height: 24px;
+
+        padding: 0 7px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border-radius: 12px;
+
+        background: #f2f2f7;
+
+        color: #555;
+
+        font-size: 12px;
+    }
+
+
+    .rooms-list {
+
+        flex: 1;
+
+        overflow-y: auto;
+    }
+
+
+    .room-item {
+
+        position: relative;
+
+        padding: 15px 18px;
+
+        border-bottom:
+            1px solid #f0f0f2;
+
+        cursor: pointer;
+
+        transition:
+            background 0.15s;
+    }
+
+
+    .room-item:hover {
+
+        background: #f5f5f7;
+    }
+
+
+    .room-item.selected {
+
+        background: #eaf3ff;
+    }
+
+
+    .room-top {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 10px;
+    }
+
+
+    .room-email {
+
+        font-size: 14px;
+
+        font-weight: 500;
+
+        overflow: hidden;
+
+        white-space: nowrap;
+
+        text-overflow: ellipsis;
+    }
+
+
+    .room-time {
+
+        flex-shrink: 0;
+
+        font-size: 11px;
+
+        color: #86868b;
+    }
+
+
+    .room-bottom {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 8px;
+
+        margin-top: 7px;
+    }
+
+
+    .room-preview {
+
+        flex: 1;
+
+        overflow: hidden;
+
+        white-space: nowrap;
+
+        text-overflow: ellipsis;
+
+        color: #86868b;
+
+        font-size: 13px;
+    }
+
+
+    .unread-badge {
+
+        min-width: 21px;
+
+        height: 21px;
+
+        padding: 0 6px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border-radius: 11px;
+
+        background: #ff3b30;
+
+        color: #fff;
+
+        font-size: 11px;
+
+        font-weight: 600;
+    }
+
+
+    .status-dot {
+
+        width: 8px;
+
+        height: 8px;
+
+        border-radius: 50%;
+
+        background: #34c759;
+
+        flex-shrink: 0;
+    }
+
+
+    .status-dot.closed {
+
+        background: #8e8e93;
+    }
+
+
+    .empty-rooms {
+
+        padding: 40px 20px;
+
+        text-align: center;
+
+        color: #86868b;
+
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+       Chat Area
+    ===================================================== */
+
+    .chat-panel {
+
+        flex: 1;
+
+        min-width: 0;
+
+        display: flex;
+
+        flex-direction: column;
+
+        background: #f5f5f7;
+    }
+
+
+    .chat-header {
+
+        height: 64px;
+
+        flex-shrink: 0;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        padding:
+            0 22px;
+
+        background: #fff;
+
+        border-bottom:
+            1px solid #e5e5e7;
+    }
+
+
+    .chat-user {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 12px;
+    }
+
+
+    .avatar {
+
+        width: 38px;
+
+        height: 38px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border-radius: 50%;
+
+        background: #e5e5ea;
+
+        color: #555;
+
+        font-size: 15px;
+
+        font-weight: 600;
+    }
+
+
+    .chat-user-name {
+
+        font-size: 15px;
+
+        font-weight: 600;
+    }
+
+
+    .chat-user-status {
+
+        margin-top: 2px;
+
+        color: #86868b;
+
+        font-size: 12px;
+    }
+
+
+    .close-chat-button {
+
+        height: 34px;
+
+        padding:
+            0 14px;
+
+        border: 1px solid #ff3b30;
+
+        border-radius: 8px;
+
+        background: #fff;
+
+        color: #ff3b30;
+
+        cursor: pointer;
+
+        font-size: 13px;
+    }
+
+
+    .close-chat-button:hover {
+
+        background: #fff1f0;
+    }
+
+
+    .close-chat-button:disabled {
+
+        color: #aaa;
+
+        border-color: #ddd;
+
+        cursor: default;
+
+        background: #f5f5f5;
+    }
+
+
+    /* =====================================================
+       Messages
+    ===================================================== */
+
+    .messages {
+
+        flex: 1;
+
+        min-height: 0;
+
+        overflow-y: auto;
+
+        padding: 24px;
+    }
+
+
+    .message-row {
+
+        display: flex;
+
+        margin-bottom: 12px;
+    }
+
+
+    .message-row.user {
+
+        justify-content: flex-start;
+    }
+
+
+    .message-row.admin {
+
+        justify-content: flex-end;
+    }
+
+
+    .bubble-container {
+
+        max-width: 68%;
+    }
+
+
+    .bubble {
+
+        padding:
+            10px 14px;
+
+        border-radius: 18px;
+
+        font-size: 14px;
+
+        line-height: 1.5;
+
+        word-break: break-word;
+
+        white-space: pre-wrap;
+    }
+
+
+    .message-row.user .bubble {
+
+        background: #ffffff;
+
+        color: #1d1d1f;
+
+        border-bottom-left-radius: 5px;
+
+        box-shadow:
+            0 1px 2px rgba(0,0,0,0.06);
+    }
+
+
+    .message-row.admin .bubble {
+
+        background: #007aff;
+
+        color: #ffffff;
+
+        border-bottom-right-radius: 5px;
+    }
+
+
+    .message-time {
+
+        margin-top: 4px;
+
+        color: #86868b;
+
+        font-size: 10px;
+    }
+
+
+    .message-row.admin .message-time {
+
+        text-align: right;
+    }
+
+
+    .read-status {
+
+        margin-left: 6px;
+
+        color: #007aff;
+    }
+
+
+    .system-message {
+
+        margin: 20px auto;
+
+        text-align: center;
+
+        color: #86868b;
+
+        font-size: 12px;
+    }
+
+
+    /* =====================================================
+       Input
+    ===================================================== */
+
+    .input-area {
+
+        flex-shrink: 0;
+
+        display: flex;
+
+        align-items: flex-end;
+
+        gap: 10px;
+
+        padding:
+            14px 18px;
+
+        background: #fff;
+
+        border-top:
+            1px solid #e5e5e7;
+    }
+
+
+    #messageInput {
+
+        flex: 1;
+
+        min-height: 42px;
+
+        max-height: 120px;
+
+        padding:
+            11px 14px;
+
+        border:
+            1px solid #d2d2d7;
+
+        border-radius: 12px;
+
+        outline: none;
+
+        resize: none;
+
+        font-family: inherit;
+
+        font-size: 14px;
+    }
+
+
+    #messageInput:focus {
+
+        border-color: #007aff;
+
+        box-shadow:
+            0 0 0 3px
+            rgba(0,122,255,0.10);
+    }
+
+
+    #sendButton {
+
+        height: 42px;
+
+        padding:
+            0 18px;
+
+        border: none;
+
+        border-radius: 10px;
+
+        background: #007aff;
+
+        color: #fff;
+
+        cursor: pointer;
+
+        font-size: 14px;
+    }
+
+
+    #sendButton:hover {
+
+        background: #006fe6;
+    }
+
+
+    #sendButton:disabled {
+
+        background: #b8b8bd;
+
+        cursor: default;
+    }
+
+
+    /* =====================================================
+       Empty Chat
+    ===================================================== */
+
+    .empty-chat {
+
+        flex: 1;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        text-align: center;
+
+        color: #86868b;
+
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+       User Info Panel
+    ===================================================== */
+
+    .user-info-panel {
+
+        width: 280px;
+
+        flex-shrink: 0;
+
+        background: #fff;
+
+        border-left:
+            1px solid #e5e5e7;
+
+        overflow-y: auto;
+    }
+
+
+    .user-info-title {
+
+        padding:
+            20px;
+
+        border-bottom:
+            1px solid #e5e5e7;
+
+        font-size: 16px;
+
+        font-weight: 600;
+    }
+
+
+    .user-info-content {
+
+        padding: 20px;
+    }
+
+
+    .info-row {
+
+        margin-bottom: 18px;
+    }
+
+
+    .info-label {
+
+        margin-bottom: 5px;
+
+        color: #86868b;
+
+        font-size: 11px;
+    }
+
+
+    .info-value {
+
+        color: #1d1d1f;
+
+        font-size: 14px;
+
+        word-break: break-word;
+    }
+
+
+    .status-active {
+
+        color: #34a853;
+    }
+
+
+    .status-pending {
+
+        color: #ff9500;
+    }
+
+
+    .status-expired {
+
+        color: #86868b;
+    }
+
+
+    .status-suspended {
+
+        color: #ff3b30;
+    }
+
+
+    /* =====================================================
+       Loading
+    ===================================================== */
+
+    .loading {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        padding: 30px;
+
+        color: #86868b;
+
+        font-size: 13px;
+    }
+
+
+    /* =====================================================
+       Modal
+    ===================================================== */
+
+    .modal-overlay {
+
+        position: fixed;
+
+        inset: 0;
+
+        z-index: 1000;
+
+        display: none;
+
+        align-items: center;
+
+        justify-content: center;
+
+        background:
+            rgba(0,0,0,0.32);
+
+        backdrop-filter:
+            blur(5px);
+    }
+
+
+    .modal-overlay.show {
+
+        display: flex;
+    }
+
+
+    .modal {
+
+        width: 360px;
+
+        padding: 26px;
+
+        border-radius: 18px;
+
+        background: #fff;
+
+        box-shadow:
+            0 20px 60px
+            rgba(0,0,0,0.2);
+
+        text-align: center;
+    }
+
+
+    .modal h2 {
+
+        margin:
+            0 0 10px;
+
+        font-size: 20px;
+    }
+
+
+    .modal p {
+
+        margin:
+            0 0 22px;
+
+        color: #666;
+
+        font-size: 14px;
+
+        line-height: 1.6;
+    }
+
+
+    .modal-buttons {
+
+        display: flex;
+
+        gap: 10px;
+    }
+
+
+    .modal-buttons button {
+
+        flex: 1;
+
+        height: 42px;
+
+        border: none;
+
+        border-radius: 10px;
+
+        cursor: pointer;
+
+        font-size: 14px;
+    }
+
+
+    .modal-cancel {
+
+        background: #f2f2f7;
+
+        color: #1d1d1f;
+    }
+
+
+    .modal-confirm {
+
+        background: #ff3b30;
+
+        color: #fff;
+    }
+
+
+    /* =====================================================
+       Responsive
+    ===================================================== */
+
+    @media (max-width: 1100px) {
+
+        .user-info-panel {
+
+            display: none;
+        }
+    }
+
+
+    @media (max-width: 700px) {
+
+        .rooms-panel {
+
+            width: 260px;
+        }
+
+        .header {
+
+            padding:
+                0 14px;
+        }
+
+        .admin-email {
+
+            display: none;
+        }
+
+        .messages {
+
+            padding: 16px;
+        }
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- =====================================================
+     Header
+====================================================== -->
+
+<header class="header">
+
+    <div class="header-title">
+        Money Statistics 管理員中心
+    </div>
+
+    <div class="header-right">
+
+        <div
+            class="admin-email"
+            id="adminEmail"
+        >
+            管理員
+        </div>
+
+        <button
+            class="logout-button"
+            id="logoutButton"
+        >
+            登出
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     Content
+====================================================== -->
+
+<main class="content">
+
+
+    <!-- =================================================
+         Rooms
+    ================================================== -->
+
+    <section class="rooms-panel">
+
+        <div class="rooms-header">
+
+            <div class="rooms-title">
+                聊天室
+            </div>
+
+            <div
+                class="rooms-count"
+                id="roomsCount"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div
+            class="rooms-list"
+            id="roomsList"
+        >
+
+            <div class="loading">
+                載入聊天室…
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         Chat
+    ================================================== -->
+
+    <section class="chat-panel">
+
+
+        <div
+            class="empty-chat"
+            id="emptyChat"
+        >
+
+            請選擇聊天室
+
+        </div>
+
+
+        <div
+            id="chatContent"
+            style="display:none; flex:1; min-height:0; flex-direction:column;"
+        >
+
+
+            <div class="chat-header">
+
+
+                <div class="chat-user">
+
+                    <div
+                        class="avatar"
+                        id="chatAvatar"
+                    >
+                        ?
+                    </div>
+
+
+                    <div>
+
+                        <div
+                            class="chat-user-name"
+                            id="chatUserName"
+                        >
+                            使用者
+                        </div>
+
+                        <div
+                            class="chat-user-status"
+                            id="chatUserStatus"
+                        >
+                            聊天室
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="close-chat-button"
+                    id="closeChatButton"
+                >
+                    結束聊天室
+                </button>
+
+            </div>
+
+
+            <div
+                class="messages"
+                id="messages"
+            ></div>
+
+
+            <div class="input-area">
+
+                <textarea
+                    id="messageInput"
+                    placeholder="輸入訊息…"
+                    rows="1"
+                ></textarea>
+
+
+                <button
+                    id="sendButton"
+                >
+                    傳送
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         User Information
+    ================================================== -->
+
+    <aside
+        class="user-info-panel"
+        id="userInfoPanel"
+    >
+
+        <div class="user-info-title">
+            使用者資訊
+        </div>
+
+
+        <div
+            class="user-info-content"
+            id="userInfoContent"
+        >
+
+            <div class="empty-chat">
+                尚未選擇使用者
+            </div>
+
+        </div>
+
+    </aside>
+
+
+</main>
+```
+
+</div>
+
+<!-- =========================================================
+     Confirm Modal
+========================================================== -->
+
+<div
+    class="modal-overlay"
+    id="confirmModal"
+>
+
+```
+<div class="modal">
+
+    <h2>
+        結束聊天室？
+    </h2>
+
+    <p>
+        結束後，此聊天室的所有訊息將會永久刪除。
+        <br>
+        此操作無法復原。
+    </p>
+
+    <div class="modal-buttons">
+
+        <button
+            class="modal-cancel"
+            id="modalCancel"
+        >
+            取消
+        </button>
+
+        <button
+            class="modal-confirm"
+            id="modalConfirm"
+        >
+            確定結束
+        </button>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+<script>
+
+
+/* ============================================================
+   Variables
+============================================================ */
+
+let currentUser = null;
+
+let currentRoom = null;
+
+let rooms = [];
+
+let realtimeChannel = null;
+
+
+/* ============================================================
+   Elements
+============================================================ */
+
+const roomsList =
+    document.getElementById("roomsList");
+
+const roomsCount =
+    document.getElementById("roomsCount");
+
+const emptyChat =
+    document.getElementById("emptyChat");
+
+const chatContent =
+    document.getElementById("chatContent");
+
+const messages =
+    document.getElementById("messages");
+
+const messageInput =
+    document.getElementById("messageInput");
+
+const sendButton =
+    document.getElementById("sendButton");
+
+const closeChatButton =
+    document.getElementById("closeChatButton");
+
+const logoutButton =
+    document.getElementById("logoutButton");
+
+const adminEmail =
+    document.getElementById("adminEmail");
+
+const chatUserName =
+    document.getElementById("chatUserName");
+
+const chatUserStatus =
+    document.getElementById("chatUserStatus");
+
+const chatAvatar =
+    document.getElementById("chatAvatar");
+
+const userInfoContent =
+    document.getElementById("userInfoContent");
+
+const confirmModal =
+    document.getElementById("confirmModal");
+
+const modalCancel =
+    document.getElementById("modalCancel");
+
+const modalConfirm =
+    document.getElementById("modalConfirm");
+
+
+/* ============================================================
+   Session
+============================================================ */
+
+const ADMIN_SESSION_KEY =
+    "moneyStatisticsAdminSessionExpire";
+
+const ADMIN_SESSION_DURATION =
+    30 * 60 * 1000;
+
+
+/* ============================================================
+   Format
+============================================================ */
+
+function formatTime(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    const date =
+        new Date(value);
+
+    if (isNaN(date.getTime())) {
+        return "";
+    }
+
+    return date.toLocaleString(
+        "zh-TW",
+        {
+            month: "numeric",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+}
+
+
+function formatDate(value) {
+
+    if (!value) {
+        return "-";
+    }
+
+    const date =
+        new Date(value);
+
+    if (isNaN(date.getTime())) {
+        return "-";
+    }
+
+    return date.toLocaleDateString(
+        "zh-TW",
+        {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }
+    );
+}
+
+
+/* ============================================================
+   Initial
+============================================================ */
+
+async function initialize() {
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth
+                .getSession();
+
+
+        if (error || !data.session) {
+
+            redirectToAdminLogin();
+
+            return;
+        }
+
+
+        currentUser =
+            data.session.user;
+
+
+        const expire =
+            sessionStorage.getItem(
+                ADMIN_SESSION_KEY
+            );
+
+
+        if (!expire) {
+
+            await supabaseClient.auth.signOut();
+
+            redirectToAdminLogin();
+
+            return;
+        }
+
+
+        if (
+            Date.now() >=
+            Number(expire)
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            sessionStorage.removeItem(
+                ADMIN_SESSION_KEY
+            );
+
+            redirectToAdminLogin();
+
+            return;
+        }
+
+
+        const isAdmin =
+            await checkAdmin(
+                currentUser.id
+            );
+
+
+        if (!isAdmin) {
+
+            await supabaseClient.auth.signOut();
+
+            sessionStorage.removeItem(
+                ADMIN_SESSION_KEY
+            );
+
+            redirectToAdminLogin();
+
+            return;
+        }
+
+
+        adminEmail.textContent =
+            currentUser.email || "管理員";
+
+
+        await loadRooms();
+
+        subscribeRealtime();
+
+        startSessionMonitor();
+
+    }
+    catch (error) {
+
+        console.error(
+            "Initialization error:",
+            error
+        );
+
+        redirectToAdminLogin();
+
+    }
+
+}
+
+
+/* ============================================================
+   Admin Check
+============================================================ */
+
+async function checkAdmin(userId) {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("admin_users")
+            .select("user_id")
+            .eq(
+                "user_id",
+                userId
+            )
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Admin check error:",
+            error
+        );
+
+        return false;
+    }
+
+
+    return !!data;
+}
+
+
+/* ============================================================
+   Redirect
+============================================================ */
+
+function redirectToAdminLogin() {
+
+    window.location.href =
+        "admin-logon.html";
+}
+
+
+/* ============================================================
+   Session Monitor
+============================================================ */
+
+function startSessionMonitor() {
+
+    setInterval(
+        async function () {
+
+            const expire =
+                sessionStorage.getItem(
+                    ADMIN_SESSION_KEY
+                );
+
+
+            if (!expire) {
+
+                return;
+            }
+
+
+            if (
+                Date.now() >=
+                Number(expire)
+            ) {
+
+                alert(
+                    "管理員工作階段已結束，請重新登入。"
+                );
+
+
+                await supabaseClient
+                    .auth
+                    .signOut();
+
+
+                sessionStorage.removeItem(
+                    ADMIN_SESSION_KEY
+                );
+
+
+                redirectToAdminLogin();
+
+            }
+
+        },
+        1000
+    );
+
+}
+
+
+/* ============================================================
+   Load Rooms
+============================================================ */
+
+async function loadRooms() {
+
+    roomsList.innerHTML =
+        '<div class="loading">載入聊天室…</div>';
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("chat_rooms")
+            .select("*")
+            .eq(
+                "status",
+                "open"
+            )
+            .order(
+                "last_message_at",
+                {
+                    ascending: false,
+                    nullsFirst: false
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Load rooms error:",
+            error
+        );
+
+
+        roomsList.innerHTML =
+            '<div class="empty-rooms">無法載入聊天室</div>';
+
+        return;
+    }
+
+
+    rooms =
+        data || [];
+
+
+    renderRooms();
+
+}
+
+
+/* ============================================================
+   Render Rooms
+============================================================ */
+
+function renderRooms() {
+
+    roomsList.innerHTML = "";
+
+    roomsCount.textContent =
+        rooms.length;
+
+
+    if (!rooms.length) {
+
+        roomsList.innerHTML =
+            '<div class="empty-rooms">' +
+            '目前沒有進行中的聊天室' +
+            '</div>';
+
+        return;
+    }
+
+
+    rooms.forEach(
+        function (room) {
+
+            const item =
+                document.createElement("div");
+
+
+            item.className =
+                "room-item";
+
+
+            if (
+                currentRoom &&
+                currentRoom.id === room.id
+            ) {
+
+                item.classList.add(
+                    "selected"
+                );
+
+            }
+
+
+            const top =
+                document.createElement("div");
+
+            top.className =
+                "room-top";
+
+
+            const email =
+                document.createElement("div");
+
+            email.className =
+                "room-email";
+
+            email.textContent =
+                room.user_email || "未知使用者";
+
+
+            const time =
+                document.createElement("div");
+
+            time.className =
+                "room-time";
+
+            time.textContent =
+                formatTime(
+                    room.last_message_at
+                );
+
+
+            top.appendChild(email);
+
+            top.appendChild(time);
+
+
+            const bottom =
+                document.createElement("div");
+
+            bottom.className =
+                "room-bottom";
+
+
+            const dot =
+                document.createElement("span");
+
+            dot.className =
+                "status-dot";
+
+
+            const preview =
+                document.createElement("div");
+
+            preview.className =
+                "room-preview";
+
+            preview.textContent =
+                room.last_message ||
+                "尚未有訊息";
+
+
+            bottom.appendChild(dot);
+
+            bottom.appendChild(preview);
+
+
+            const unread =
+                Number(
+                    room.unread_count || 0
+                );
+
+
+            if (unread > 0) {
+
+                const badge =
+                    document.createElement("span");
+
+                badge.className =
+                    "unread-badge";
+
+                badge.textContent =
+                    unread > 99
+                        ? "99+"
+                        : unread;
+
+
+                bottom.appendChild(
+                    badge
+                );
+
+            }
+
+
+            item.appendChild(top);
+
+            item.appendChild(bottom);
+
+
+            item.addEventListener(
+                "click",
+                function () {
+
+                    openRoom(room);
+
+                }
+            );
+
+
+            roomsList.appendChild(item);
+
+        }
+    );
+
+}
+
+
+/* ============================================================
+   Open Room
+============================================================ */
+
+async function openRoom(room) {
+
+    currentRoom =
+        room;
+
+
+    renderRooms();
+
+
+    emptyChat.style.display =
+        "none";
+
+
+    chatContent.style.display =
+        "flex";
+
+
+    chatUserName.textContent =
+        room.user_email ||
+        "使用者";
+
+
+    chatAvatar.textContent =
+        (
+            room.user_email ||
+            "U"
+        )
+        .charAt(0)
+        .toUpperCase();
+
+
+    chatUserStatus.textContent =
+        "聊天室 #" + room.id;
+
+
+    closeChatButton.disabled =
+        false;
+
+
+    await loadMessages(
+        room.id
+    );
+
+
+    await markMessagesAsRead(
+        room.id
+    );
+
+
+    await loadUserInfo(
+        room.user_id,
+        room.user_email
+    );
+
+
+    messageInput.focus();
+
+}
+
+
+/* ============================================================
+   Load Messages
+============================================================ */
+
+async function loadMessages(roomId) {
+
+    messages.innerHTML =
+        '<div class="loading">載入訊息…</div>';
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("chat_messages")
+            .select("*")
+            .eq(
+                "room_id",
+                roomId
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Load messages error:",
+            error
+        );
+
+
+        messages.innerHTML =
+            '<div class="system-message">' +
+            '無法載入訊息' +
+            '</div>';
+
+        return;
+    }
+
+
+    messages.innerHTML = "";
+
+
+    if (!data || !data.length) {
+
+        messages.innerHTML =
+            '<div class="system-message">' +
+            '目前沒有訊息' +
+            '</div>';
+
+        return;
+    }
+
+
+    data.forEach(
+        function (message) {
+
+            renderMessage(
+                message
+            );
+
+        }
+    );
+
+
+    scrollMessagesToBottom();
+
+}
+
+
+/* ============================================================
+   Render Message
+============================================================ */
+
+function renderMessage(message) {
+
+    const row =
+        document.createElement("div");
+
+
+    const senderType =
+        (
+            message.sender_type ||
+            "user"
+        ).toLowerCase();
+
+
+    row.className =
+        "message-row " +
+        (
+            senderType === "admin"
+                ? "admin"
+                : "user"
+        );
+
+
+    const container =
+        document.createElement("div");
+
+
+    container.className =
+        "bubble-container";
+
+
+    const bubble =
+        document.createElement("div");
+
+
+    bubble.className =
+        "bubble";
+
+
+    bubble.textContent =
+        message.message || "";
+
+
+    const time =
+        document.createElement("div");
+
+
+    time.className =
+        "message-time";
+
+
+    time.textContent =
+        formatTime(
+            message.created_at
+        );
+
+
+    if (
+        senderType === "admin" &&
+        message.is_read
+    ) {
+
+        const read =
+            document.createElement("span");
+
+        read.className =
+            "read-status";
+
+        read.textContent =
+            "已讀";
+
+        time.appendChild(
+            read
+        );
+
+    }
+
+
+    container.appendChild(
+        bubble
+    );
+
+    container.appendChild(
+        time
+    );
+
+
+    row.appendChild(
+        container
+    );
+
+
+    messages.appendChild(
+        row
+    );
+
+}
+
+
+/* ============================================================
+   Scroll
+============================================================ */
+
+function scrollMessagesToBottom() {
+
+    messages.scrollTop =
+        messages.scrollHeight;
+}
+
+
+/* ============================================================
+   Mark Read
+============================================================ */
+
+async function markMessagesAsRead(roomId) {
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("chat_messages")
+            .update({
+                is_read: true
+            })
+            .eq(
+                "room_id",
+                roomId
+            )
+            .eq(
+                "sender_type",
+                "user"
+            )
+            .eq(
+                "is_read",
+                false
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Mark messages read error:",
+            error
+        );
+
+        return;
+    }
+
+
+    await supabaseClient
+        .from("chat_rooms")
+        .update({
+            unread_count: 0
+        })
+        .eq(
+            "id",
+            roomId
+        );
+
+
+    const room =
+        rooms.find(
+            function (item) {
+                return item.id === roomId;
+            }
+        );
+
+
+    if (room) {
+
+        room.unread_count = 0;
+
+    }
+
+
+    renderRooms();
+
+}
+
+
+/* ============================================================
+   Send Message
+============================================================ */
+
+async function sendMessage() {
+
+    if (!currentRoom) {
+
+        return;
+    }
+
+
+    const text =
+        messageInput.value.trim();
+
+
+    if (!text) {
+
+        return;
+    }
+
+
+    sendButton.disabled =
+        true;
+
+
+    try {
+
+        const {
+            data: sessionData,
+            error: sessionError
+        } =
+            await supabaseClient.auth
+                .getSession();
+
+
+        if (
+            sessionError ||
+            !sessionData.session
+        ) {
+
+            redirectToAdminLogin();
+
+            return;
+        }
+
+
+        const user =
+            sessionData.session.user;
+
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("chat_messages")
+                .insert({
+
+                    room_id:
+                        currentRoom.id,
+
+                    sender_id:
+                        user.id,
+
+                    sender_email:
+                        user.email,
+
+                    sender_type:
+                        "admin",
+
+                    message:
+                        text,
+
+                    is_read:
+                        false
+
+                });
+
+
+        if (error) {
+
+            throw error;
+        }
+
+
+        /*
+         * 更新聊天室最後訊息
+         */
+
+        const {
+            error: roomError
+        } =
+            await supabaseClient
+                .from("chat_rooms")
+                .update({
+
+                    last_message:
+                        text,
+
+                    last_message_at:
+                        new Date().toISOString(),
+
+                    status:
+                        "open"
+
+                })
+                .eq(
+                    "id",
+                    currentRoom.id
+                );
+
+
+        if (roomError) {
+
+            console.error(
+                "Update room error:",
+                roomError
+            );
+
+        }
+
+
+        messageInput.value = "";
+
+        messageInput.style.height =
+            "42px";
+
+    }
+    catch (error) {
+
+        console.error(
+            "Send message error:",
+            error
+        );
+
+        alert(
+            "訊息傳送失敗，請稍後再試。"
+        );
+
+    }
+    finally {
+
+        sendButton.disabled =
+            false;
+
+        messageInput.focus();
+
+    }
+
+}
+
+
+/* ============================================================
+   User Info
+============================================================ */
+
+async function loadUserInfo(
+    userId,
+    email
+) {
+
+    userInfoContent.innerHTML =
+        '<div class="loading">載入使用者資訊…</div>';
+
+
+    if (!userId) {
+
+        userInfoContent.innerHTML =
+            '<div class="empty-chat">沒有使用者資料</div>';
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .schema("licenses")
+            .from("licenses_plan")
+            .select(
+                "owner_user,plan_name,duration_years,start_year,start_month,end_year,end_month,plan_price,currency,status"
+            )
+            .eq(
+                "owner_user",
+                email
+            )
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Load license error:",
+            error
+        );
+
+
+        userInfoContent.innerHTML =
+            '<div class="info-row">' +
+            '<div class="info-label">Email</div>' +
+            '<div class="info-value">' +
+            escapeHtml(email || "-") +
+            '</div>' +
+            '</div>' +
+
+            '<div class="info-row">' +
+            '<div class="info-label">方案</div>' +
+            '<div class="info-value">無法載入</div>' +
+            '</div>';
+
+        return;
+    }
+
+
+    let html = "";
+
+
+    html +=
+        '<div class="info-row">' +
+        '<div class="info-label">Email</div>' +
+        '<div class="info-value">' +
+        escapeHtml(email || "-") +
+        '</div>' +
+        '</div>';
+
+
+    if (data) {
+
+        html +=
+            '<div class="info-row">' +
+            '<div class="info-label">目前方案</div>' +
+            '<div class="info-value">' +
+            escapeHtml(
+                data.plan_name || "-"
+            ) +
+            '</div>' +
+            '</div>';
+
+
+        html +=
+            '<div class="info-row">' +
+            '<div class="info-label">合約期間</div>' +
+            '<div class="info-value">' +
+            escapeHtml(
+                data.duration_years || "-"
+            ) +
+            '</div>' +
+            '</div>';
+
+
+        html +=
+            '<div class="info-row">' +
+            '<div class="info-label">開始日期</div>' +
+            '<div class="info-value">' +
+            formatYearMonth(
+                data.start_year,
+                data.start_month
+            ) +
+            '</div>' +
+            '</div>';
+
+
+        html +=
+            '<div class="info-row">' +
+            '<div class="info-label">結束日期</div>' +
+            '<div class="info-value">' +
+            formatYearMonth(
+                data.end_year,
+                data.end_month
+            ) +
+            '</div>' +
+            '</div>';
+
+
+        html +=
+            '<div class="info-row">' +
+            '<div class="info-label">方案價格</div>' +
+            '<div class="info-value">' +
+            escapeHtml(
+                (
+                    data.currency || ""
+                ) +
+                " " +
+                (
+                    data.plan_price || "-"
+                )
+            ) +
+            '</div>' +
+            '</div>';
+
+
+        html +=
+            '<div class="info-row">' +
+            '<div class="info-label">狀態</div>' +
+            '<div class="info-value ' +
+            getStatusClass(
+                data.status
+            ) +
+            '">' +
+            translateStatus(
+                data.status
+            ) +
+            '</div>' +
+            '</div>';
+
+    }
+    else {
+
+        html +=
+            '<div class="info-row">' +
+            '<div class="info-label">方案</div>' +
+            '<div class="info-value">' +
+            '目前沒有方案資料' +
+            '</div>' +
+            '</div>';
+
+    }
+
+
+    userInfoContent.innerHTML =
+        html;
+
+}
+
+
+function formatYearMonth(
+    year,
+    month
+) {
+
+    if (!year || !month) {
+
+        return "-";
+    }
+
+
+    return (
+        year +
+        "/" +
+        String(month).padStart(2, "0")
+    );
+
+}
+
+
+function translateStatus(status) {
+
+    switch (
+        String(status || "")
+            .toLowerCase()
+    ) {
+
+        case "active":
+            return "啟用中";
+
+        case "pending":
+            return "審核中";
+
+        case "expired":
+            return "已到期";
+
+        case "cancelled":
+            return "已取消";
+
+        case "refunded":
+            return "已退款";
+
+        case "suspended":
+            return "已暫停";
+
+        default:
+            return status || "-";
+
+    }
+
+}
+
+
+function getStatusClass(status) {
+
+    switch (
+        String(status || "")
+            .toLowerCase()
+    ) {
+
+        case "active":
+            return "status-active";
+
+        case "pending":
+            return "status-pending";
+
+        case "expired":
+            return "status-expired";
+
+        case "suspended":
+            return "status-suspended";
+
+        default:
+            return "";
+
+    }
+
+}
+
+
+/* ============================================================
+   Escape HTML
+============================================================ */
+
+function escapeHtml(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* ============================================================
+   End Chat
+============================================================ */
+
+function showCloseModal() {
+
+    if (!currentRoom) {
+
+        return;
+    }
+
+
+    confirmModal.classList.add(
+        "show"
+    );
+
+}
+
+
+function hideCloseModal() {
+
+    confirmModal.classList.remove(
+        "show"
+    );
+
+}
+
+
+/* ============================================================
+   Delete Messages + Close Room
+============================================================ */
+
+async function closeCurrentChat() {
+
+    if (!currentRoom) {
+
+        return;
+    }
+
+
+    const roomId =
+        currentRoom.id;
+
+
+    modalConfirm.disabled =
+        true;
+
+    modalConfirm.textContent =
+        "處理中…";
+
+
+    try {
+
+        /*
+         * =====================================================
+         * 1. 刪除聊天室所有訊息
+         * =====================================================
+         */
+
+        const {
+            error: deleteError
+        } =
+            await supabaseClient
+                .from("chat_messages")
+                .delete()
+                .eq(
+                    "room_id",
+                    roomId
+                );
+
+
+        if (deleteError) {
+
+            console.error(
+                "Delete messages error:",
+                deleteError
+            );
+
+            throw deleteError;
+        }
+
+
+        /*
+         * =====================================================
+         * 2. 保留聊天室本身
+         *
+         *    只改成 closed
+         * =====================================================
+         */
+
+        const {
+            error: updateError
+        } =
+            await supabaseClient
+                .from("chat_rooms")
+                .update({
+
+                    status:
+                        "closed",
+
+                    unread_count:
+                        0,
+
+                    last_message:
+                        null,
+
+                    last_message_at:
+                        null,
+
+                    closed_at:
+                        new Date().toISOString()
+
+                })
+                .eq(
+                    "id",
+                    roomId
+                );
+
+
+        if (updateError) {
+
+            console.error(
+                "Close room error:",
+                updateError
+            );
+
+            throw updateError;
+        }
+
+
+        /*
+         * =====================================================
+         * 3. 清除目前畫面
+         * =====================================================
+         */
+
+        currentRoom = null;
+
+
+        emptyChat.style.display =
+            "flex";
+
+
+        chatContent.style.display =
+            "none";
+
+
+        messages.innerHTML =
+            "";
+
+
+        userInfoContent.innerHTML =
+            '<div class="empty-chat">' +
+            '尚未選擇使用者' +
+            '</div>';
+
+
+        /*
+         * =====================================================
+         * 4. 重新載入聊天室
+         * =====================================================
+         */
+
+        await loadRooms();
+
+
+        hideCloseModal();
+
+
+        alert(
+            "聊天室已結束，聊天內容已刪除。"
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Close chat error:",
+            error
+        );
+
+
+        alert(
+            "結束聊天室失敗，聊天內容尚未完整處理。"
+        );
+
+    }
+    finally {
+
+        modalConfirm.disabled =
+            false;
+
+        modalConfirm.textContent =
+            "確定結束";
+
+    }
+
+}
+
+
+/* ============================================================
+   Realtime
+============================================================ */
+
+function subscribeRealtime() {
+
+    if (realtimeChannel) {
+
+        supabaseClient
+            .removeChannel(
+                realtimeChannel
+            );
+
+    }
+
+
+    realtimeChannel =
+        supabaseClient
+            .channel(
+                "admin-chat-console"
+            )
+
+
+            /* -----------------------------------------------
+               新訊息
+            ------------------------------------------------ */
+
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "chat_messages"
+                },
+                async function (payload) {
+
+                    const message =
+                        payload.new;
+
+
+                    /*
+                     * 如果目前正在看的聊天室
+                     */
+
+                    if (
+                        currentRoom &&
+                        Number(
+                            currentRoom.id
+                        ) ===
+                        Number(
+                            message.room_id
+                        )
+                    ) {
+
+                        renderMessage(
+                            message
+                        );
+
+                        scrollMessagesToBottom();
+
+
+                        /*
+                         * 使用者訊息進來後，
+                         * 管理員目前正在聊天室，
+                         * 直接標記已讀。
+                         */
+
+                        if (
+                            message.sender_type ===
+                            "user"
+                        ) {
+
+                            await markMessagesAsRead(
+                                currentRoom.id
+                            );
+
+                        }
+
+                    }
+
+
+                    /*
+                     * 更新聊天室列表
+                     */
+
+                    await loadRooms();
+
+                }
+            )
+
+
+            /* -----------------------------------------------
+               聊天室更新
+            ------------------------------------------------ */
+
+            .on(
+                "postgres_changes",
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "chat_rooms"
+                },
+                async function () {
+
+                    await loadRooms();
+
+                }
+            )
+
+
+            /* -----------------------------------------------
+               訊息刪除
+            ------------------------------------------------ */
+
+            .on(
+                "postgres_changes",
+                {
+                    event: "DELETE",
+                    schema: "public",
+                    table: "chat_messages"
+                },
+                function (payload) {
+
+                    /*
+                     * 如果目前聊天室正在刪除訊息，
+                     * 重新整理目前畫面。
+                     */
+
+                    if (
+                        currentRoom &&
+                        payload.old &&
+                        Number(
+                            payload.old.room_id
+                        ) ===
+                        Number(
+                            currentRoom.id
+                        )
+                    ) {
+
+                        loadMessages(
+                            currentRoom.id
+                        );
+
+                    }
+
+                }
+            )
+
+
+            .subscribe(
+                function (status) {
+
+                    console.log(
+                        "Admin Realtime:",
+                        status
+                    );
+
+                }
+            );
+
+}
+
+
+/* ============================================================
+   Send Button
+============================================================ */
+
+sendButton.addEventListener(
+    "click",
+    function () {
+
+        sendMessage();
+
+    }
+);
+
+
+/* ============================================================
+   Enter to Send
+============================================================ */
+
+messageInput.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+
+            event.preventDefault();
+
+            sendMessage();
+
+        }
+
+    }
+);
+
+
+/* ============================================================
+   Textarea Auto Height
+============================================================ */
+
+messageInput.addEventListener(
+    "input",
+    function () {
+
+        this.style.height =
+            "42px";
+
+        this.style.height =
+            Math.min(
+                this.scrollHeight,
+                120
+            ) + "px";
+
+    }
+);
+
+
+/* ============================================================
+   Close Chat
+============================================================ */
+
+closeChatButton.addEventListener(
+    "click",
+    function () {
+
+        showCloseModal();
+
+    }
+);
+
+
+/* ============================================================
+   Modal Cancel
+============================================================ */
+
+modalCancel.addEventListener(
+    "click",
+    function () {
+
+        hideCloseModal();
+
+    }
+);
+
+
+/* ============================================================
+   Modal Confirm
+============================================================ */
+
+modalConfirm.addEventListener(
+    "click",
+    function () {
+
+        closeCurrentChat();
+
+    }
+);
+
+
+/* ============================================================
+   Click Overlay
+============================================================ */
+
+confirmModal.addEventListener(
+    "click",
+    function (event) {
+
+        if (
+            event.target ===
+            confirmModal
+        ) {
+
+            hideCloseModal();
+
+        }
+
+    }
+);
+
+
+/* ============================================================
+   Logout
+============================================================ */
+
+logoutButton.addEventListener(
+    "click",
+    async function () {
+
+        const confirmed =
+            confirm(
+                "確定要登出管理員中心嗎？"
+            );
+
+
+        if (!confirmed) {
+
+            return;
+        }
+
+
+        try {
+
+            if (realtimeChannel) {
+
+                await supabaseClient
+                    .removeChannel(
+                        realtimeChannel
+                    );
+
+            }
+
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+
+        }
+        catch (error) {
+
+            console.error(
+                "Logout error:",
+                error
+            );
+
+        }
+        finally {
+
+            sessionStorage.removeItem(
+                ADMIN_SESSION_KEY
+            );
+
+
+            window.location.href =
+                "admin-logon.html";
+
+        }
+
+    }
+);
+
+
+/* ============================================================
+   Visibility
+============================================================ */
+
+document.addEventListener(
+    "visibilitychange",
+    async function () {
+
+        if (
+            document.visibilityState !==
+            "visible"
+        ) {
+
+            return;
+        }
+
+
+        const {
+            data
+        } =
+            await supabaseClient.auth
+                .getSession();
+
+
+        if (!data.session) {
+
+            redirectToAdminLogin();
+
+            return;
+        }
+
+
+        const expire =
+            sessionStorage.getItem(
+                ADMIN_SESSION_KEY
+            );
+
+
+        if (
+            !expire ||
+            Date.now() >=
+            Number(expire)
+        ) {
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+            sessionStorage.removeItem(
+                ADMIN_SESSION_KEY
+            );
+
+            redirectToAdminLogin();
+
+        }
+
+    }
+);
+
+
+/* ============================================================
+   Start
+============================================================ */
+
+initialize();
+
+</script>
+
+</body>
+
+</html>
