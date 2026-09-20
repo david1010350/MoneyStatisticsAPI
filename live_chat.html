@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Money Statistics - 客服聊天室
+    </title>
+
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            min-height: 100vh;
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                "Microsoft JhengHei",
+                sans-serif;
+
+            background: #f5f5f7;
+
+            color: #1d1d1f;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+        }
+
+
+        /* ======================================== */
+        /* Chat Container */
+        /* ======================================== */
+
+        .chat-container {
+
+            width: 100%;
+
+            max-width: 700px;
+
+            height: 700px;
+
+            background: white;
+
+            border-radius: 24px;
+
+            box-shadow:
+                0 10px 40px
+                rgba(0, 0, 0, 0.08);
+
+            display: flex;
+
+            flex-direction: column;
+
+            overflow: hidden;
+
+        }
+
+
+        /* ======================================== */
+        /* Header */
+        /* ======================================== */
+
+        .chat-header {
+
+            height: 72px;
+
+            padding:
+                0 24px;
+
+            border-bottom:
+                1px solid #e5e5e5;
+
+            display: flex;
+
+            align-items: center;
+
+        }
+
+
+        .chat-header-title {
+
+            font-size: 20px;
+
+            font-weight: 600;
+
+        }
+
+
+        .chat-header-status {
+
+            margin-left: 10px;
+
+            font-size: 13px;
+
+            color: #34c759;
+
+        }
+
+
+        /* ======================================== */
+        /* Messages */
+        /* ======================================== */
+
+        .chat-messages {
+
+            flex: 1;
+
+            padding: 24px;
+
+            overflow-y: auto;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 12px;
+
+            background: #f5f5f7;
+
+        }
+
+
+        .message {
+
+            max-width: 75%;
+
+            padding:
+                10px 14px;
+
+            border-radius: 16px;
+
+            font-size: 15px;
+
+            line-height: 1.5;
+
+            word-break: break-word;
+
+        }
+
+
+        .message.user {
+
+            align-self: flex-end;
+
+            background: #0071e3;
+
+            color: white;
+
+            border-bottom-right-radius: 5px;
+
+        }
+
+
+        .message.admin {
+
+            align-self: flex-start;
+
+            background: white;
+
+            color: #1d1d1f;
+
+            border-bottom-left-radius: 5px;
+
+        }
+
+
+        .message-time {
+
+            margin-top: 4px;
+
+            font-size: 11px;
+
+            opacity: 0.65;
+
+        }
+
+
+        /* ======================================== */
+        /* Input */
+        /* ======================================== */
+
+        .chat-input-area {
+
+            padding: 16px;
+
+            border-top:
+                1px solid #e5e5e5;
+
+            display: flex;
+
+            gap: 10px;
+
+            background: white;
+
+        }
+
+
+        #messageInput {
+
+            flex: 1;
+
+            height: 44px;
+
+            padding:
+                0 14px;
+
+            border:
+                1px solid #d2d2d7;
+
+            border-radius: 12px;
+
+            font-size: 15px;
+
+            outline: none;
+
+        }
+
+
+        #messageInput:focus {
+
+            border-color: #0071e3;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(0, 113, 227, 0.12);
+
+        }
+
+
+        #sendButton {
+
+            width: 80px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: #0071e3;
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+        }
+
+
+        #sendButton:hover {
+
+            background: #0077ed;
+
+        }
+
+
+        #sendButton:disabled {
+
+            background: #a7c9ed;
+
+            cursor: not-allowed;
+
+        }
+
+
+        /* ======================================== */
+        /* Error */
+        /* ======================================== */
+
+        .error-message {
+
+            padding: 10px 20px;
+
+            text-align: center;
+
+            color: #d70015;
+
+            font-size: 13px;
+
+            display: none;
+
+        }
+
+
+        /* ======================================== */
+        /* Mobile */
+        /* ======================================== */
+
+        @media (max-width: 720px) {
+
+            body {
+
+                align-items: stretch;
+
+            }
+
+
+            .chat-container {
+
+                height: 100vh;
+
+                border-radius: 0;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="chat-container">
+
+
+        <!-- Header -->
+
+        <div class="chat-header">
+
+            <div class="chat-header-title">
+
+                Money Statistics 支援
+
+            </div>
+
+            <div
+                id="connectionStatus"
+                class="chat-header-status"
+            >
+                ● 已連線
+            </div>
+
+        </div>
+
+
+        <!-- Error -->
+
+        <div
+            id="errorMessage"
+            class="error-message"
+        ></div>
+
+
+        <!-- Messages -->
+
+        <div
+            id="chatMessages"
+            class="chat-messages"
+        ></div>
+
+
+        <!-- Input -->
+
+        <div class="chat-input-area">
+
+            <input
+                type="text"
+                id="messageInput"
+                placeholder="輸入訊息…"
+                autocomplete="off"
+            >
+
+            <button
+                type="button"
+                id="sendButton"
+            >
+                送出
+            </button>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ======================================== -->
+    <!-- Supabase Client -->
+    <!-- ======================================== -->
+
+    <script src="supabase.js"></script>
+
+
+    <script>
+
+        // ==========================================================
+        // DOM
+        // ==========================================================
+
+        const chatMessages =
+            document.getElementById(
+                "chatMessages"
+            );
+
+
+        const messageInput =
+            document.getElementById(
+                "messageInput"
+            );
+
+
+        const sendButton =
+            document.getElementById(
+                "sendButton"
+            );
+
+
+        const errorMessage =
+            document.getElementById(
+                "errorMessage"
+            );
+
+
+        const connectionStatus =
+            document.getElementById(
+                "connectionStatus"
+            );
+
+
+        // ==========================================================
+        // Current User
+        // ==========================================================
+
+        let currentUser = null;
+
+
+        // ==========================================================
+        // 顯示錯誤
+        // ==========================================================
+
+        function showError(message) {
+
+            errorMessage.textContent =
+                message;
+
+            errorMessage.style.display =
+                "block";
+
+        }
+
+
+        // ==========================================================
+        // 取得目前登入者
+        // ==========================================================
+
+        async function loadCurrentUser() {
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient.auth.getUser();
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                if (!data.user) {
+
+                    window.location.href =
+                        "logon.html";
+
+                    return false;
+
+                }
+
+
+                currentUser =
+                    data.user;
+
+
+                return true;
+
+            }
+            catch (error) {
+
+                console.error(error);
+
+                showError(
+                    "無法取得登入資訊。"
+                );
+
+                return false;
+
+            }
+
+        }
+
+
+        // ==========================================================
+        // 顯示訊息
+        // ==========================================================
+
+        function displayMessage(message) {
+
+            const messageElement =
+                document.createElement(
+                    "div"
+                );
+
+
+            messageElement.className =
+                "message user";
+
+
+            messageElement.textContent =
+                message.message;
+
+
+            const timeElement =
+                document.createElement(
+                    "div"
+                );
+
+
+            timeElement.className =
+                "message-time";
+
+
+            const date =
+                new Date(
+                    message.created_at
+                );
+
+
+            timeElement.textContent =
+                date.toLocaleString(
+                    "zh-TW",
+                    {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    }
+                );
+
+
+            messageElement.appendChild(
+                timeElement
+            );
+
+
+            chatMessages.appendChild(
+                messageElement
+            );
+
+
+            chatMessages.scrollTop =
+                chatMessages.scrollHeight;
+
+        }
+
+
+        // ==========================================================
+        // 讀取歷史訊息
+        // ==========================================================
+
+        async function loadMessages() {
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .from("chat_messages")
+                        .select("*")
+                        .eq(
+                            "user_id",
+                            currentUser.id
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending: true
+                            }
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                chatMessages.innerHTML =
+                    "";
+
+
+                data.forEach(
+                    function (message) {
+
+                        displayMessage(
+                            message
+                        );
+
+                    }
+                );
+
+            }
+            catch (error) {
+
+                console.error(error);
+
+                showError(
+                    "無法載入聊天紀錄：" +
+                    error.message
+                );
+
+            }
+
+        }
+
+
+        // ==========================================================
+        // 發送訊息
+        // ==========================================================
+
+        async function sendMessage() {
+
+            const text =
+                messageInput.value.trim();
+
+
+            if (!text) {
+
+                return;
+
+            }
+
+
+            sendButton.disabled =
+                true;
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("chat_messages")
+                        .insert({
+
+                            user_id:
+                                currentUser.id,
+
+                            user_email:
+                                currentUser.email,
+
+                            message:
+                                text
+
+                        });
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                messageInput.value =
+                    "";
+
+            }
+            catch (error) {
+
+                console.error(error);
+
+                showError(
+                    "訊息傳送失敗：" +
+                    error.message
+                );
+
+            }
+            finally {
+
+                sendButton.disabled =
+                    false;
+
+                messageInput.focus();
+
+            }
+
+        }
+
+
+        // ==========================================================
+        // Realtime
+        // ==========================================================
+
+        function subscribeRealtime() {
+
+            supabaseClient
+                .channel(
+                    "chat-messages"
+                )
+                .on(
+                    "postgres_changes",
+                    {
+                        event: "INSERT",
+                        schema: "public",
+                        table: "chat_messages",
+                        filter:
+                            "user_id=eq." +
+                            currentUser.id
+                    },
+                    function (payload) {
+
+                        displayMessage(
+                            payload.new
+                        );
+
+                    }
+                )
+                .subscribe(
+                    function (status) {
+
+                        if (
+                            status ===
+                            "SUBSCRIBED"
+                        ) {
+
+                            connectionStatus.textContent =
+                                "● 即時連線";
+
+                        }
+
+                    }
+                );
+
+        }
+
+
+        // ==========================================================
+        // Button
+        // ==========================================================
+
+        sendButton.addEventListener(
+            "click",
+            sendMessage
+        );
+
+
+        // ==========================================================
+        // Enter
+        // ==========================================================
+
+        messageInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
+
+                    event.preventDefault();
+
+                    sendMessage();
+
+                }
+
+            }
+        );
+
+
+        // ==========================================================
+        // 初始化
+        // ==========================================================
+
+        async function initializeChat() {
+
+            const loggedIn =
+                await loadCurrentUser();
+
+
+            if (!loggedIn) {
+
+                return;
+
+            }
+
+
+            await loadMessages();
+
+
+            subscribeRealtime();
+
+
+            messageInput.focus();
+
+        }
+
+
+        initializeChat();
+
+    </script>
+
+
+</body>
+
+</html>
