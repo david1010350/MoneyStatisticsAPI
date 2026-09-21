@@ -1,13 +1,40 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Money Statistics - 客服</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>技術支援 - Money Statistics</title>
+
+    <!-- ==========================================================
+         Supabase
+         ========================================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+    <!--
+        你的 supabase.js 已經建立：
+
+        const SUPABASE_URL = "...";
+        const SUPABASE_ANON_KEY = "...";
+        const supabaseClient = supabase.createClient(...);
+
+        所以這裡不要再次宣告。
+    -->
+
     <script src="./supabase.js"></script>
+
+
+    <!-- ==========================================================
+         CSS
+         ========================================================== -->
 
     <style>
 
@@ -15,8 +42,16 @@
             box-sizing: border-box;
         }
 
+
+        html,
         body {
+
             margin: 0;
+            padding: 0;
+
+            width: 100%;
+            height: 100%;
+
             font-family:
                 -apple-system,
                 BlinkMacSystemFont,
@@ -27,386 +62,568 @@
                 sans-serif;
 
             background: #f5f5f7;
+
             color: #1d1d1f;
+
         }
 
-        /* =========================================================
+
+        body {
+
+            display: flex;
+
+            flex-direction: column;
+
+            min-height: 100vh;
+
+        }
+
+
+        /* ==========================================================
            Header
-        ========================================================= */
+           ========================================================== */
 
         .header {
-            height: 64px;
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+
+            height: 60px;
+
+            background: rgba(
+                255,
+                255,
+                255,
+                0.92
+            );
 
             border-bottom: 1px solid #e5e5e7;
 
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
 
             padding: 0 24px;
 
             position: sticky;
+
             top: 0;
+
             z-index: 100;
+
+            backdrop-filter: blur(20px);
+
+            -webkit-backdrop-filter: blur(20px);
+
         }
+
+
+        .header-left {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+        }
+
+
+        .logo {
+
+            width: 34px;
+
+            height: 34px;
+
+            border-radius: 9px;
+
+            object-fit: cover;
+
+        }
+
 
         .header-title {
-            font-size: 20px;
+
+            font-size: 17px;
+
             font-weight: 600;
-            letter-spacing: -0.3px;
+
+            letter-spacing: -0.2px;
+
         }
+
 
         .header-right {
+
             display: flex;
+
             align-items: center;
+
             gap: 14px;
+
         }
+
 
         .user-email {
+
+            font-size: 13px;
+
             color: #6e6e73;
-            font-size: 14px;
+
+            max-width: 280px;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+            white-space: nowrap;
+
         }
 
+
         .logout-button {
+
             border: none;
+
             background: transparent;
+
             color: #0071e3;
 
             font-size: 14px;
+
             cursor: pointer;
 
-            padding: 7px 10px;
-            border-radius: 8px;
+            padding: 6px 4px;
+
         }
+
 
         .logout-button:hover {
-            background: #f0f0f2;
+
+            text-decoration: underline;
+
         }
 
-        /* =========================================================
+
+        /* ==========================================================
            Main
-        ========================================================= */
+           ========================================================== */
 
-        .page {
-            max-width: 1100px;
+        .main {
+
+            flex: 1;
+
+            width: 100%;
+
+            max-width: 980px;
+
             margin: 0 auto;
-            padding: 32px 20px 50px;
+
+            padding: 32px 20px 40px;
+
+            display: flex;
+
+            flex-direction: column;
+
         }
 
-        .chat-card {
-            height: calc(100vh - 150px);
-            min-height: 520px;
+
+        .page-title {
+
+            font-size: 32px;
+
+            font-weight: 700;
+
+            letter-spacing: -1px;
+
+            margin: 0 0 8px;
+
+        }
+
+
+        .page-description {
+
+            color: #6e6e73;
+
+            font-size: 15px;
+
+            line-height: 1.6;
+
+            margin-bottom: 24px;
+
+        }
+
+
+        /* ==========================================================
+           Support Card
+           ========================================================== */
+
+        .support-card {
 
             background: #ffffff;
 
-            border: 1px solid #e5e5e7;
             border-radius: 18px;
 
+            padding: 18px 20px;
+
+            margin-bottom: 20px;
+
+            border: 1px solid #e5e5e7;
+
             box-shadow:
-                0 4px 20px rgba(0, 0, 0, 0.05);
+                0 4px 18px rgba(0, 0, 0, 0.04);
 
-            display: flex;
-            flex-direction: column;
-
-            overflow: hidden;
         }
 
-        /* =========================================================
-           Chat Header
-        ========================================================= */
 
-        .chat-header {
-            min-height: 70px;
+        .support-row {
 
             display: flex;
+
             align-items: center;
 
-            padding: 12px 22px;
+            justify-content: space-between;
 
-            border-bottom: 1px solid #e5e5e7;
+            gap: 20px;
 
-            flex-shrink: 0;
         }
 
-        .support-icon {
-            width: 42px;
-            height: 42px;
 
-            border-radius: 50%;
-
-            background: #0071e3;
-            color: white;
+        .support-left {
 
             display: flex;
+
             align-items: center;
-            justify-content: center;
 
-            font-size: 20px;
+            gap: 12px;
 
-            margin-right: 13px;
+            min-width: 0;
 
-            flex-shrink: 0;
         }
 
-        .support-title {
-            font-size: 17px;
-            font-weight: 600;
-        }
-
-        .support-status {
-            margin-top: 3px;
-
-            color: #86868b;
-
-            font-size: 13px;
-        }
 
         .status-dot {
-            display: inline-block;
 
-            width: 7px;
-            height: 7px;
+            width: 10px;
+
+            height: 10px;
+
+            border-radius: 50%;
 
             background: #34c759;
 
-            border-radius: 50%;
+            flex: 0 0 auto;
 
-            margin-right: 5px;
         }
 
-        .status-dot.closed {
-            background: #8e8e93;
-        }
 
         .status-dot.warning {
-            background: #ff9500;
+
+            background: #ff9f0a;
+
         }
 
-        /* =========================================================
+
+        .status-dot.closed {
+
+            background: #8e8e93;
+
+        }
+
+
+        .status-dot.error {
+
+            background: #ff3b30;
+
+        }
+
+
+        .support-status {
+
+            font-size: 15px;
+
+            font-weight: 500;
+
+        }
+
+
+        .support-plan {
+
+            font-size: 13px;
+
+            color: #6e6e73;
+
+            margin-top: 3px;
+
+        }
+
+
+        /* ==========================================================
+           Chat Card
+           ========================================================== */
+
+        .chat-card {
+
+            background: #ffffff;
+
+            border-radius: 22px;
+
+            border: 1px solid #e5e5e7;
+
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.06);
+
+            overflow: hidden;
+
+            display: flex;
+
+            flex-direction: column;
+
+            min-height: 620px;
+
+            flex: 1;
+
+        }
+
+
+        .chat-header {
+
+            padding: 17px 20px;
+
+            border-bottom: 1px solid #e5e5e7;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+        }
+
+
+        .chat-header-title {
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+        }
+
+
+        .chat-header-status {
+
+            font-size: 13px;
+
+            color: #6e6e73;
+
+        }
+
+
+        /* ==========================================================
            Messages
-        ========================================================= */
+           ========================================================== */
 
         .messages {
+
             flex: 1;
 
             overflow-y: auto;
 
-            padding: 24px 22px;
+            padding: 24px 20px;
+
+            min-height: 430px;
 
             background: #fbfbfd;
+
+            scroll-behavior: smooth;
+
         }
 
+
+        .empty-state {
+
+            height: 100%;
+
+            min-height: 420px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            padding: 40px;
+
+        }
+
+
+        .empty-state-inner {
+
+            max-width: 430px;
+
+        }
+
+
+        .empty-icon {
+
+            width: 52px;
+
+            height: 52px;
+
+            border-radius: 50%;
+
+            background: #f2f2f7;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin: 0 auto 16px;
+
+            font-size: 23px;
+
+        }
+
+
+        .empty-title {
+
+            font-size: 18px;
+
+            font-weight: 600;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .empty-description {
+
+            font-size: 14px;
+
+            color: #6e6e73;
+
+            line-height: 1.7;
+
+        }
+
+
         .message-row {
+
             display: flex;
 
             margin-bottom: 14px;
 
-            width: 100%;
         }
+
 
         .message-row.user {
+
             justify-content: flex-end;
+
         }
+
 
         .message-row.admin {
+
             justify-content: flex-start;
+
         }
 
-        .message-content {
-            max-width: min(72%, 620px);
+
+        .message-wrapper {
+
+            max-width: min(
+                75%,
+                620px
+            );
+
         }
 
-        .message-bubble {
-            padding: 11px 15px;
 
-            border-radius: 18px;
-
-            font-size: 15px;
-            line-height: 1.55;
-
-            word-break: break-word;
-            white-space: pre-wrap;
-        }
-
-        .message-row.user .message-bubble {
-            background: #0071e3;
-            color: white;
-
-            border-bottom-right-radius: 5px;
-        }
-
-        .message-row.admin .message-bubble {
-            background: #e9e9eb;
-            color: #1d1d1f;
-
-            border-bottom-left-radius: 5px;
-        }
-
-        .message-time {
-            margin-top: 4px;
+        .message-sender {
 
             font-size: 11px;
 
             color: #86868b;
+
+            margin-bottom: 4px;
+
         }
 
-        .message-row.user .message-time {
+
+        .message-row.user .message-sender {
+
             text-align: right;
+
         }
 
-        .message-row.admin .message-time {
-            text-align: left;
-        }
 
-        /* =========================================================
-           Empty State
-        ========================================================= */
+        .message-bubble {
 
-        .empty-state {
-            height: 100%;
+            padding: 10px 14px;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius: 18px;
 
-            flex-direction: column;
-
-            color: #86868b;
-
-            text-align: center;
-
-            padding: 30px;
-        }
-
-        .empty-icon {
-            width: 58px;
-            height: 58px;
-
-            border-radius: 50%;
-
-            background: #f0f0f2;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 25px;
-
-            margin-bottom: 14px;
-        }
-
-        .empty-title {
-            color: #1d1d1f;
-
-            font-size: 17px;
-            font-weight: 600;
-
-            margin-bottom: 6px;
-        }
-
-        .empty-description {
             font-size: 14px;
+
             line-height: 1.6;
-            max-width: 430px;
+
+            word-break: break-word;
+
+            white-space: pre-wrap;
+
         }
 
-        /* =========================================================
-           Input
-        ========================================================= */
 
-        .input-area {
-            border-top: 1px solid #e5e5e7;
-
-            padding: 14px 16px;
-
-            background: #ffffff;
-
-            display: flex;
-            align-items: flex-end;
-
-            gap: 10px;
-
-            flex-shrink: 0;
-        }
-
-        .message-input {
-            flex: 1;
-
-            resize: none;
-
-            min-height: 44px;
-            max-height: 130px;
-
-            border: 1px solid #d2d2d7;
-
-            border-radius: 13px;
-
-            padding: 11px 13px;
-
-            font-family: inherit;
-            font-size: 15px;
-
-            outline: none;
-
-            background: #ffffff;
-
-            transition:
-                border-color 0.15s,
-                box-shadow 0.15s;
-        }
-
-        .message-input:focus {
-            border-color: #0071e3;
-
-            box-shadow:
-                0 0 0 3px rgba(0, 113, 227, 0.12);
-        }
-
-        .message-input:disabled {
-            background: #f5f5f7;
-            color: #86868b;
-            cursor: not-allowed;
-        }
-
-        .send-button {
-            height: 44px;
-
-            padding: 0 18px;
-
-            border: none;
-
-            border-radius: 12px;
+        .message-row.user .message-bubble {
 
             background: #0071e3;
+
             color: white;
 
-            font-size: 15px;
-            font-weight: 500;
+            border-bottom-right-radius: 5px;
 
-            cursor: pointer;
-
-            transition:
-                background 0.15s,
-                opacity 0.15s;
         }
 
-        .send-button:hover {
-            background: #0077ed;
+
+        .message-row.admin .message-bubble {
+
+            background: #e9e9ee;
+
+            color: #1d1d1f;
+
+            border-bottom-left-radius: 5px;
+
         }
 
-        .send-button:disabled {
-            opacity: 0.45;
-            cursor: default;
+
+        .message-time {
+
+            font-size: 10px;
+
+            color: #8e8e93;
+
+            margin-top: 4px;
+
         }
 
-        /* =========================================================
-           Closed / Support Time Banner
-        ========================================================= */
+
+        .message-row.user .message-time {
+
+            text-align: right;
+
+        }
+
+
+        /* ==========================================================
+           Closed Banner
+           ========================================================== */
 
         .closed-banner {
+
             display: none;
 
             padding: 13px 18px;
@@ -415,212 +632,283 @@
 
             border-top: 1px solid #e5e5e7;
 
-            color: #6e6e73;
+            border-bottom: 1px solid #e5e5e7;
 
             text-align: center;
+
+            color: #6e6e73;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+        }
+
+
+        .closed-banner.show {
+
+            display: block;
+
+        }
+
+
+        /* ==========================================================
+           Input
+           ========================================================== */
+
+        .composer {
+
+            display: flex;
+
+            align-items: flex-end;
+
+            gap: 10px;
+
+            padding: 14px 16px;
+
+            background: #ffffff;
+
+        }
+
+
+        .message-input {
+
+            flex: 1;
+
+            min-height: 44px;
+
+            max-height: 130px;
+
+            resize: none;
+
+            border: 1px solid #d2d2d7;
+
+            border-radius: 15px;
+
+            padding: 11px 13px;
+
+            font-family: inherit;
 
             font-size: 14px;
 
-            line-height: 1.6;
-        }
+            outline: none;
 
-        .closed-banner.show {
-            display: block;
-        }
+            background: #ffffff;
 
-        .support-time {
             color: #1d1d1f;
-            font-weight: 500;
+
+            transition:
+                border-color 0.15s ease,
+                box-shadow 0.15s ease;
+
         }
 
-        /* =========================================================
-           Modal
-        ========================================================= */
 
-        .modal-overlay {
-            display: none;
+        .message-input:focus {
 
-            position: fixed;
-
-            inset: 0;
-
-            background: rgba(0, 0, 0, 0.35);
-
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-
-            align-items: center;
-            justify-content: center;
-
-            z-index: 1000;
-
-            padding: 20px;
-        }
-
-        .modal-overlay.show {
-            display: flex;
-        }
-
-        .modal {
-            width: 100%;
-            max-width: 390px;
-
-            background: white;
-
-            border-radius: 18px;
+            border-color: #0071e3;
 
             box-shadow:
-                0 20px 60px rgba(0, 0, 0, 0.18);
+                0 0 0 3px
+                rgba(0, 113, 227, 0.12);
 
-            padding: 28px 26px 22px;
-
-            text-align: center;
         }
 
-        .modal-icon {
-            width: 52px;
-            height: 52px;
 
-            margin: 0 auto 15px;
-
-            border-radius: 50%;
+        .message-input:disabled {
 
             background: #f5f5f7;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            cursor: not-allowed;
 
-            font-size: 23px;
         }
 
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
 
-            margin-bottom: 9px;
-        }
+        .send-button {
 
-        .modal-message {
-            font-size: 14px;
-
-            line-height: 1.6;
-
-            color: #6e6e73;
-
-            margin-bottom: 23px;
-        }
-
-        .modal-button {
-            width: 100%;
+            width: 44px;
 
             height: 44px;
 
+            border-radius: 50%;
+
             border: none;
 
-            border-radius: 11px;
-
             background: #0071e3;
-            color: white;
 
-            font-size: 15px;
+            color: #ffffff;
+
+            font-size: 18px;
 
             cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex: 0 0 auto;
+
+            transition:
+                opacity 0.15s ease,
+                transform 0.1s ease;
+
         }
 
-        /* =========================================================
-           Loading
-        ========================================================= */
 
-        .loading {
-            color: #86868b;
+        .send-button:hover {
 
-            font-size: 14px;
+            opacity: 0.88;
+
+        }
+
+
+        .send-button:active {
+
+            transform: scale(0.95);
+
+        }
+
+
+        .send-button:disabled {
+
+            opacity: 0.35;
+
+            cursor: not-allowed;
+
+        }
+
+
+        /* ==========================================================
+           Footer
+           ========================================================== */
+
+        .footer {
 
             text-align: center;
 
-            padding: 30px;
+            padding: 18px;
+
+            color: #86868b;
+
+            font-size: 11px;
+
         }
 
-        /* =========================================================
-           Mobile
-        ========================================================= */
+
+        /* ==========================================================
+           Responsive
+           ========================================================== */
 
         @media (max-width: 700px) {
 
             .header {
+
                 padding: 0 15px;
+
             }
+
 
             .header-title {
-                font-size: 18px;
+
+                font-size: 15px;
+
             }
+
 
             .user-email {
+
                 display: none;
+
             }
 
-            .page {
-                padding: 0;
+
+            .main {
+
+                padding: 22px 12px 30px;
+
             }
+
+
+            .page-title {
+
+                font-size: 27px;
+
+            }
+
 
             .chat-card {
-                height: calc(100vh - 64px);
 
-                min-height: 0;
+                min-height: 560px;
 
-                border-radius: 0;
-
-                border-left: none;
-                border-right: none;
-
-                box-shadow: none;
             }
 
-            .message-content {
-                max-width: 82%;
-            }
 
             .messages {
-                padding: 20px 14px;
+
+                min-height: 380px;
+
             }
 
-            .input-area {
-                padding: 10px;
-            }
 
-            .send-button {
-                padding: 0 15px;
+            .message-wrapper {
+
+                max-width: 84%;
+
             }
 
         }
 
     </style>
+
 </head>
+
 
 <body>
 
-    <!-- =========================================================
+
+    <!-- ==========================================================
          Header
-    ========================================================= -->
+         ========================================================== -->
 
     <header class="header">
 
-        <div class="header-title">
-            Money Statistics
+        <div class="header-left">
+
+            <!--
+                如果你原本有自己的 Logo，
+                可以把下面 src 換成你的 Logo URL。
+            -->
+
+            <img
+                class="logo"
+                src="https://david1010350.github.io/MoneyStatisticsAPI/logo.png"
+                alt="Money Statistics"
+                onerror="this.style.display='none';"
+            >
+
+            <div class="header-title">
+                Money Statistics
+            </div>
+
         </div>
+
 
         <div class="header-right">
 
-            <span
+            <div
                 id="userEmail"
-                class="user-email">
+                class="user-email"
+            >
                 載入中...
-            </span>
+            </div>
 
             <button
                 id="logoutButton"
-                class="logout-button">
+                class="logout-button"
+                type="button"
+            >
                 登出
             </button>
 
@@ -629,37 +917,87 @@
     </header>
 
 
-    <!-- =========================================================
+    <!-- ==========================================================
          Main
-    ========================================================= -->
+         ========================================================== -->
 
-    <main class="page">
+    <main class="main">
+
+
+        <h1 class="page-title">
+            技術支援
+        </h1>
+
+
+        <div class="page-description">
+
+            如果您在使用 Money Statistics 時遇到問題，
+            可以透過聊天室與我們聯絡。
+
+        </div>
+
+
+        <!-- ======================================================
+             Support Status
+             ====================================================== -->
+
+        <section class="support-card">
+
+            <div class="support-row">
+
+                <div class="support-left">
+
+                    <span
+                        id="supportStatusDot"
+                        class="status-dot warning"
+                    ></span>
+
+
+                    <div>
+
+                        <div
+                            id="supportStatus"
+                            class="support-status"
+                        >
+                            正在取得技術支援設定...
+                        </div>
+
+
+                        <div
+                            id="supportPlan"
+                            class="support-plan"
+                        >
+                            正在載入方案資料...
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ======================================================
+             Chat
+             ====================================================== -->
 
         <section class="chat-card">
 
-            <!-- Chat Header -->
 
             <div class="chat-header">
 
-                <div class="support-icon">
-                    💬
+                <div class="chat-header-title">
+                    Money Statistics 技術支援
                 </div>
 
-                <div>
 
-                    <div class="support-title">
-                        Money Statistics 客服
-                    </div>
-
-                    <div
-                        id="supportStatus"
-                        class="support-status">
-
-                        <span class="status-dot"></span>
-                        載入支援時間...
-
-                    </div>
-
+                <div
+                    id="chatHeaderStatus"
+                    class="chat-header-status"
+                >
+                    連線中...
                 </div>
 
             </div>
@@ -669,389 +1007,507 @@
 
             <div
                 id="messages"
-                class="messages">
+                class="messages"
+            >
 
-                <div class="loading">
-                    正在載入聊天室...
+                <div
+                    id="emptyState"
+                    class="empty-state"
+                >
+
+                    <div class="empty-state-inner">
+
+                        <div class="empty-icon">
+                            💬
+                        </div>
+
+
+                        <div class="empty-title">
+                            需要協助嗎？
+                        </div>
+
+
+                        <div class="empty-description">
+
+                            請輸入您的問題並送出，
+                            我們會為您建立客服聊天室。
+
+                        </div>
+
+                    </div>
+
                 </div>
 
             </div>
 
 
-            <!-- Closed / Support Time Banner -->
+            <!-- Closed Banner -->
 
             <div
                 id="closedBanner"
-                class="closed-banner">
-            </div>
+                class="closed-banner"
+            ></div>
 
 
-            <!-- Input -->
+            <!-- Composer -->
 
-            <div class="input-area">
+            <div class="composer">
 
                 <textarea
                     id="messageInput"
                     class="message-input"
+                    rows="1"
                     placeholder="輸入訊息..."
-                    rows="1"></textarea>
+                    disabled
+                ></textarea>
+
 
                 <button
                     id="sendButton"
-                    class="send-button">
-
-                    傳送
-
+                    class="send-button"
+                    type="button"
+                    disabled
+                    aria-label="送出訊息"
+                >
+                    ↑
                 </button>
 
             </div>
 
+
         </section>
+
 
     </main>
 
 
-    <!-- =========================================================
-         Session Expired Modal
-    ========================================================= -->
+    <!-- ==========================================================
+         Footer
+         ========================================================== -->
 
-    <div
-        id="sessionModal"
-        class="modal-overlay">
+    <footer class="footer">
 
-        <div class="modal">
+        Copyright ©
+        <span id="currentYear"></span>
+        David Kao.
 
-            <div class="modal-icon">
-                🔒
-            </div>
+    </footer>
 
-            <div class="modal-title">
-                工作階段已結束
-            </div>
 
-            <div class="modal-message">
-
-                為了保護您的帳號安全，
-                此次工作階段已經結束。
-
-                <br>
-
-                請重新登入 Money Statistics。
-
-            </div>
-
-            <button
-                id="sessionConfirmButton"
-                class="modal-button">
-
-                確定
-
-            </button>
-
-        </div>
-
-    </div>
-
+    <!-- ==========================================================
+         JavaScript
+         ========================================================== -->
 
     <script>
 
-        // =========================================================
-        // Session
-        // =========================================================
 
-        const MONEY_STATISTICS_SESSION_KEY =
-            "moneyStatisticsSessionExpire";
+        // ==========================================================
+        // Global Variables
+        // ==========================================================
 
-        const SESSION_DURATION =
-            30 * 60 * 1000;
-
-
-        // =========================================================
-        // State
-        // =========================================================
 
         let currentUser = null;
 
         let currentRoom = null;
 
-        let realtimeChannel = null;
-
-        let sessionTimer = null;
-
-        let supportTimer = null;
-
-        let loadingMessages = false;
-
         let supportConfig = {
+
             enabled: false,
+
             hours: 0,
+
             startTime: null,
+
             endTime: null,
+
             timezone: "Asia/Taipei"
+
         };
 
 
-        // =========================================================
+        let supportTimer = null;
+
+        let realtimeChannel = null;
+
+        let roomRealtimeChannel = null;
+
+        let isSending = false;
+
+
+        // ==========================================================
         // DOM
-        // =========================================================
+        // ==========================================================
+
 
         const userEmail =
-            document.getElementById("userEmail");
+            document.getElementById(
+                "userEmail"
+            );
 
-        const messages =
-            document.getElementById("messages");
-
-        const messageInput =
-            document.getElementById("messageInput");
-
-        const sendButton =
-            document.getElementById("sendButton");
 
         const logoutButton =
-            document.getElementById("logoutButton");
+            document.getElementById(
+                "logoutButton"
+            );
 
-        const closedBanner =
-            document.getElementById("closedBanner");
 
         const supportStatus =
-            document.getElementById("supportStatus");
-
-        const sessionModal =
-            document.getElementById("sessionModal");
-
-        const sessionConfirmButton =
-            document.getElementById("sessionConfirmButton");
+            document.getElementById(
+                "supportStatus"
+            );
 
 
-        // =========================================================
-        // Start
-        // =========================================================
+        const supportStatusDot =
+            document.getElementById(
+                "supportStatusDot"
+            );
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            async function () {
 
-                try {
+        const supportPlan =
+            document.getElementById(
+                "supportPlan"
+            );
 
-                    await checkSession();
 
-                } catch (error) {
+        const chatHeaderStatus =
+            document.getElementById(
+                "chatHeaderStatus"
+            );
 
-                    console.error(
-                        "初始化失敗：",
-                        error
-                    );
 
-                    redirectToLogin();
+        const messagesContainer =
+            document.getElementById(
+                "messages"
+            );
+
+
+        const emptyState =
+            document.getElementById(
+                "emptyState"
+            );
+
+
+        const closedBanner =
+            document.getElementById(
+                "closedBanner"
+            );
+
+
+        const messageInput =
+            document.getElementById(
+                "messageInput"
+            );
+
+
+        const sendButton =
+            document.getElementById(
+                "sendButton"
+            );
+
+
+        const currentYear =
+            document.getElementById(
+                "currentYear"
+            );
+
+
+        currentYear.textContent =
+            new Date().getFullYear();
+
+
+        // ==========================================================
+        // Utility
+        // ==========================================================
+
+
+        function escapeHtml(
+            value
+        ) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.textContent =
+                value ?? "";
+
+            return div.innerHTML;
+
+        }
+
+
+        function formatTime(
+            value
+        ) {
+
+            if (!value) {
+                return "";
+            }
+
+
+            const date =
+                new Date(value);
+
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return "";
+
+            }
+
+
+            return date.toLocaleTimeString(
+                "zh-TW",
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+
+        }
+
+
+        function parseTimeToMinutes(
+            value
+        ) {
+
+            if (!value) {
+                return null;
+            }
+
+
+            const text =
+                String(value)
+                    .substring(0, 5);
+
+
+            const parts =
+                text.split(":");
+
+
+            if (
+                parts.length !== 2
+            ) {
+
+                return null;
+
+            }
+
+
+            const hour =
+                Number(parts[0]);
+
+
+            const minute =
+                Number(parts[1]);
+
+
+            if (
+                !Number.isFinite(hour) ||
+                !Number.isFinite(minute)
+            ) {
+
+                return null;
+
+            }
+
+
+            return (
+                hour * 60 +
+                minute
+            );
+
+        }
+
+
+        function getCurrentTimeParts(
+            timeZone
+        ) {
+
+            const formatter =
+                new Intl.DateTimeFormat(
+                    "en-US",
+                    {
+                        timeZone: timeZone,
+                        hour12: false,
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    }
+                );
+
+
+            const parts =
+                formatter.formatToParts(
+                    new Date()
+                );
+
+
+            let hour = 0;
+
+            let minute = 0;
+
+
+            for (
+                const part of parts
+            ) {
+
+                if (
+                    part.type === "hour"
+                ) {
+
+                    hour =
+                        Number(part.value);
+
+                }
+
+
+                if (
+                    part.type === "minute"
+                ) {
+
+                    minute =
+                        Number(part.value);
 
                 }
 
             }
-        );
 
 
-        // =========================================================
-        // Check Session
-        // =========================================================
+            /*
+                Intl 有時會把午夜表示成 24。
+                這裡統一轉成 0。
+            */
 
-        async function checkSession() {
+            if (hour === 24) {
+                hour = 0;
+            }
+
+
+            return {
+                hour,
+                minute
+            };
+
+        }
+
+
+        // ==========================================================
+        // Authentication
+        // ==========================================================
+
+
+        async function checkAuthentication() {
 
             const {
                 data,
                 error
             } =
-                await supabaseClient.auth.getSession();
+                await supabaseClient
+                    .auth
+                    .getSession();
+
+
+            if (error) {
+
+                console.error(
+                    "取得登入狀態失敗：",
+                    error
+                );
+
+                window.location.href =
+                    "login.html";
+
+                return false;
+
+            }
+
 
             if (
-                error ||
                 !data ||
                 !data.session ||
                 !data.session.user
             ) {
 
-                redirectToLogin();
+                window.location.href =
+                    "login.html";
 
-                return;
+                return false;
 
             }
+
 
             currentUser =
                 data.session.user;
 
+
             userEmail.textContent =
-                currentUser.email || "";
+                currentUser.email ||
+                "";
 
 
-            // -----------------------------------------------------
-            // 30 分鐘工作階段
-            // -----------------------------------------------------
-
-            let expireTime =
-                sessionStorage.getItem(
-                    MONEY_STATISTICS_SESSION_KEY
-                );
-
-
-            if (!expireTime) {
-
-                expireTime =
-                    Date.now() +
-                    SESSION_DURATION;
-
-                sessionStorage.setItem(
-                    MONEY_STATISTICS_SESSION_KEY,
-                    expireTime.toString()
-                );
-
-            }
-
-
-            if (
-                Date.now() >=
-                Number(expireTime)
-            ) {
-
-                showSessionExpired();
-
-                return;
-
-            }
-
-
-            startSessionTimer(
-                Number(expireTime)
-            );
-
-
-            // -----------------------------------------------------
-            // 讀取客服方案
-            // -----------------------------------------------------
-
-            await loadSupportConfig();
-
-
-            // -----------------------------------------------------
-            // 初始化聊天室
-            // -----------------------------------------------------
-
-            await initializeChat();
+            return true;
 
         }
 
 
-        // =========================================================
-        // Session Timer
-        // =========================================================
-
-        function startSessionTimer(
-            expireTime
-        ) {
-
-            if (sessionTimer) {
-
-                clearTimeout(
-                    sessionTimer
-                );
-
-            }
+        // ==========================================================
+        // Logout
+        // ==========================================================
 
 
-            const remaining =
-                expireTime -
-                Date.now();
-
-
-            if (remaining <= 0) {
-
-                showSessionExpired();
-
-                return;
-
-            }
-
-
-            sessionTimer =
-                setTimeout(
-                    function () {
-
-                        showSessionExpired();
-
-                    },
-                    remaining
-                );
-
-        }
-
-
-        // =========================================================
-        // Session Expired
-        // =========================================================
-
-        function showSessionExpired() {
-
-            if (sessionTimer) {
-
-                clearTimeout(
-                    sessionTimer
-                );
-
-                sessionTimer = null;
-
-            }
-
-
-            messageInput.disabled = true;
-
-            sendButton.disabled = true;
-
-
-            sessionModal.classList.add(
-                "show"
-            );
-
-        }
-
-
-        sessionConfirmButton.addEventListener(
+        logoutButton.addEventListener(
             "click",
             async function () {
 
-                sessionStorage.removeItem(
-                    MONEY_STATISTICS_SESSION_KEY
-                );
+                logoutButton.disabled =
+                    true;
 
 
-                await supabaseClient.auth.signOut();
+                try {
+
+                    await supabaseClient
+                        .auth
+                        .signOut();
+
+                } catch (error) {
+
+                    console.error(
+                        "登出失敗：",
+                        error
+                    );
+
+                }
 
 
-                redirectToLogin();
+                /*
+                    本版本已經完全取消
+                    30 分鐘固定 Session。
+
+                    不再清除：
+                    moneyStatisticsSessionExpire
+                */
+
+                window.location.href =
+                    "login.html";
 
             }
         );
 
 
-        // =========================================================
-        // Redirect Login
-        // =========================================================
-
-        function redirectToLogin() {
-
-            window.location.href =
-                "login.html";
-
-        }
-
-
-        // =========================================================
+        // ==========================================================
         // Load Support Configuration
-        // =========================================================
+        // ==========================================================
+
 
         async function loadSupportConfig() {
 
             if (!currentUser) {
-
                 return;
-
             }
 
 
@@ -1067,20 +1523,21 @@
                             "id",
                             "plan_name",
                             "status",
-                            "support_enabled",
                             "support_hours",
                             "support_start_time",
-                            "support_end_time",
-                            "support_timezone"
+                            "support_end_time"
                         ].join(",")
                     )
                     .eq(
                         "owner_user",
                         currentUser.email
                     )
-                    .eq(
+                    .in(
                         "status",
-                         ["active", "pending"]
+                        [
+                            "active",
+                            "pending"
+                        ]
                     )
                     .order(
                         "created_at",
@@ -1098,17 +1555,24 @@
                     error
                 );
 
+
                 supportConfig = {
+
                     enabled: false,
+
                     hours: 0,
+
                     startTime: null,
+
                     endTime: null,
-                    timezone: "Asia/Taipei"
+
+                    timezone:
+                        "Asia/Taipei"
+
                 };
 
-                setSupportUnavailableState(
-                    "目前無法取得您的技術支援設定。"
-                );
+
+                setSupportConfigError();
 
                 return;
 
@@ -1121,16 +1585,29 @@
             ) {
 
                 supportConfig = {
+
                     enabled: false,
+
                     hours: 0,
+
                     startTime: null,
+
                     endTime: null,
-                    timezone: "Asia/Taipei"
+
+                    timezone:
+                        "Asia/Taipei"
+
                 };
 
-                setSupportUnavailableState(
-                    "目前沒有可用的技術支援方案。"
+
+                supportPlan.textContent =
+                    "目前沒有有效的技術支援方案";
+
+
+                setSupportConfigError(
+                    "目前沒有找到有效的方案資料。"
                 );
+
 
                 return;
 
@@ -1141,14 +1618,19 @@
                 data[0];
 
 
+            const supportHours =
+                Number(
+                    plan.support_hours || 0
+                );
+
+
             supportConfig = {
+
                 enabled:
-                    plan.support_enabled === true,
+                    supportHours > 0,
 
                 hours:
-                    Number(
-                        plan.support_hours || 0
-                    ),
+                    supportHours,
 
                 startTime:
                     plan.support_start_time,
@@ -1157,17 +1639,24 @@
                     plan.support_end_time,
 
                 timezone:
-                    plan.support_timezone ||
                     "Asia/Taipei"
+
             };
+
+
+            supportPlan.textContent =
+                `${plan.plan_name || "目前方案"} · ` +
+                `方案狀態：${plan.status}`;
+
+
+            console.log(
+                "目前技術支援設定：",
+                supportConfig
+            );
 
 
             updateSupportState();
 
-
-            // -----------------------------------------------------
-            // 定期重新檢查支援時間
-            // -----------------------------------------------------
 
             if (supportTimer) {
 
@@ -1191,9 +1680,10 @@
         }
 
 
-        // =========================================================
-        // Support Time Calculation
-        // =========================================================
+        // ==========================================================
+        // Support State
+        // ==========================================================
+
 
         function getSupportState() {
 
@@ -1203,24 +1693,39 @@
             ) {
 
                 return {
+
                     available: false,
+
                     reason: "disabled"
+
                 };
 
             }
 
 
-            // -----------------------------------------------------
-            // 24 小時 = 全天
-            // -----------------------------------------------------
+            /*
+                只有 support_hours >= 24
+                才視為 24 小時支援。
+
+                因此：
+
+                24 + 00:00–00:00
+                = 24 小時
+
+                12 + 00:00–00:00
+                = 不會被誤判為 24 小時
+            */
 
             if (
                 supportConfig.hours >= 24
             ) {
 
                 return {
+
                     available: true,
+
                     reason: "24h"
+
                 };
 
             }
@@ -1232,8 +1737,11 @@
             ) {
 
                 return {
+
                     available: false,
+
                     reason: "invalid"
+
                 };
 
             }
@@ -1241,7 +1749,7 @@
 
             const now =
                 getCurrentTimeParts(
-                    supportConfig.timezone
+                    "Asia/Taipei"
                 );
 
 
@@ -1268,38 +1776,26 @@
             ) {
 
                 return {
+
                     available: false,
+
                     reason: "invalid"
+
                 };
 
             }
 
 
-            // -----------------------------------------------------
-            // 00:00 - 00:00
-            // 若 hours 不是 24，仍視為全天
-            // -----------------------------------------------------
+            /*
+                一般時段：
 
-            if (
-                start === 0 &&
-                end === 0
-            ) {
-
-                return {
-                    available: true,
-                    reason: "24h"
-                };
-
-            }
-
-
-            // -----------------------------------------------------
-            // 一般時間，例如 10:00 - 22:00
-            // -----------------------------------------------------
+                10:00 → 22:00
+            */
 
             if (start < end) {
 
                 return {
+
                     available:
                         nowMinutes >= start &&
                         nowMinutes < end,
@@ -1307,17 +1803,22 @@
                     reason: "normal",
 
                     start: start,
+
                     end: end
+
                 };
 
             }
 
 
-            // -----------------------------------------------------
-            // 跨午夜，例如 22:00 - 06:00
-            // -----------------------------------------------------
+            /*
+                跨日：
+
+                22:00 → 06:00
+            */
 
             return {
+
                 available:
                     nowMinutes >= start ||
                     nowMinutes < end,
@@ -1325,206 +1826,18 @@
                 reason: "overnight",
 
                 start: start,
+
                 end: end
+
             };
 
         }
 
 
-        // =========================================================
-        // Current Time
-        // =========================================================
+        // ==========================================================
+        // Update Support UI
+        // ==========================================================
 
-        function getCurrentTimeParts(
-            timezone
-        ) {
-
-            const formatter =
-                new Intl.DateTimeFormat(
-                    "zh-TW",
-                    {
-                        timeZone:
-                            timezone ||
-                            "Asia/Taipei",
-
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: false
-                    }
-                );
-
-
-            const parts =
-                formatter.formatToParts(
-                    new Date()
-                );
-
-
-            let hour = 0;
-            let minute = 0;
-
-
-            parts.forEach(
-                function (part) {
-
-                    if (
-                        part.type === "hour"
-                    ) {
-
-                        hour =
-                            Number(part.value);
-
-                    }
-
-                    if (
-                        part.type === "minute"
-                    ) {
-
-                        minute =
-                            Number(part.value);
-
-                    }
-
-                }
-            );
-
-
-            return {
-                hour: hour,
-                minute: minute
-            };
-
-        }
-
-
-        // =========================================================
-        // Parse Time
-        // =========================================================
-
-        function parseTimeToMinutes(
-            value
-        ) {
-
-            if (!value) {
-
-                return null;
-
-            }
-
-
-            const text =
-                String(value)
-                    .substring(0, 5);
-
-
-            const parts =
-                text.split(":");
-
-
-            if (
-                parts.length !== 2
-            ) {
-
-                return null;
-
-            }
-
-
-            const hour =
-                Number(parts[0]);
-
-            const minute =
-                Number(parts[1]);
-
-
-            if (
-                Number.isNaN(hour) ||
-                Number.isNaN(minute) ||
-                hour < 0 ||
-                hour > 23 ||
-                minute < 0 ||
-                minute > 59
-            ) {
-
-                return null;
-
-            }
-
-
-            return (
-                hour * 60 +
-                minute
-            );
-
-        }
-
-
-        // =========================================================
-        // Format Support Time
-        // =========================================================
-
-        function formatSupportTime() {
-
-            if (
-                supportConfig.hours >= 24 ||
-                (
-                    parseTimeToMinutes(
-                        supportConfig.startTime
-                    ) === 0 &&
-                    parseTimeToMinutes(
-                        supportConfig.endTime
-                    ) === 0
-                )
-            ) {
-
-                return "24 小時技術支援";
-
-            }
-
-
-            if (
-                !supportConfig.startTime ||
-                !supportConfig.endTime
-            ) {
-
-                return "技術支援時間未設定";
-
-            }
-
-
-            return (
-                formatTimeValue(
-                    supportConfig.startTime
-                ) +
-                "–" +
-                formatTimeValue(
-                    supportConfig.endTime
-                )
-            );
-
-        }
-
-
-        function formatTimeValue(
-            value
-        ) {
-
-            if (!value) {
-
-                return "";
-
-            }
-
-
-            return String(value)
-                .substring(0, 5);
-
-        }
-
-
-        // =========================================================
-        // Update Support State
-        // =========================================================
 
         function updateSupportState() {
 
@@ -1536,127 +1849,126 @@
                 state.available
             ) {
 
-                setSupportAvailableState();
+                setSupportAvailableState(
+                    state
+                );
 
             } else {
 
-                setSupportUnavailableState();
+                setSupportUnavailableState(
+                    state
+                );
 
             }
 
         }
 
 
-        // =========================================================
-        // Support Available
-        // =========================================================
+        function setSupportAvailableState(
+            state
+        ) {
 
-        function setSupportAvailableState() {
-
-            supportStatus.innerHTML = `
-                <span class="status-dot"></span>
-                線上客服
-            `;
+            supportStatusDot.className =
+                "status-dot";
 
 
-            // 如果是「沒有聊天室」
-            // 才允許輸入建立新聊天室
-
-            if (!currentRoom) {
-
-                messageInput.disabled =
-                    false;
-
-                sendButton.disabled =
-                    false;
-
-                messageInput.placeholder =
-                    "輸入訊息...";
-
-            }
+            messageInput.disabled =
+                false;
 
 
-            // 如果目前聊天室是開啟的
-            if (
-                currentRoom &&
-                currentRoom.status === "open"
-            ) {
-
-                messageInput.disabled =
-                    false;
-
-                sendButton.disabled =
-                    false;
-
-                messageInput.placeholder =
-                    "輸入訊息...";
-
-            }
-
-
-            // 如果聊天室已關閉
-            if (
-                currentRoom &&
-                currentRoom.status === "closed"
-            ) {
-
-                messageInput.disabled =
-                    false;
-
-                sendButton.disabled =
-                    false;
-
-                messageInput.placeholder =
-                    "輸入訊息以開始新的客服對話...";
-
-            }
+            sendButton.disabled =
+                false;
 
 
             closedBanner.classList.remove(
                 "show"
             );
 
+
+            if (
+                state.reason === "24h"
+            ) {
+
+                supportStatus.textContent =
+                    "24 小時技術支援";
+
+
+                chatHeaderStatus.textContent =
+                    "技術支援服務中";
+
+            } else {
+
+                const start =
+                    supportConfig.startTime
+                        ? String(
+                            supportConfig.startTime
+                        ).substring(0, 5)
+                        : "";
+
+
+                const end =
+                    supportConfig.endTime
+                        ? String(
+                            supportConfig.endTime
+                        ).substring(0, 5)
+                        : "";
+
+
+                supportStatus.textContent =
+                    `技術支援服務中 · ${start}–${end}`;
+
+
+                chatHeaderStatus.textContent =
+                    "技術支援服務中";
+
+            }
+
         }
 
 
-        // =========================================================
-        // Support Unavailable
-        // =========================================================
-
         function setSupportUnavailableState(
-            customMessage
+            state
         ) {
 
-            supportStatus.innerHTML = `
-                <span class="status-dot warning"></span>
-                目前非技術支援時間
-            `;
+            supportStatusDot.className =
+                "status-dot closed";
 
 
             messageInput.disabled =
                 true;
 
+
             sendButton.disabled =
                 true;
 
 
-            const timeText =
-                formatSupportTime();
+            if (
+                state.reason === "invalid"
+            ) {
 
+                supportStatus.textContent =
+                    "無法判斷技術支援時間";
 
-            closedBanner.innerHTML = `
-                ${customMessage
-                    ? escapeHtml(customMessage)
-                    : "目前非技術支援時間。"
-                }
+                chatHeaderStatus.textContent =
+                    "暫時無法使用";
 
-                <br>
+                closedBanner.innerHTML =
+                    "目前無法判斷技術支援時間。<br>" +
+                    "請稍後重新整理頁面。";
 
-                技術支援時間：
-                <span class="support-time">
-                    ${escapeHtml(timeText)}
-                </span>
-            `;
+            } else {
+
+                supportStatus.textContent =
+                    "目前非技術支援時間";
+
+                chatHeaderStatus.textContent =
+                    "目前暫停服務";
+
+                closedBanner.innerHTML =
+                    "目前不在技術支援服務時間內。<br>" +
+                    "請於技術支援時間內重新聯絡我們。";
+
+            }
 
 
             closedBanner.classList.add(
@@ -1666,48 +1978,63 @@
         }
 
 
-        // =========================================================
-        // Initialize Chat
-        // =========================================================
+        function setSupportConfigError(
+            customMessage
+        ) {
 
-        async function initializeChat() {
+            supportStatusDot.className =
+                "status-dot error";
 
-            await loadOrCreateRoom();
 
-            if (currentRoom) {
+            supportStatus.textContent =
+                "無法取得技術支援設定";
 
-                await loadMessages();
 
-                subscribeRealtime();
+            chatHeaderStatus.textContent =
+                "暫時無法使用";
 
-            }
+
+            messageInput.disabled =
+                true;
+
+
+            sendButton.disabled =
+                true;
+
+
+            closedBanner.innerHTML =
+                escapeHtml(
+                    customMessage ||
+                    "目前無法取得您的技術支援設定。"
+                ) +
+                "<br>" +
+                "請稍後重新整理頁面。";
+
+
+            closedBanner.classList.add(
+                "show"
+            );
 
         }
 
 
-        // =========================================================
-        // Load / Create Room
-        // =========================================================
+        // ==========================================================
+        // Find Open Room
+        // ==========================================================
 
-        async function loadOrCreateRoom() {
+
+        async function loadCurrentRoom() {
 
             if (!currentUser) {
-
                 return;
-
             }
 
-
-            // -----------------------------------------------------
-            // 找目前使用者的開啟聊天室
-            // -----------------------------------------------------
 
             const {
                 data,
                 error
             } =
                 await supabaseClient
-                    .schema("public")
                     .from("chat_rooms")
                     .select("*")
                     .eq(
@@ -1734,10 +2061,6 @@
                     error
                 );
 
-                showError(
-                    "無法載入客服聊天室。"
-                );
-
                 return;
 
             }
@@ -1751,50 +2074,42 @@
                 currentRoom =
                     data[0];
 
-                setChatOpenState();
 
-                return;
+                await loadMessages();
+
+                subscribeRealtime();
+
+            } else {
+
+                /*
+                    沒有聊天室時，
+                    不建立空聊天室。
+
+                    等使用者第一次送出訊息
+                    才建立聊天室。
+                */
+
+                currentRoom = null;
+
+                showEmptyState();
 
             }
-
-
-            // -----------------------------------------------------
-            // 沒有聊天室
-            // -----------------------------------------------------
-
-            currentRoom = null;
-
-            setChatWaitingState();
 
         }
 
 
-        // =========================================================
+        // ==========================================================
         // Create Room
-        // =========================================================
+        // ==========================================================
+
 
         async function createRoom() {
 
             if (!currentUser) {
 
-                return null;
-
-            }
-
-
-            // -----------------------------------------------------
-            // 建立聊天室前再次確認支援時間
-            // -----------------------------------------------------
-
-            const supportState =
-                getSupportState();
-
-
-            if (!supportState.available) {
-
-                updateSupportState();
-
-                return null;
+                throw new Error(
+                    "使用者尚未登入"
+                );
 
             }
 
@@ -1804,7 +2119,6 @@
                 error
             } =
                 await supabaseClient
-                    .schema("public")
                     .from("chat_rooms")
                     .insert({
 
@@ -1838,7 +2152,7 @@
                     error
                 );
 
-                return null;
+                throw error;
 
             }
 
@@ -1847,7 +2161,8 @@
                 data;
 
 
-            setChatOpenState();
+            hideEmptyState();
+
 
             subscribeRealtime();
 
@@ -1857,264 +2172,20 @@
         }
 
 
-        // =========================================================
-        // Waiting State
-        // =========================================================
-
-        function setChatWaitingState() {
-
-            const supportState =
-                getSupportState();
-
-
-            if (!supportState.available) {
-
-                messages.innerHTML = `
-
-                    <div class="empty-state">
-
-                        <div class="empty-icon">
-                            🕐
-                        </div>
-
-                        <div class="empty-title">
-                            目前非技術支援時間
-                        </div>
-
-                        <div class="empty-description">
-                            ${escapeHtml(
-                                getSupportUnavailableDescription()
-                            )}
-                        </div>
-
-                    </div>
-
-                `;
-
-                updateSupportState();
-
-                return;
-
-            }
-
-
-            closedBanner.classList.remove(
-                "show"
-            );
-
-
-            messageInput.disabled =
-                false;
-
-            sendButton.disabled =
-                false;
-
-
-            messages.innerHTML = `
-
-                <div class="empty-state">
-
-                    <div class="empty-icon">
-                        💬
-                    </div>
-
-                    <div class="empty-title">
-                        需要協助嗎？
-                    </div>
-
-                    <div class="empty-description">
-                        請輸入訊息，我們會為您建立客服聊天室。
-                    </div>
-
-                </div>
-
-            `;
-
-
-            supportStatus.innerHTML = `
-                <span class="status-dot"></span>
-                線上客服
-            `;
-
-        }
-
-
-        // =========================================================
-        // Support Unavailable Description
-        // =========================================================
-
-        function getSupportUnavailableDescription() {
-
-            if (!supportConfig.enabled) {
-
-                return "目前您的方案未提供技術支援服務。";
-
-            }
-
-
-            return (
-                "目前非技術支援時間。技術支援時間為 " +
-                formatSupportTime() +
-                "。"
-            );
-
-        }
-
-
-        // =========================================================
-        // Open State
-        // =========================================================
-
-        function setChatOpenState() {
-
-            closedBanner.classList.remove(
-                "show"
-            );
-
-
-            const supportState =
-                getSupportState();
-
-
-            if (!supportState.available) {
-
-                updateSupportState();
-
-                return;
-
-            }
-
-
-            messageInput.disabled =
-                false;
-
-            sendButton.disabled =
-                false;
-
-
-            messageInput.placeholder =
-                "輸入訊息...";
-
-
-            supportStatus.innerHTML = `
-                <span class="status-dot"></span>
-                線上客服
-            `;
-
-        }
-
-
-        // =========================================================
-        // Closed State
-        // =========================================================
-
-        function setChatClosedState() {
-
-            const supportState =
-                getSupportState();
-
-
-            if (!supportState.available) {
-
-                messageInput.disabled =
-                    true;
-
-                sendButton.disabled =
-                    true;
-
-                supportStatus.innerHTML = `
-                    <span class="status-dot warning"></span>
-                    目前非技術支援時間
-                `;
-
-                closedBanner.innerHTML = `
-                    此聊天室已結束。
-
-                    <br>
-
-                    目前非技術支援時間。
-                    技術支援時間：
-                    <span class="support-time">
-                        ${escapeHtml(
-                            formatSupportTime()
-                        )}
-                    </span>
-                `;
-
-                closedBanner.classList.add(
-                    "show"
-                );
-
-                return;
-
-            }
-
-
-            messageInput.disabled =
-                false;
-
-            sendButton.disabled =
-                false;
-
-            messageInput.placeholder =
-                "輸入訊息以開始新的客服對話...";
-
-
-            closedBanner.innerHTML =
-                "此聊天室已結束。若您需要協助，請輸入新的訊息建立客服聊天室。";
-
-
-            closedBanner.classList.add(
-                "show"
-            );
-
-
-            supportStatus.innerHTML = `
-                <span class="status-dot"></span>
-                線上客服
-            `;
-
-
-            messages.innerHTML = `
-
-                <div class="empty-state">
-
-                    <div class="empty-icon">
-                        ✓
-                    </div>
-
-                    <div class="empty-title">
-                        聊天室已結束
-                    </div>
-
-                    <div class="empty-description">
-                        您可以輸入新的訊息開始新的客服對話。
-                    </div>
-
-                </div>
-
-            `;
-
-        }
-
-
-        // =========================================================
+        // ==========================================================
         // Load Messages
-        // =========================================================
+        // ==========================================================
+
 
         async function loadMessages() {
 
-            if (
-                !currentRoom ||
-                loadingMessages
-            ) {
+            if (!currentRoom) {
+
+                showEmptyState();
 
                 return;
 
             }
-
-
-            loadingMessages = true;
 
 
             const {
@@ -2122,7 +2193,6 @@
                 error
             } =
                 await supabaseClient
-                    .schema("public")
                     .from("chat_messages")
                     .select("*")
                     .eq(
@@ -2137,9 +2207,6 @@
                     );
 
 
-            loadingMessages = false;
-
-
             if (error) {
 
                 console.error(
@@ -2147,75 +2214,253 @@
                     error
                 );
 
-                showError(
-                    "無法載入聊天訊息。"
-                );
-
                 return;
 
             }
 
 
-            renderMessages(
-                data || []
-            );
+            /*
+                重新載入時清空畫面，
+                再按照資料庫順序建立。
+            */
+
+            messagesContainer.innerHTML =
+                "";
 
 
-            await markMessagesAsRead();
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                showEmptyState();
+
+            } else {
+
+                hideEmptyState();
+
+
+                for (
+                    const message of data
+                ) {
+
+                    appendMessage(
+                        message
+                    );
+
+                }
+
+
+                scrollMessagesToBottom();
+
+            }
+
+
+            /*
+                使用者打開聊天室後，
+                將客服訊息標記為已讀。
+            */
+
+            await markAdminMessagesRead();
 
         }
 
 
-        // =========================================================
-        // Render Messages
-        // =========================================================
+        // ==========================================================
+        // Show / Hide Empty State
+        // ==========================================================
 
-        function renderMessages(
-            messageList
-        ) {
+
+        function showEmptyState() {
+
+            messagesContainer.innerHTML =
+                "";
+
+
+            messagesContainer.appendChild(
+                emptyState
+            );
+
+
+            emptyState.style.display =
+                "flex";
+
+        }
+
+
+        function hideEmptyState() {
 
             if (
-                !messageList ||
-                messageList.length === 0
+                emptyState &&
+                emptyState.parentNode
             ) {
 
-                messages.innerHTML = `
+                emptyState.remove();
 
-                    <div class="empty-state">
+            }
 
-                        <div class="empty-icon">
-                            💬
-                        </div>
+        }
 
-                        <div class="empty-title">
-                            開始與客服聊天
-                        </div>
 
-                        <div class="empty-description">
-                            請輸入您的問題，我們會盡快回覆。
-                        </div>
+        // ==========================================================
+        // Append Message
+        // ==========================================================
 
-                    </div>
 
-                `;
+        function appendMessage(
+            message
+        ) {
 
+            if (!message) {
                 return;
+            }
+
+
+            /*
+                非常重要：
+
+                檢查 message.id。
+
+                因為自己的訊息會：
+
+                ① INSERT 成功後立即顯示
+
+                ② Realtime 又收到 INSERT
+
+                如果沒有這個檢查，
+                同一則訊息會出現兩次。
+            */
+
+            if (
+                message.id !== undefined &&
+                message.id !== null
+            ) {
+
+                const existing =
+                    document.querySelector(
+                        `[data-message-id="${message.id}"]`
+                    );
+
+
+                if (existing) {
+
+                    return;
+
+                }
 
             }
 
 
-            messages.innerHTML = "";
+            hideEmptyState();
 
 
-            messageList.forEach(
-                function (message) {
+            const row =
+                document.createElement(
+                    "div"
+                );
 
-                    appendMessage(
-                        message,
-                        false
-                    );
 
-                }
+            row.className =
+                message.sender_type === "user"
+                    ? "message-row user"
+                    : "message-row admin";
+
+
+            if (
+                message.id !== undefined &&
+                message.id !== null
+            ) {
+
+                row.dataset.messageId =
+                    message.id;
+
+            }
+
+
+            const wrapper =
+                document.createElement(
+                    "div"
+                );
+
+
+            wrapper.className =
+                "message-wrapper";
+
+
+            const sender =
+                document.createElement(
+                    "div"
+                );
+
+
+            sender.className =
+                "message-sender";
+
+
+            sender.textContent =
+                message.sender_type === "user"
+                    ? "您"
+                    : "Money Statistics 技術支援";
+
+
+            const bubble =
+                document.createElement(
+                    "div"
+                );
+
+
+            bubble.className =
+                "message-bubble";
+
+
+            /*
+                使用 textContent，
+                不直接使用 innerHTML，
+                避免使用者輸入 HTML / Script。
+            */
+
+            bubble.textContent =
+                message.message || "";
+
+
+            const time =
+                document.createElement(
+                    "div"
+                );
+
+
+            time.className =
+                "message-time";
+
+
+            time.textContent =
+                formatTime(
+                    message.created_at
+                );
+
+
+            wrapper.appendChild(
+                sender
+            );
+
+
+            wrapper.appendChild(
+                bubble
+            );
+
+
+            wrapper.appendChild(
+                time
+            );
+
+
+            row.appendChild(
+                wrapper
+            );
+
+
+            messagesContainer.appendChild(
+                row
             );
 
 
@@ -2224,153 +2469,18 @@
         }
 
 
-        // =========================================================
-        // Append Message
-        // =========================================================
-
-        function appendMessage(
-            message,
-            scroll = true
-        ) {
-
-            const isUser =
-                message.sender_type ===
-                "user";
-
-
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-            row.className =
-                "message-row " +
-                (
-                    isUser
-                        ? "user"
-                        : "admin"
-                );
-
-
-            const content =
-                document.createElement(
-                    "div"
-                );
-
-            content.className =
-                "message-content";
-
-
-            const bubble =
-                document.createElement(
-                    "div"
-                );
-
-            bubble.className =
-                "message-bubble";
-
-
-            bubble.textContent =
-                message.message;
-
-
-            const time =
-                document.createElement(
-                    "div"
-                );
-
-            time.className =
-                "message-time";
-
-
-            time.textContent =
-                formatMessageTime(
-                    message.created_at
-                );
-
-
-            content.appendChild(
-                bubble
-            );
-
-            content.appendChild(
-                time
-            );
-
-            row.appendChild(
-                content
-            );
-
-            messages.appendChild(
-                row
-            );
-
-
-            if (scroll) {
-
-                scrollMessagesToBottom();
-
-            }
-
-        }
-
-
-        // =========================================================
-        // Format Time
-        // =========================================================
-
-        function formatMessageTime(
-            value
-        ) {
-
-            if (!value) {
-
-                return "";
-
-            }
-
-
-            const date =
-                new Date(value);
-
-
-            if (
-                Number.isNaN(
-                    date.getTime()
-                )
-            ) {
-
-                return "";
-
-            }
-
-
-            return date.toLocaleTimeString(
-                "zh-TW",
-                {
-                    timeZone:
-                        supportConfig.timezone ||
-                        "Asia/Taipei",
-
-                    hour: "2-digit",
-                    minute: "2-digit"
-                }
-            );
-
-        }
-
-
-        // =========================================================
+        // ==========================================================
         // Scroll
-        // =========================================================
+        // ==========================================================
+
 
         function scrollMessagesToBottom() {
 
             requestAnimationFrame(
                 function () {
 
-                    messages.scrollTop =
-                        messages.scrollHeight;
+                    messagesContainer.scrollTop =
+                        messagesContainer.scrollHeight;
 
                 }
             );
@@ -2378,240 +2488,22 @@
         }
 
 
-        // =========================================================
-        // Send Message
-        // =========================================================
+        // ==========================================================
+        // Mark Admin Messages Read
+        // ==========================================================
 
-        sendButton.addEventListener(
-            "click",
-            sendMessage
-        );
 
-
-        messageInput.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (
-                    event.key === "Enter" &&
-                    !event.shiftKey
-                ) {
-
-                    event.preventDefault();
-
-                    sendMessage();
-
-                }
-
-            }
-        );
-
-
-        async function sendMessage() {
-
-            // -----------------------------------------------------
-            // 再次確認支援時間
-            // -----------------------------------------------------
-
-            const supportState =
-                getSupportState();
-
-
-            if (!supportState.available) {
-
-                updateSupportState();
-
-                return;
-
-            }
-
-
-            const text =
-                messageInput.value.trim();
-
-
-            if (!text) {
-
-                return;
-
-            }
-
-
-            if (!currentUser) {
-
-                return;
-
-            }
-
-
-            // -----------------------------------------------------
-            // 如果沒有開啟聊天室
-            // 建立新聊天室
-            // -----------------------------------------------------
-
-            if (
-                !currentRoom ||
-                currentRoom.status !== "open"
-            ) {
-
-                const room =
-                    await createRoom();
-
-
-                if (!room) {
-
-                    showError(
-                        "無法建立客服聊天室。"
-                    );
-
-                    return;
-
-                }
-
-
-                messages.innerHTML = "";
-
-            }
-
-
-            sendButton.disabled =
-                true;
-
-
-            const {
-                data,
-                error
-            } =
-                await supabaseClient
-                    .schema("public")
-                    .from("chat_messages")
-                    .insert({
-
-                        room_id:
-                            currentRoom.id,
-
-                        sender_id:
-                            currentUser.id,
-
-                        sender_email:
-                            currentUser.email,
-
-                        sender_type:
-                            "user",
-
-                        message:
-                            text,
-
-                        is_read:
-                            false
-
-                    })
-                    .select()
-                    .single();
-
-
-            sendButton.disabled =
-                false;
-
-
-            if (error) {
-
-                console.error(
-                    "傳送訊息失敗：",
-                    error
-                );
-
-                showError(
-                    "訊息傳送失敗，請稍後再試。"
-                );
-
-                return;
-
-            }
-
-
-            // -----------------------------------------------------
-            // 更新聊天室預覽資訊
-            // -----------------------------------------------------
-
-            await updateRoomPreview(
-                text
-            );
-
-
-            messageInput.value = "";
-
-            autoResizeTextarea();
-
-        }
-
-
-        // =========================================================
-        // Update Room Last Message
-        // =========================================================
-
-        async function updateRoomPreview(
-            text
-        ) {
+        async function markAdminMessagesRead() {
 
             if (!currentRoom) {
-
                 return;
-
             }
 
 
             const {
-                error
+                error: messageError
             } =
                 await supabaseClient
-                    .schema("public")
-                    .from("chat_rooms")
-                    .update({
-
-                        last_message:
-                            text,
-
-                        last_message_at:
-                            new Date().toISOString()
-
-                    })
-                    .eq(
-                        "id",
-                        currentRoom.id
-                    );
-
-
-            if (error) {
-
-                console.error(
-                    "更新聊天室資訊失敗：",
-                    error
-                );
-
-            }
-
-        }
-
-
-        // =========================================================
-        // Mark Messages Read
-        // =========================================================
-
-        async function markMessagesAsRead() {
-
-            if (!currentRoom) {
-
-                return;
-
-            }
-
-
-            const {
-                error
-            } =
-                await supabaseClient
-                    .schema("public")
                     .from("chat_messages")
                     .update({
                         is_read: true
@@ -2630,164 +2522,537 @@
                     );
 
 
-            if (error) {
+            if (messageError) {
 
                 console.error(
-                    "更新已讀狀態失敗：",
-                    error
+                    "更新訊息已讀狀態失敗：",
+                    messageError
                 );
 
             }
 
 
-            await supabaseClient
-                .schema("public")
-                .from("chat_rooms")
-                .update({
-                    unread_count: 0
-                })
-                .eq(
-                    "id",
-                    currentRoom.id
+            const {
+                error: roomError
+            } =
+                await supabaseClient
+                    .from("chat_rooms")
+                    .update({
+
+                        unread_count: 0
+
+                    })
+                    .eq(
+                        "id",
+                        currentRoom.id
+                    )
+                    .eq(
+                        "user_id",
+                        currentUser.id
+                    );
+
+
+            if (roomError) {
+
+                console.error(
+                    "更新聊天室未讀數失敗：",
+                    roomError
                 );
+
+            }
 
         }
 
 
-        // =========================================================
-        // Realtime
-        // =========================================================
+        // ==========================================================
+        // Update Room Preview
+        // ==========================================================
 
-        function subscribeRealtime() {
+
+        async function updateRoomPreview(
+            text
+        ) {
 
             if (!currentRoom) {
+                return;
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("chat_rooms")
+                    .update({
+
+                        last_message:
+                            text,
+
+                        last_message_at:
+                            new Date().toISOString(),
+
+                        unread_count:
+                            0
+
+                    })
+                    .eq(
+                        "id",
+                        currentRoom.id
+                    )
+                    .eq(
+                        "user_id",
+                        currentUser.id
+                    )
+                    .select()
+                    .single();
+
+
+            if (error) {
+
+                console.error(
+                    "更新聊天室資訊失敗：",
+                    error
+                );
 
                 return;
 
             }
 
 
-            if (realtimeChannel) {
+            if (data) {
 
-                supabaseClient.removeChannel(
-                    realtimeChannel
-                );
+                currentRoom =
+                    data;
+
+            }
+
+        }
+
+
+        // ==========================================================
+        // Send Message
+        // ==========================================================
+
+
+        async function sendMessage() {
+
+            if (isSending) {
+                return;
+            }
+
+
+            /*
+                再確認一次支援時間。
+
+                避免使用者在頁面開啟後，
+                支援時間結束仍可以送出。
+            */
+
+            const supportState =
+                getSupportState();
+
+
+            if (
+                !supportState.available
+            ) {
+
+                updateSupportState();
+
+                return;
 
             }
 
 
+            const text =
+                messageInput.value.trim();
+
+
+            if (!text) {
+                return;
+            }
+
+
+            if (!currentUser) {
+                return;
+            }
+
+
+            isSending = true;
+
+
+            sendButton.disabled =
+                true;
+
+
+            messageInput.disabled =
+                true;
+
+
+            try {
+
+                /*
+                    如果沒有聊天室：
+
+                    代表可能是：
+
+                    ① 使用者第一次聯絡
+
+                    ② 前一個聊天室已被客服關閉
+
+                    此時建立新的 open room。
+                */
+
+                if (
+                    !currentRoom ||
+                    currentRoom.status !== "open"
+                ) {
+
+                    await createRoom();
+
+                }
+
+
+                /*
+                    =================================================
+                    真正的訊息 INSERT
+                    =================================================
+                */
+
+                const {
+                    data:
+                        insertedMessage,
+                    error
+                } =
+                    await supabaseClient
+                        .from("chat_messages")
+                        .insert({
+
+                            room_id:
+                                currentRoom.id,
+
+                            sender_id:
+                                currentUser.id,
+
+                            sender_email:
+                                currentUser.email,
+
+                            sender_type:
+                                "user",
+
+                            message:
+                                text,
+
+                            is_read:
+                                false
+
+                        })
+                        .select()
+                        .single();
+
+
+                if (error) {
+
+                    console.error(
+                        "發送訊息失敗：",
+                        error
+                    );
+
+                    alert(
+                        "訊息發送失敗，請稍後再試。"
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                    =================================================
+                    ★ 關鍵修正
+                    =================================================
+
+                    INSERT 成功後，
+                    不等待 Realtime。
+
+                    直接把 Supabase 回傳的
+                    insertedMessage 放到畫面。
+
+                    所以現在使用者按送出後
+                    會立即看到自己的訊息。
+                */
+
+                if (
+                    insertedMessage
+                ) {
+
+                    appendMessage(
+                        insertedMessage
+                    );
+
+                }
+
+
+                /*
+                    清空輸入框
+                */
+
+                messageInput.value =
+                    "";
+
+
+                autoResizeTextarea();
+
+
+                /*
+                    更新聊天室最後訊息
+                */
+
+                await updateRoomPreview(
+                    text
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "聊天室發送錯誤：",
+                    error
+                );
+
+
+                alert(
+                    "目前無法發送訊息，請稍後再試。"
+                );
+
+            } finally {
+
+                isSending =
+                    false;
+
+
+                /*
+                    發送完成後，
+                    再依照目前支援時間
+                    決定是否啟用輸入框。
+                */
+
+                const state =
+                    getSupportState();
+
+
+                if (
+                    state.available
+                ) {
+
+                    messageInput.disabled =
+                        false;
+
+                    sendButton.disabled =
+                        false;
+
+                    messageInput.focus();
+
+                } else {
+
+                    updateSupportState();
+
+                }
+
+            }
+
+        }
+
+
+        // ==========================================================
+        // Realtime
+        // ==========================================================
+
+
+        function subscribeRealtime() {
+
+            if (!currentRoom) {
+                return;
+            }
+
+
+            /*
+                如果之前已經有訂閱，
+                先解除。
+            */
+
+            if (
+                realtimeChannel
+            ) {
+
+                supabaseClient
+                    .removeChannel(
+                        realtimeChannel
+                    );
+
+                realtimeChannel =
+                    null;
+
+            }
+
+
+            if (
+                roomRealtimeChannel
+            ) {
+
+                supabaseClient
+                    .removeChannel(
+                        roomRealtimeChannel
+                    );
+
+                roomRealtimeChannel =
+                    null;
+
+            }
+
+
+            /*
+                =====================================================
+                Chat Messages Realtime
+                =====================================================
+            */
+
             realtimeChannel =
                 supabaseClient
                     .channel(
-                        "user-chat-" +
-                        currentRoom.id
+                        "chat-messages-" +
+                        currentRoom.id +
+                        "-" +
+                        Date.now()
                     )
-
-                    // ------------------------------------------------
-                    // 新訊息
-                    // ------------------------------------------------
-
                     .on(
                         "postgres_changes",
                         {
-                            event: "INSERT",
 
-                            schema: "public",
+                            event:
+                                "INSERT",
 
-                            table: "chat_messages",
+                            schema:
+                                "public",
+
+                            table:
+                                "chat_messages",
 
                             filter:
                                 "room_id=eq." +
                                 currentRoom.id
-                        },
 
-                        async function (
+                        },
+                        function (
                             payload
                         ) {
 
-                            const message =
-                                payload.new;
+                            console.log(
+                                "收到聊天室新訊息：",
+                                payload.new
+                            );
 
 
-                            const isOwnMessage =
-                                message.sender_id ===
-                                currentUser.id;
+                            /*
+                                這裡不用判斷
+                                sender_type。
 
+                                使用 appendMessage()
+                                裡面的 message.id
+                                自動去重。
+
+                                因此：
+
+                                自己：
+                                INSERT → 立即顯示
+                                Realtime → 已存在 → 略過
+
+                                客服：
+                                Realtime → 顯示
+                            */
+
+                            appendMessage(
+                                payload.new
+                            );
+
+
+                            /*
+                                如果收到的是客服訊息，
+                                自動標記已讀。
+                            */
 
                             if (
-                                !isOwnMessage
-                            ) {
-
-                                appendMessage(
-                                    message,
-                                    true
-                                );
-
-                            }
-
-
-                            // ----------------------------------------
-                            // 管理員訊息自動標記已讀
-                            // ----------------------------------------
-
-                            if (
-                                message.sender_type ===
+                                payload.new
+                                    .sender_type ===
                                 "admin"
                             ) {
 
-                                await supabaseClient
-                                    .schema("public")
-                                    .from(
-                                        "chat_messages"
-                                    )
-                                    .update({
-                                        is_read: true
-                                    })
-                                    .eq(
-                                        "id",
-                                        message.id
-                                    );
-
-
-                                await supabaseClient
-                                    .schema("public")
-                                    .from(
-                                        "chat_rooms"
-                                    )
-                                    .update({
-                                        unread_count: 0
-                                    })
-                                    .eq(
-                                        "id",
-                                        currentRoom.id
-                                    );
+                                markAdminMessagesRead();
 
                             }
 
                         }
                     )
+                    .subscribe(
+                        function (
+                            status
+                        ) {
 
-                    // ------------------------------------------------
-                    // 聊天室更新
-                    // ------------------------------------------------
+                            console.log(
+                                "聊天室 Realtime 狀態：",
+                                status
+                            );
 
+                        }
+                    );
+
+
+            /*
+                =====================================================
+                Chat Room Realtime
+                =====================================================
+
+                主要用來處理：
+
+                客服關閉聊天室
+                或聊天室狀態更新。
+            */
+
+            roomRealtimeChannel =
+                supabaseClient
+                    .channel(
+                        "chat-room-" +
+                        currentRoom.id +
+                        "-" +
+                        Date.now()
+                    )
                     .on(
                         "postgres_changes",
                         {
-                            event: "UPDATE",
 
-                            schema: "public",
+                            event:
+                                "UPDATE",
 
-                            table: "chat_rooms",
+                            schema:
+                                "public",
+
+                            table:
+                                "chat_rooms",
 
                             filter:
                                 "id=eq." +
                                 currentRoom.id
-                        },
 
-                        async function (
+                        },
+                        function (
                             payload
                         ) {
+
+                            console.log(
+                                "聊天室更新：",
+                                payload.new
+                            );
+
 
                             currentRoom =
                                 payload.new;
@@ -2798,41 +3063,81 @@
                                 "closed"
                             ) {
 
-                                setChatClosedState();
-
-
-                                if (
-                                    realtimeChannel
-                                ) {
-
-                                    await supabaseClient
-                                        .removeChannel(
-                                            realtimeChannel
-                                        );
-
-                                    realtimeChannel =
-                                        null;
-
-                                }
+                                handleRoomClosed();
 
                             }
 
                         }
                     )
+                    .subscribe(
+                        function (
+                            status
+                        ) {
 
-                    .subscribe();
+                            console.log(
+                                "聊天室狀態 Realtime：",
+                                status
+                            );
+
+                        }
+                    );
 
         }
 
 
-        // =========================================================
-        // Textarea Auto Resize
-        // =========================================================
+        // ==========================================================
+        // Handle Room Closed
+        // ==========================================================
 
-        messageInput.addEventListener(
-            "input",
-            autoResizeTextarea
-        );
+
+        function handleRoomClosed() {
+
+            chatHeaderStatus.textContent =
+                "聊天室已結束";
+
+
+            closedBanner.innerHTML =
+                "此聊天室已由技術支援人員結束。<br>" +
+                "如果您還需要協助，請直接輸入新的訊息，系統會建立新的聊天室。";
+
+
+            closedBanner.classList.add(
+                "show"
+            );
+
+
+            /*
+                即使聊天室已關閉，
+                仍然讓使用者可以輸入。
+
+                sendMessage() 發送時會發現
+                currentRoom.status !== "open"
+
+                然後建立新的聊天室。
+            */
+
+            const supportState =
+                getSupportState();
+
+
+            if (
+                supportState.available
+            ) {
+
+                messageInput.disabled =
+                    false;
+
+                sendButton.disabled =
+                    false;
+
+            }
+
+        }
+
+
+        // ==========================================================
+        // Textarea Auto Resize
+        // ==========================================================
 
 
         function autoResizeTextarea() {
@@ -2850,139 +3155,164 @@
         }
 
 
-        // =========================================================
-        // Logout
-        // =========================================================
+        messageInput.addEventListener(
+            "input",
+            function () {
 
-        logoutButton.addEventListener(
+                autoResizeTextarea();
+
+            }
+        );
+
+
+        // ==========================================================
+        // Enter / Shift + Enter
+        // ==========================================================
+
+
+        messageInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                /*
+                    Enter：
+                    送出
+
+                    Shift + Enter：
+                    換行
+                */
+
+                if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+                    sendMessage();
+
+                }
+
+            }
+        );
+
+
+        // ==========================================================
+        // Send Button
+        // ==========================================================
+
+
+        sendButton.addEventListener(
             "click",
-            async function () {
+            function () {
 
-                if (realtimeChannel) {
+                sendMessage();
 
-                    await supabaseClient
+            }
+        );
+
+
+        // ==========================================================
+        // Cleanup Realtime
+        // ==========================================================
+
+
+        window.addEventListener(
+            "beforeunload",
+            function () {
+
+                if (
+                    realtimeChannel
+                ) {
+
+                    supabaseClient
                         .removeChannel(
                             realtimeChannel
                         );
 
-                    realtimeChannel =
-                        null;
+                }
+
+
+                if (
+                    roomRealtimeChannel
+                ) {
+
+                    supabaseClient
+                        .removeChannel(
+                            roomRealtimeChannel
+                        );
 
                 }
 
 
-                if (supportTimer) {
+                if (
+                    supportTimer
+                ) {
 
                     clearInterval(
                         supportTimer
                     );
 
-                    supportTimer =
-                        null;
-
-                }
-
-
-                if (sessionTimer) {
-
-                    clearTimeout(
-                        sessionTimer
-                    );
-
-                    sessionTimer =
-                        null;
-
-                }
-
-
-                sessionStorage.removeItem(
-                    MONEY_STATISTICS_SESSION_KEY
-                );
-
-
-                await supabaseClient.auth.signOut();
-
-
-                redirectToLogin();
-
-            }
-        );
-
-
-        // =========================================================
-        // Error
-        // =========================================================
-
-        function showError(
-            message
-        ) {
-
-            messages.innerHTML = `
-
-                <div class="empty-state">
-
-                    <div class="empty-icon">
-                        ⚠️
-                    </div>
-
-                    <div class="empty-title">
-                        發生錯誤
-                    </div>
-
-                    <div class="empty-description">
-                        ${escapeHtml(message)}
-                    </div>
-
-                </div>
-
-            `;
-
-        }
-
-
-        // =========================================================
-        // Escape HTML
-        // =========================================================
-
-        function escapeHtml(
-            value
-        ) {
-
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-            div.textContent =
-                value;
-
-            return div.innerHTML;
-
-        }
-
-
-        // =========================================================
-        // Auth State Change
-        // =========================================================
-
-        supabaseClient.auth.onAuthStateChange(
-            function (
-                event,
-                session
-            ) {
-
-                if (
-                    event === "SIGNED_OUT"
-                ) {
-
-                    redirectToLogin();
-
                 }
 
             }
         );
+
+
+        // ==========================================================
+        // Start
+        // ==========================================================
+
+
+        async function initialize() {
+
+            console.log(
+                "初始化 Money Statistics Live Chat..."
+            );
+
+
+            /*
+                ★ 本版本不再有：
+
+                moneyStatisticsSessionExpire
+                SESSION_DURATION
+                30 分鐘倒數
+                sessionStorage Session Timer
+
+                完全交給 Supabase Auth 管理登入狀態。
+            */
+
+
+            const authenticated =
+                await checkAuthentication();
+
+
+            if (!authenticated) {
+                return;
+            }
+
+
+            await loadSupportConfig();
+
+
+            /*
+                只有有登入的使用者才讀取聊天室。
+            */
+
+            await loadCurrentRoom();
+
+
+            console.log(
+                "Live Chat 初始化完成。"
+            );
+
+        }
+
+
+        initialize();
 
     </script>
+
 
 </body>
 </html>
