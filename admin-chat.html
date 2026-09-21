@@ -2328,6 +2328,20 @@ async function loadUserInfo(
     }
 
 
+    console.log(
+        "開始讀取使用者方案：",
+        email
+    );
+
+
+    /*
+     * ========================================================
+     * 讀取 licenses.licenses_plan
+     *
+     * 管理員可以透過 RLS 讀取所有方案
+     * ========================================================
+     */
+
     const {
         data,
         error
@@ -2336,14 +2350,48 @@ async function loadUserInfo(
             .schema("licenses")
             .from("licenses_plan")
             .select(
-                "owner_user,plan_name,duration_years,start_year,start_month,end_year,end_month,plan_price,currency,status"
+                [
+                    "id",
+                    "owner_user",
+                    "paln_id",
+                    "plan_name",
+                    "duration_years",
+                    "start_year",
+                    "start_month",
+                    "end_year",
+                    "end_month",
+                    "plan_price",
+                    "currency",
+                    "status",
+                    "created_at",
+                    "update_at"
+                ].join(",")
             )
             .eq(
                 "owner_user",
                 email
             )
-            .maybeSingle();
+            .in(
+                "status",
+                [
+                    "active",
+                    "pending"
+                ]
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            )
+            .limit(1);
 
+
+    /*
+     * ========================================================
+     * Supabase 錯誤
+     * ========================================================
+     */
 
     if (error) {
 
@@ -2352,128 +2400,294 @@ async function loadUserInfo(
             error
         );
 
+        console.error(
+            "code:",
+            error.code
+        );
+
+        console.error(
+            "message:",
+            error.message
+        );
+
+        console.error(
+            "details:",
+            error.details
+        );
+
+        console.error(
+            "hint:",
+            error.hint
+        );
+
 
         userInfoContent.innerHTML =
             '<div class="info-row">' +
-                '<div class="info-label">Email</div>' +
-                '<div class="info-value">' +
-                    escapeHtml(email || "-") +
+
+                '<div class="info-label">' +
+                    'Email' +
                 '</div>' +
+
+                '<div class="info-value">' +
+                    escapeHtml(
+                        email || "-"
+                    ) +
+                '</div>' +
+
             '</div>' +
 
             '<div class="info-row">' +
-                '<div class="info-label">方案</div>' +
-                '<div class="info-value">無法載入</div>' +
+
+                '<div class="info-label">' +
+                    '方案' +
+                '</div>' +
+
+                '<div class="info-value">' +
+                    '無法載入' +
+                '</div>' +
+
             '</div>';
 
         return;
     }
 
 
+    /*
+     * ========================================================
+     * 顯示 Email
+     * ========================================================
+     */
+
     let html = "";
 
 
     html +=
         '<div class="info-row">' +
-            '<div class="info-label">Email</div>' +
-            '<div class="info-value">' +
-                escapeHtml(email || "-") +
+
+            '<div class="info-label">' +
+                'Email' +
             '</div>' +
+
+            '<div class="info-value">' +
+                escapeHtml(
+                    email || "-"
+                ) +
+            '</div>' +
+
         '</div>';
 
 
-    if (data) {
+    /*
+     * ========================================================
+     * 沒有方案
+     * ========================================================
+     */
+
+    if (
+        !data ||
+        data.length === 0
+    ) {
+
+        console.warn(
+            "找不到使用者方案：",
+            email
+        );
+
 
         html +=
             '<div class="info-row">' +
-                '<div class="info-label">目前方案</div>' +
-                '<div class="info-value">' +
-                    escapeHtml(
-                        data.plan_name || "-"
-                    ) +
+
+                '<div class="info-label">' +
+                    '方案' +
                 '</div>' +
-            '</div>';
 
-
-        html +=
-            '<div class="info-row">' +
-                '<div class="info-label">合約期間</div>' +
-                '<div class="info-value">' +
-                    escapeHtml(
-                        data.duration_years || "-"
-                    ) +
-                '</div>' +
-            '</div>';
-
-
-        html +=
-            '<div class="info-row">' +
-                '<div class="info-label">開始日期</div>' +
-                '<div class="info-value">' +
-                    formatYearMonth(
-                        data.start_year,
-                        data.start_month
-                    ) +
-                '</div>' +
-            '</div>';
-
-
-        html +=
-            '<div class="info-row">' +
-                '<div class="info-label">結束日期</div>' +
-                '<div class="info-value">' +
-                    formatYearMonth(
-                        data.end_year,
-                        data.end_month
-                    ) +
-                '</div>' +
-            '</div>';
-
-
-        html +=
-            '<div class="info-row">' +
-                '<div class="info-label">方案價格</div>' +
-                '<div class="info-value">' +
-                    escapeHtml(
-                        (
-                            data.currency || ""
-                        ) +
-                        " " +
-                        (
-                            data.plan_price || "-"
-                        )
-                    ) +
-                '</div>' +
-            '</div>';
-
-
-        html +=
-            '<div class="info-row">' +
-                '<div class="info-label">狀態</div>' +
-                '<div class="info-value ' +
-                    getStatusClass(
-                        data.status
-                    ) +
-                '">' +
-                    translateStatus(
-                        data.status
-                    ) +
-                '</div>' +
-            '</div>';
-
-    }
-    else {
-
-        html +=
-            '<div class="info-row">' +
-                '<div class="info-label">方案</div>' +
                 '<div class="info-value">' +
                     '目前沒有方案資料' +
                 '</div>' +
+
             '</div>';
 
+
+        userInfoContent.innerHTML =
+            html;
+
+        return;
     }
 
+
+    /*
+     * ========================================================
+     * 取得最新方案
+     * ========================================================
+     */
+
+    const plan =
+        data[0];
+
+
+    console.log(
+        "找到使用者方案：",
+        plan
+    );
+
+
+    /*
+     * ========================================================
+     * 方案名稱
+     * ========================================================
+     */
+
+    html +=
+        '<div class="info-row">' +
+
+            '<div class="info-label">' +
+                '目前方案' +
+            '</div>' +
+
+            '<div class="info-value">' +
+                escapeHtml(
+                    plan.plan_name || "-"
+                ) +
+            '</div>' +
+
+        '</div>';
+
+
+    /*
+     * ========================================================
+     * 合約期間
+     * ========================================================
+     */
+
+    html +=
+        '<div class="info-row">' +
+
+            '<div class="info-label">' +
+                '合約期間' +
+            '</div>' +
+
+            '<div class="info-value">' +
+                escapeHtml(
+                    plan.duration_years != null
+                        ? plan.duration_years + " 年"
+                        : "-"
+                ) +
+            '</div>' +
+
+        '</div>';
+
+
+    /*
+     * ========================================================
+     * 開始日期
+     * ========================================================
+     */
+
+    html +=
+        '<div class="info-row">' +
+
+            '<div class="info-label">' +
+                '開始日期' +
+            '</div>' +
+
+            '<div class="info-value">' +
+                formatYearMonth(
+                    plan.start_year,
+                    plan.start_month
+                ) +
+            '</div>' +
+
+        '</div>';
+
+
+    /*
+     * ========================================================
+     * 結束日期
+     * ========================================================
+     */
+
+    html +=
+        '<div class="info-row">' +
+
+            '<div class="info-label">' +
+                '結束日期' +
+            '</div>' +
+
+            '<div class="info-value">' +
+                formatYearMonth(
+                    plan.end_year,
+                    plan.end_month
+                ) +
+            '</div>' +
+
+        '</div>';
+
+
+    /*
+     * ========================================================
+     * 方案價格
+     * ========================================================
+     */
+
+    html +=
+        '<div class="info-row">' +
+
+            '<div class="info-label">' +
+                '方案價格' +
+            '</div>' +
+
+            '<div class="info-value">' +
+
+                escapeHtml(
+                    (
+                        plan.currency || ""
+                    ) +
+                    " " +
+                    (
+                        plan.plan_price != null
+                            ? plan.plan_price
+                            : "-"
+                    )
+                ) +
+
+            '</div>' +
+
+        '</div>';
+
+
+    /*
+     * ========================================================
+     * 狀態
+     * ========================================================
+     */
+
+    html +=
+        '<div class="info-row">' +
+
+            '<div class="info-label">' +
+                '狀態' +
+            '</div>' +
+
+            '<div class="info-value ' +
+                getStatusClass(
+                    plan.status
+                ) +
+            '">' +
+
+                translateStatus(
+                    plan.status
+                ) +
+
+            '</div>' +
+
+        '</div>';
+
+
+    /*
+     * ========================================================
+     * 顯示
+     * ========================================================
+     */
 
     userInfoContent.innerHTML =
         html;
