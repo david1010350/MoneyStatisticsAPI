@@ -2035,6 +2035,7 @@
                 error
             } =
                 await supabaseClient
+                .schema("public")
                     .from("chat_rooms")
                     .select("*")
                     .eq(
@@ -2119,6 +2120,7 @@
                 error
             } =
                 await supabaseClient
+                .schema("public")
                     .from("chat_rooms")
                     .insert({
 
@@ -2504,6 +2506,7 @@
                 error: messageError
             } =
                 await supabaseClient
+                .schema("public")
                     .from("chat_messages")
                     .update({
                         is_read: true
@@ -2536,6 +2539,7 @@
                 error: roomError
             } =
                 await supabaseClient
+                .schema("public")
                     .from("chat_rooms")
                     .update({
 
@@ -2583,6 +2587,7 @@
                 error
             } =
                 await supabaseClient
+                .schema("public")
                     .from("chat_rooms")
                     .update({
 
@@ -2725,6 +2730,7 @@
                     error
                 } =
                     await supabaseClient
+                    .schema("public")
                         .from("chat_messages")
                         .insert({
 
