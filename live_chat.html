@@ -119,12 +119,12 @@
         ========================================================= */
 
         .chat-header {
-            height: 70px;
+            min-height: 70px;
 
             display: flex;
             align-items: center;
 
-            padding: 0 22px;
+            padding: 12px 22px;
 
             border-bottom: 1px solid #e5e5e7;
 
@@ -147,6 +147,8 @@
             font-size: 20px;
 
             margin-right: 13px;
+
+            flex-shrink: 0;
         }
 
         .support-title {
@@ -173,6 +175,14 @@
             border-radius: 50%;
 
             margin-right: 5px;
+        }
+
+        .status-dot.closed {
+            background: #8e8e93;
+        }
+
+        .status-dot.warning {
+            background: #ff9500;
         }
 
         /* =========================================================
@@ -267,6 +277,8 @@
             color: #86868b;
 
             text-align: center;
+
+            padding: 30px;
         }
 
         .empty-icon {
@@ -297,6 +309,8 @@
 
         .empty-description {
             font-size: 14px;
+            line-height: 1.6;
+            max-width: 430px;
         }
 
         /* =========================================================
@@ -351,6 +365,12 @@
                 0 0 0 3px rgba(0, 113, 227, 0.12);
         }
 
+        .message-input:disabled {
+            background: #f5f5f7;
+            color: #86868b;
+            cursor: not-allowed;
+        }
+
         .send-button {
             height: 44px;
 
@@ -383,7 +403,7 @@
         }
 
         /* =========================================================
-           Closed State
+           Closed / Support Time Banner
         ========================================================= */
 
         .closed-banner {
@@ -400,10 +420,17 @@
             text-align: center;
 
             font-size: 14px;
+
+            line-height: 1.6;
         }
 
         .closed-banner.show {
             display: block;
+        }
+
+        .support-time {
+            color: #1d1d1f;
+            font-weight: 500;
         }
 
         /* =========================================================
@@ -565,6 +592,7 @@
             .send-button {
                 padding: 0 15px;
             }
+
         }
 
     </style>
@@ -628,7 +656,7 @@
                         class="support-status">
 
                         <span class="status-dot"></span>
-                        線上客服
+                        載入支援時間...
 
                     </div>
 
@@ -650,15 +678,11 @@
             </div>
 
 
-            <!-- Closed Banner -->
+            <!-- Closed / Support Time Banner -->
 
             <div
                 id="closedBanner"
                 class="closed-banner">
-
-                此聊天室已結束。
-                若您需要協助，請重新輸入訊息建立新的客服聊天室。
-
             </div>
 
 
@@ -731,9 +755,6 @@
 
     <script>
 
-        
-
-
         // =========================================================
         // Session
         // =========================================================
@@ -757,7 +778,17 @@
 
         let sessionTimer = null;
 
+        let supportTimer = null;
+
         let loadingMessages = false;
+
+        let supportConfig = {
+            enabled: false,
+            hours: 0,
+            startTime: null,
+            endTime: null,
+            timezone: "Asia/Taipei"
+        };
 
 
         // =========================================================
@@ -892,6 +923,17 @@
             );
 
 
+            // -----------------------------------------------------
+            // 讀取客服方案
+            // -----------------------------------------------------
+
+            await loadSupportConfig();
+
+
+            // -----------------------------------------------------
+            // 初始化聊天室
+            // -----------------------------------------------------
+
             await initializeChat();
 
         }
@@ -1001,6 +1043,630 @@
 
 
         // =========================================================
+        // Load Support Configuration
+        // =========================================================
+
+        async function loadSupportConfig() {
+
+            if (!currentUser) {
+
+                return;
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .schema("licenses")
+                    .from("licenses_plan")
+                    .select(
+                        [
+                            "id",
+                            "plan_name",
+                            "status",
+                            "support_enabled",
+                            "support_hours",
+                            "support_start_time",
+                            "support_end_time",
+                            "support_timezone"
+                        ].join(",")
+                    )
+                    .eq(
+                        "owner_user",
+                        currentUser.email
+                    )
+                    .eq(
+                        "status",
+                        "active"
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    )
+                    .limit(1);
+
+
+            if (error) {
+
+                console.error(
+                    "讀取技術支援設定失敗：",
+                    error
+                );
+
+                supportConfig = {
+                    enabled: false,
+                    hours: 0,
+                    startTime: null,
+                    endTime: null,
+                    timezone: "Asia/Taipei"
+                };
+
+                setSupportUnavailableState(
+                    "目前無法取得您的技術支援設定。"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                supportConfig = {
+                    enabled: false,
+                    hours: 0,
+                    startTime: null,
+                    endTime: null,
+                    timezone: "Asia/Taipei"
+                };
+
+                setSupportUnavailableState(
+                    "目前沒有可用的技術支援方案。"
+                );
+
+                return;
+
+            }
+
+
+            const plan =
+                data[0];
+
+
+            supportConfig = {
+                enabled:
+                    plan.support_enabled === true,
+
+                hours:
+                    Number(
+                        plan.support_hours || 0
+                    ),
+
+                startTime:
+                    plan.support_start_time,
+
+                endTime:
+                    plan.support_end_time,
+
+                timezone:
+                    plan.support_timezone ||
+                    "Asia/Taipei"
+            };
+
+
+            updateSupportState();
+
+
+            // -----------------------------------------------------
+            // 定期重新檢查支援時間
+            // -----------------------------------------------------
+
+            if (supportTimer) {
+
+                clearInterval(
+                    supportTimer
+                );
+
+            }
+
+
+            supportTimer =
+                setInterval(
+                    function () {
+
+                        updateSupportState();
+
+                    },
+                    30000
+                );
+
+        }
+
+
+        // =========================================================
+        // Support Time Calculation
+        // =========================================================
+
+        function getSupportState() {
+
+            if (
+                !supportConfig.enabled ||
+                supportConfig.hours <= 0
+            ) {
+
+                return {
+                    available: false,
+                    reason: "disabled"
+                };
+
+            }
+
+
+            // -----------------------------------------------------
+            // 24 小時 = 全天
+            // -----------------------------------------------------
+
+            if (
+                supportConfig.hours >= 24
+            ) {
+
+                return {
+                    available: true,
+                    reason: "24h"
+                };
+
+            }
+
+
+            if (
+                !supportConfig.startTime ||
+                !supportConfig.endTime
+            ) {
+
+                return {
+                    available: false,
+                    reason: "invalid"
+                };
+
+            }
+
+
+            const now =
+                getCurrentTimeParts(
+                    supportConfig.timezone
+                );
+
+
+            const nowMinutes =
+                now.hour * 60 +
+                now.minute;
+
+
+            const start =
+                parseTimeToMinutes(
+                    supportConfig.startTime
+                );
+
+
+            const end =
+                parseTimeToMinutes(
+                    supportConfig.endTime
+                );
+
+
+            if (
+                start === null ||
+                end === null
+            ) {
+
+                return {
+                    available: false,
+                    reason: "invalid"
+                };
+
+            }
+
+
+            // -----------------------------------------------------
+            // 00:00 - 00:00
+            // 若 hours 不是 24，仍視為全天
+            // -----------------------------------------------------
+
+            if (
+                start === 0 &&
+                end === 0
+            ) {
+
+                return {
+                    available: true,
+                    reason: "24h"
+                };
+
+            }
+
+
+            // -----------------------------------------------------
+            // 一般時間，例如 10:00 - 22:00
+            // -----------------------------------------------------
+
+            if (start < end) {
+
+                return {
+                    available:
+                        nowMinutes >= start &&
+                        nowMinutes < end,
+
+                    reason: "normal",
+
+                    start: start,
+                    end: end
+                };
+
+            }
+
+
+            // -----------------------------------------------------
+            // 跨午夜，例如 22:00 - 06:00
+            // -----------------------------------------------------
+
+            return {
+                available:
+                    nowMinutes >= start ||
+                    nowMinutes < end,
+
+                reason: "overnight",
+
+                start: start,
+                end: end
+            };
+
+        }
+
+
+        // =========================================================
+        // Current Time
+        // =========================================================
+
+        function getCurrentTimeParts(
+            timezone
+        ) {
+
+            const formatter =
+                new Intl.DateTimeFormat(
+                    "zh-TW",
+                    {
+                        timeZone:
+                            timezone ||
+                            "Asia/Taipei",
+
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false
+                    }
+                );
+
+
+            const parts =
+                formatter.formatToParts(
+                    new Date()
+                );
+
+
+            let hour = 0;
+            let minute = 0;
+
+
+            parts.forEach(
+                function (part) {
+
+                    if (
+                        part.type === "hour"
+                    ) {
+
+                        hour =
+                            Number(part.value);
+
+                    }
+
+                    if (
+                        part.type === "minute"
+                    ) {
+
+                        minute =
+                            Number(part.value);
+
+                    }
+
+                }
+            );
+
+
+            return {
+                hour: hour,
+                minute: minute
+            };
+
+        }
+
+
+        // =========================================================
+        // Parse Time
+        // =========================================================
+
+        function parseTimeToMinutes(
+            value
+        ) {
+
+            if (!value) {
+
+                return null;
+
+            }
+
+
+            const text =
+                String(value)
+                    .substring(0, 5);
+
+
+            const parts =
+                text.split(":");
+
+
+            if (
+                parts.length !== 2
+            ) {
+
+                return null;
+
+            }
+
+
+            const hour =
+                Number(parts[0]);
+
+            const minute =
+                Number(parts[1]);
+
+
+            if (
+                Number.isNaN(hour) ||
+                Number.isNaN(minute) ||
+                hour < 0 ||
+                hour > 23 ||
+                minute < 0 ||
+                minute > 59
+            ) {
+
+                return null;
+
+            }
+
+
+            return (
+                hour * 60 +
+                minute
+            );
+
+        }
+
+
+        // =========================================================
+        // Format Support Time
+        // =========================================================
+
+        function formatSupportTime() {
+
+            if (
+                supportConfig.hours >= 24 ||
+                (
+                    parseTimeToMinutes(
+                        supportConfig.startTime
+                    ) === 0 &&
+                    parseTimeToMinutes(
+                        supportConfig.endTime
+                    ) === 0
+                )
+            ) {
+
+                return "24 小時技術支援";
+
+            }
+
+
+            if (
+                !supportConfig.startTime ||
+                !supportConfig.endTime
+            ) {
+
+                return "技術支援時間未設定";
+
+            }
+
+
+            return (
+                formatTimeValue(
+                    supportConfig.startTime
+                ) +
+                "–" +
+                formatTimeValue(
+                    supportConfig.endTime
+                )
+            );
+
+        }
+
+
+        function formatTimeValue(
+            value
+        ) {
+
+            if (!value) {
+
+                return "";
+
+            }
+
+
+            return String(value)
+                .substring(0, 5);
+
+        }
+
+
+        // =========================================================
+        // Update Support State
+        // =========================================================
+
+        function updateSupportState() {
+
+            const state =
+                getSupportState();
+
+
+            if (
+                state.available
+            ) {
+
+                setSupportAvailableState();
+
+            } else {
+
+                setSupportUnavailableState();
+
+            }
+
+        }
+
+
+        // =========================================================
+        // Support Available
+        // =========================================================
+
+        function setSupportAvailableState() {
+
+            supportStatus.innerHTML = `
+                <span class="status-dot"></span>
+                線上客服
+            `;
+
+
+            // 如果是「沒有聊天室」
+            // 才允許輸入建立新聊天室
+
+            if (!currentRoom) {
+
+                messageInput.disabled =
+                    false;
+
+                sendButton.disabled =
+                    false;
+
+                messageInput.placeholder =
+                    "輸入訊息...";
+
+            }
+
+
+            // 如果目前聊天室是開啟的
+            if (
+                currentRoom &&
+                currentRoom.status === "open"
+            ) {
+
+                messageInput.disabled =
+                    false;
+
+                sendButton.disabled =
+                    false;
+
+                messageInput.placeholder =
+                    "輸入訊息...";
+
+            }
+
+
+            // 如果聊天室已關閉
+            if (
+                currentRoom &&
+                currentRoom.status === "closed"
+            ) {
+
+                messageInput.disabled =
+                    false;
+
+                sendButton.disabled =
+                    false;
+
+                messageInput.placeholder =
+                    "輸入訊息以開始新的客服對話...";
+
+            }
+
+
+            closedBanner.classList.remove(
+                "show"
+            );
+
+        }
+
+
+        // =========================================================
+        // Support Unavailable
+        // =========================================================
+
+        function setSupportUnavailableState(
+            customMessage
+        ) {
+
+            supportStatus.innerHTML = `
+                <span class="status-dot warning"></span>
+                目前非技術支援時間
+            `;
+
+
+            messageInput.disabled =
+                true;
+
+            sendButton.disabled =
+                true;
+
+
+            const timeText =
+                formatSupportTime();
+
+
+            closedBanner.innerHTML = `
+                ${customMessage
+                    ? escapeHtml(customMessage)
+                    : "目前非技術支援時間。"
+                }
+
+                <br>
+
+                技術支援時間：
+                <span class="support-time">
+                    ${escapeHtml(timeText)}
+                </span>
+            `;
+
+
+            closedBanner.classList.add(
+                "show"
+            );
+
+        }
+
+
+        // =========================================================
         // Initialize Chat
         // =========================================================
 
@@ -1041,7 +1707,7 @@
                 error
             } =
                 await supabaseClient
-                 .schema("public")
+                    .schema("public")
                     .from("chat_rooms")
                     .select("*")
                     .eq(
@@ -1094,7 +1760,6 @@
 
             // -----------------------------------------------------
             // 沒有聊天室
-            // 不立即建立空聊天室
             // -----------------------------------------------------
 
             currentRoom = null;
@@ -1117,12 +1782,29 @@
             }
 
 
+            // -----------------------------------------------------
+            // 建立聊天室前再次確認支援時間
+            // -----------------------------------------------------
+
+            const supportState =
+                getSupportState();
+
+
+            if (!supportState.available) {
+
+                updateSupportState();
+
+                return null;
+
+            }
+
+
             const {
                 data,
                 error
             } =
                 await supabaseClient
-                 .schema("public")
+                    .schema("public")
                     .from("chat_rooms")
                     .insert({
 
@@ -1167,7 +1849,6 @@
 
             setChatOpenState();
 
-
             subscribeRealtime();
 
 
@@ -1182,9 +1863,45 @@
 
         function setChatWaitingState() {
 
+            const supportState =
+                getSupportState();
+
+
+            if (!supportState.available) {
+
+                messages.innerHTML = `
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            🕐
+                        </div>
+
+                        <div class="empty-title">
+                            目前非技術支援時間
+                        </div>
+
+                        <div class="empty-description">
+                            ${escapeHtml(
+                                getSupportUnavailableDescription()
+                            )}
+                        </div>
+
+                    </div>
+
+                `;
+
+                updateSupportState();
+
+                return;
+
+            }
+
+
             closedBanner.classList.remove(
                 "show"
             );
+
 
             messageInput.disabled =
                 false;
@@ -1213,10 +1930,33 @@
 
             `;
 
+
             supportStatus.innerHTML = `
                 <span class="status-dot"></span>
                 線上客服
             `;
+
+        }
+
+
+        // =========================================================
+        // Support Unavailable Description
+        // =========================================================
+
+        function getSupportUnavailableDescription() {
+
+            if (!supportConfig.enabled) {
+
+                return "目前您的方案未提供技術支援服務。";
+
+            }
+
+
+            return (
+                "目前非技術支援時間。技術支援時間為 " +
+                formatSupportTime() +
+                "。"
+            );
 
         }
 
@@ -1231,11 +1971,29 @@
                 "show"
             );
 
+
+            const supportState =
+                getSupportState();
+
+
+            if (!supportState.available) {
+
+                updateSupportState();
+
+                return;
+
+            }
+
+
             messageInput.disabled =
                 false;
 
             sendButton.disabled =
                 false;
+
+
+            messageInput.placeholder =
+                "輸入訊息...";
 
 
             supportStatus.innerHTML = `
@@ -1252,19 +2010,69 @@
 
         function setChatClosedState() {
 
+            const supportState =
+                getSupportState();
+
+
+            if (!supportState.available) {
+
+                messageInput.disabled =
+                    true;
+
+                sendButton.disabled =
+                    true;
+
+                supportStatus.innerHTML = `
+                    <span class="status-dot warning"></span>
+                    目前非技術支援時間
+                `;
+
+                closedBanner.innerHTML = `
+                    此聊天室已結束。
+
+                    <br>
+
+                    目前非技術支援時間。
+                    技術支援時間：
+                    <span class="support-time">
+                        ${escapeHtml(
+                            formatSupportTime()
+                        )}
+                    </span>
+                `;
+
+                closedBanner.classList.add(
+                    "show"
+                );
+
+                return;
+
+            }
+
+
             messageInput.disabled =
                 false;
 
             sendButton.disabled =
                 false;
 
+            messageInput.placeholder =
+                "輸入訊息以開始新的客服對話...";
+
+
+            closedBanner.innerHTML =
+                "此聊天室已結束。若您需要協助，請輸入新的訊息建立客服聊天室。";
+
+
             closedBanner.classList.add(
                 "show"
             );
 
 
-            supportStatus.innerHTML =
-                "聊天室已結束";
+            supportStatus.innerHTML = `
+                <span class="status-dot"></span>
+                線上客服
+            `;
 
 
             messages.innerHTML = `
@@ -1314,7 +2122,7 @@
                 error
             } =
                 await supabaseClient
-                .schema("public")
+                    .schema("public")
                     .from("chat_messages")
                     .select("*")
                     .eq(
@@ -1540,6 +2348,10 @@
             return date.toLocaleTimeString(
                 "zh-TW",
                 {
+                    timeZone:
+                        supportConfig.timezone ||
+                        "Asia/Taipei",
+
                     hour: "2-digit",
                     minute: "2-digit"
                 }
@@ -1596,6 +2408,23 @@
 
 
         async function sendMessage() {
+
+            // -----------------------------------------------------
+            // 再次確認支援時間
+            // -----------------------------------------------------
+
+            const supportState =
+                getSupportState();
+
+
+            if (!supportState.available) {
+
+                updateSupportState();
+
+                return;
+
+            }
+
 
             const text =
                 messageInput.value.trim();
@@ -1654,7 +2483,7 @@
                 error
             } =
                 await supabaseClient
-                .schema("public")
+                    .schema("public")
                     .from("chat_messages")
                     .insert({
 
@@ -1701,15 +2530,18 @@
             }
 
 
+            // -----------------------------------------------------
+            // 更新聊天室預覽資訊
+            // -----------------------------------------------------
+
+            await updateRoomPreview(
+                text
+            );
+
+
             messageInput.value = "";
 
             autoResizeTextarea();
-
-
-            // -----------------------------------------------------
-            // Realtime 通常會自動顯示
-            // 這裡不再手動 append
-            // -----------------------------------------------------
 
         }
 
@@ -1733,7 +2565,7 @@
                 error
             } =
                 await supabaseClient
-                 .schema("public")
+                    .schema("public")
                     .from("chat_rooms")
                     .update({
 
@@ -1779,7 +2611,7 @@
                 error
             } =
                 await supabaseClient
-                .schema("public")
+                    .schema("public")
                     .from("chat_messages")
                     .update({
                         is_read: true
@@ -1809,7 +2641,7 @@
 
 
             await supabaseClient
-             .schema("public")
+                .schema("public")
                 .from("chat_rooms")
                 .update({
                     unread_count: 0
@@ -1877,10 +2709,6 @@
                                 payload.new;
 
 
-                            // ----------------------------------------
-                            // 避免自己的訊息重複顯示
-                            // ----------------------------------------
-
                             const isOwnMessage =
                                 message.sender_id ===
                                 currentUser.id;
@@ -1908,7 +2736,7 @@
                             ) {
 
                                 await supabaseClient
-                                .schema("public")
+                                    .schema("public")
                                     .from(
                                         "chat_messages"
                                     )
@@ -1922,7 +2750,7 @@
 
 
                                 await supabaseClient
-                                 .schema("public")
+                                    .schema("public")
                                     .from(
                                         "chat_rooms"
                                     )
@@ -1964,10 +2792,6 @@
                             currentRoom =
                                 payload.new;
 
-
-                            // ----------------------------------------
-                            // 管理員結束聊天室
-                            // ----------------------------------------
 
                             if (
                                 currentRoom.status ===
@@ -2042,6 +2866,18 @@
                         );
 
                     realtimeChannel =
+                        null;
+
+                }
+
+
+                if (supportTimer) {
+
+                    clearInterval(
+                        supportTimer
+                    );
+
+                    supportTimer =
                         null;
 
                 }
