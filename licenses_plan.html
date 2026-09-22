@@ -1,17 +1,26 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>方案 - Money Statistics</title>
+
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- Supabase 設定 -->
     <script src="supabase.js"></script>
+
     <script src="session.js"></script>
+
 
     <style>
 
@@ -19,7 +28,9 @@
             box-sizing: border-box;
         }
 
+
         body {
+
             margin: 0;
 
             font-family:
@@ -31,140 +42,214 @@
                 sans-serif;
 
             background: #f5f5f7;
+
             color: #1d1d1f;
         }
 
+
         .container {
+
             max-width: 1100px;
+
             margin: 0 auto;
-            padding: 40px 20px 60px;
+
+            padding:
+                40px 20px 60px;
         }
+
 
         /* =====================================================
            Header
         ===================================================== */
 
         .header {
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
             margin-bottom: 40px;
         }
 
+
         .header-left {
+
             display: flex;
+
             align-items: center;
+
             gap: 16px;
         }
 
+
         .back-button {
+
             border: none;
+
             background: white;
+
             color: #0071e3;
-            padding: 10px 16px;
+
+            padding:
+                10px 16px;
+
             border-radius: 12px;
+
             cursor: pointer;
+
             font-size: 15px;
         }
 
+
         .back-button:hover {
+
             background: #e8f1fb;
         }
 
+
         .header h1 {
+
             margin: 0;
+
             font-size: 32px;
+
             font-weight: 700;
         }
 
+
         .logout-button {
+
             border: none;
+
             background: #ff3b30;
+
             color: white;
-            padding: 10px 18px;
+
+            padding:
+                10px 18px;
+
             border-radius: 12px;
+
             cursor: pointer;
+
             font-size: 14px;
         }
 
+
         .logout-button:hover {
+
             background: #d92d25;
         }
+
 
         /* =====================================================
            User
         ===================================================== */
 
         .user-info {
+
             margin-bottom: 30px;
+
             color: #6e6e73;
+
             font-size: 14px;
         }
+
 
         /* =====================================================
            Loading
         ===================================================== */
 
         .loading {
+
             text-align: center;
-            padding: 60px 20px;
+
+            padding:
+                60px 20px;
+
             color: #6e6e73;
         }
+
 
         /* =====================================================
            Empty
         ===================================================== */
 
         .empty {
+
             background: white;
+
             border-radius: 24px;
-            padding: 60px 30px;
+
+            padding:
+                60px 30px;
+
             text-align: center;
+
             box-shadow:
-                0 8px 30px rgba(0, 0, 0, 0.06);
+                0 8px 30px
+                rgba(0, 0, 0, 0.06);
         }
 
+
         .empty h2 {
+
             margin-top: 0;
+
             font-size: 22px;
         }
 
+
         .empty p {
+
             color: #6e6e73;
+
             margin-bottom: 0;
         }
+
 
         /* =====================================================
            Pending Banner
         ===================================================== */
 
         .pending-banner {
+
             display: flex;
 
             gap: 18px;
 
             margin-bottom: 30px;
 
-            padding: 22px 24px;
+            padding:
+                22px 24px;
 
             background: #fffaf0;
 
-            border: 1px solid #f2dfb1;
+            border:
+                1px solid #f2dfb1;
 
             border-radius: 20px;
 
             box-shadow:
-                0 6px 24px rgba(0, 0, 0, 0.04);
+                0 6px 24px
+                rgba(0, 0, 0, 0.04);
         }
 
+
         .pending-icon {
+
             width: 44px;
+
             height: 44px;
 
             flex-shrink: 0;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             background: #fff4ce;
@@ -174,22 +259,32 @@
             font-size: 21px;
         }
 
+
         .pending-content {
+
             flex: 1;
+
             min-width: 0;
         }
 
+
         .pending-title {
-            margin: 0 0 6px;
+
+            margin:
+                0 0 6px;
 
             font-size: 19px;
+
             font-weight: 700;
 
             color: #1d1d1f;
         }
 
+
         .pending-description {
-            margin: 0 0 20px;
+
+            margin:
+                0 0 20px;
 
             color: #6e6e73;
 
@@ -198,11 +293,13 @@
             line-height: 1.6;
         }
 
+
         /* =====================================================
            Pending Plan
         ===================================================== */
 
         .pending-plan {
+
             display: grid;
 
             grid-template-columns:
@@ -211,17 +308,23 @@
             gap: 12px;
         }
 
+
         .pending-plan-item {
-            padding: 14px 16px;
+
+            padding:
+                14px 16px;
 
             background: white;
 
             border-radius: 14px;
 
-            border: 1px solid #eee5d2;
+            border:
+                1px solid #eee5d2;
         }
 
+
         .pending-plan-label {
+
             display: block;
 
             margin-bottom: 5px;
@@ -231,7 +334,9 @@
             font-size: 13px;
         }
 
+
         .pending-plan-value {
+
             display: block;
 
             color: #1d1d1f;
@@ -241,7 +346,9 @@
             font-weight: 600;
         }
 
+
         .pending-time {
+
             margin-top: 14px;
 
             color: #86868b;
@@ -249,20 +356,27 @@
             font-size: 13px;
         }
 
+
         /* =====================================================
-           Plan
+           Plans
         ===================================================== */
 
         .plans {
+
             display: grid;
 
             grid-template-columns:
-                repeat(auto-fit, minmax(320px, 1fr));
+                repeat(
+                    auto-fit,
+                    minmax(320px, 1fr)
+                );
 
             gap: 24px;
         }
 
+
         .plan-card {
+
             background: white;
 
             border-radius: 24px;
@@ -270,21 +384,28 @@
             padding: 30px;
 
             box-shadow:
-                0 8px 30px rgba(0, 0, 0, 0.06);
+                0 8px 30px
+                rgba(0, 0, 0, 0.06);
 
             transition:
                 transform 0.2s,
                 box-shadow 0.2s;
         }
 
+
         .plan-card:hover {
-            transform: translateY(-3px);
+
+            transform:
+                translateY(-3px);
 
             box-shadow:
-                0 12px 35px rgba(0, 0, 0, 0.10);
+                0 12px 35px
+                rgba(0, 0, 0, 0.10);
         }
 
+
         .plan-header {
+
             display: flex;
 
             justify-content: space-between;
@@ -296,7 +417,9 @@
             margin-bottom: 25px;
         }
 
+
         .plan-name {
+
             margin: 0;
 
             font-size: 24px;
@@ -304,14 +427,17 @@
             font-weight: 700;
         }
 
+
         /* =====================================================
            Status
         ===================================================== */
 
         .status {
+
             display: inline-block;
 
-            padding: 6px 12px;
+            padding:
+                6px 12px;
 
             border-radius: 999px;
 
@@ -322,50 +448,75 @@
             white-space: nowrap;
         }
 
+
         .status-pending {
+
             background: #fff4ce;
+
             color: #8a6200;
         }
 
+
         .status-active {
+
             background: #dff7e5;
+
             color: #1b7f3a;
         }
 
+
         .status-expired {
+
             background: #eeeeee;
+
             color: #666666;
         }
 
+
         .status-cancelled {
+
             background: #ffe5e5;
+
             color: #c62828;
         }
 
+
         .status-refunded {
+
             background: #eee5ff;
+
             color: #6941c6;
         }
 
+
         .status-suspended {
+
             background: #fff0df;
+
             color: #a15c00;
         }
+
 
         /* =====================================================
            Price
         ===================================================== */
 
         .price {
+
             margin-bottom: 28px;
         }
 
+
         .price-value {
+
             font-size: 32px;
+
             font-weight: 700;
         }
 
+
         .price-currency {
+
             margin-left: 6px;
 
             color: #6e6e73;
@@ -373,35 +524,44 @@
             font-size: 14px;
         }
 
+
         /* =====================================================
            Information
         ===================================================== */
 
         .info-list {
+
             border-top:
                 1px solid #e5e5e7;
         }
 
+
         .info-row {
+
             display: flex;
 
             justify-content: space-between;
 
             gap: 20px;
 
-            padding: 15px 0;
+            padding:
+                15px 0;
 
             border-bottom:
                 1px solid #e5e5e7;
         }
 
+
         .info-label {
+
             color: #6e6e73;
 
             font-size: 14px;
         }
 
+
         .info-value {
+
             text-align: right;
 
             font-size: 14px;
@@ -409,11 +569,101 @@
             font-weight: 500;
         }
 
+
+        /* =====================================================
+           Change Plan
+        ===================================================== */
+
+        .change-plan-button {
+
+            margin-top: 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            width: 100%;
+
+            padding:
+                16px 18px;
+
+            background: #f5f5f7;
+
+            border:
+                1px solid #e5e5e7;
+
+            border-radius: 16px;
+
+            color: #0071e3;
+
+            text-decoration: none;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s,
+                transform 0.2s,
+                border-color 0.2s;
+        }
+
+
+        .change-plan-button:hover {
+
+            background: #e8f1fb;
+
+            border-color: #c7def5;
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        .change-plan-content {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 4px;
+        }
+
+
+        .change-plan-title {
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            color: #1d1d1f;
+        }
+
+
+        .change-plan-description {
+
+            font-size: 13px;
+
+            color: #6e6e73;
+        }
+
+
+        .change-plan-arrow {
+
+            font-size: 22px;
+
+            color: #0071e3;
+
+            margin-left: 15px;
+        }
+
+
         /* =====================================================
            Error
         ===================================================== */
 
         .error {
+
             background: #fff1f0;
 
             border:
@@ -428,6 +678,7 @@
             line-height: 1.6;
         }
 
+
         /* =====================================================
            Mobile
         ===================================================== */
@@ -435,61 +686,82 @@
         @media (max-width: 700px) {
 
             .pending-plan {
+
                 grid-template-columns: 1fr;
             }
         }
 
+
         @media (max-width: 600px) {
 
             .container {
+
                 padding:
                     25px 15px 40px;
             }
 
+
             .header {
+
                 align-items: flex-start;
 
                 gap: 15px;
             }
 
+
             .header h1 {
+
                 font-size: 26px;
             }
 
+
             .plan-card {
+
                 padding: 24px;
             }
 
+
             .plan-header {
+
                 flex-direction: column;
             }
 
+
             .info-row {
+
                 flex-direction: column;
 
                 gap: 5px;
             }
 
+
             .info-value {
+
                 text-align: left;
             }
 
+
             .pending-banner {
+
                 padding: 18px;
             }
+
         }
 
     </style>
+
 </head>
 
 
 <body>
 
+
 <div class="container">
+
 
     <!-- =====================================================
          Header
-    ====================================================== -->
+    ===================================================== -->
 
     <div class="header">
 
@@ -502,11 +774,13 @@
                 ← 返回
             </button>
 
+
             <h1>
                 方案
             </h1>
 
         </div>
+
 
         <button
             class="logout-button"
@@ -520,7 +794,7 @@
 
     <!-- =====================================================
          User
-    ====================================================== -->
+    ===================================================== -->
 
     <div
         id="userInfo"
@@ -532,7 +806,7 @@
 
     <!-- =====================================================
          Content
-    ====================================================== -->
+    ===================================================== -->
 
     <div id="content">
 
@@ -542,16 +816,16 @@
 
     </div>
 
+
 </div>
 
 
 <script>
 
-    /*
-     * =========================================================
-     * 方案狀態中文名稱
-     * =========================================================
-     */
+
+    /* =========================================================
+       方案狀態中文名稱
+    ========================================================= */
 
     const statusNames = {
 
@@ -576,11 +850,9 @@
     };
 
 
-    /*
-     * =========================================================
-     * HTML 安全處理
-     * =========================================================
-     */
+    /* =========================================================
+       HTML 安全處理
+    ========================================================= */
 
     function escapeHtml(value) {
 
@@ -588,8 +860,10 @@
             value === null ||
             value === undefined
         ) {
+
             return "";
         }
+
 
         return String(value)
 
@@ -620,28 +894,31 @@
     }
 
 
-    /*
-     * =========================================================
-     * 日期格式化
-     * =========================================================
-     */
+    /* =========================================================
+       日期格式化
+    ========================================================= */
 
     function formatDate(value) {
 
         if (!value) {
+
             return "—";
         }
 
+
         const date =
             new Date(value);
+
 
         if (
             isNaN(
                 date.getTime()
             )
         ) {
+
             return escapeHtml(value);
         }
+
 
         return date.toLocaleDateString(
             "zh-TW",
@@ -654,28 +931,31 @@
     }
 
 
-    /*
-     * =========================================================
-     * 日期時間格式化
-     * =========================================================
-     */
+    /* =========================================================
+       日期時間格式化
+    ========================================================= */
 
     function formatDateTime(value) {
 
         if (!value) {
+
             return "—";
         }
 
+
         const date =
             new Date(value);
+
 
         if (
             isNaN(
                 date.getTime()
             )
         ) {
+
             return escapeHtml(value);
         }
+
 
         return date.toLocaleString(
             "zh-TW",
@@ -690,11 +970,9 @@
     }
 
 
-    /*
-     * =========================================================
-     * 金額格式化
-     * =========================================================
-     */
+    /* =========================================================
+       金額格式化
+    ========================================================= */
 
     function formatPrice(price) {
 
@@ -703,17 +981,22 @@
             price === undefined ||
             price === ""
         ) {
+
             return "—";
         }
+
 
         const number =
             Number(price);
 
+
         if (
             isNaN(number)
         ) {
+
             return escapeHtml(price);
         }
+
 
         return number.toLocaleString(
             "zh-TW"
@@ -721,19 +1004,16 @@
     }
 
 
-    /*
-     * =========================================================
-     * 取得方案資料
-     * =========================================================
-     */
+    /* =========================================================
+       取得方案資料
+    ========================================================= */
 
     async function loadPlans() {
 
-        /*
-         * -----------------------------------------------------
-         * 取得目前登入狀態
-         * -----------------------------------------------------
-         */
+
+        /* -----------------------------------------------------
+           取得目前登入狀態
+        ----------------------------------------------------- */
 
         const {
             data: {
@@ -746,11 +1026,9 @@
                 .getSession();
 
 
-        /*
-         * -----------------------------------------------------
-         * Session 發生錯誤
-         * -----------------------------------------------------
-         */
+        /* -----------------------------------------------------
+           Session 發生錯誤
+        ----------------------------------------------------- */
 
         if (sessionError) {
 
@@ -758,6 +1036,7 @@
                 "取得 Session 失敗：",
                 sessionError
             );
+
 
             document.getElementById(
                 "content"
@@ -776,11 +1055,9 @@
         }
 
 
-        /*
-         * -----------------------------------------------------
-         * 尚未登入
-         * -----------------------------------------------------
-         */
+        /* -----------------------------------------------------
+           尚未登入
+        ----------------------------------------------------- */
 
         if (!session) {
 
@@ -791,24 +1068,20 @@
         }
 
 
-        /*
-         * -----------------------------------------------------
-         * 取得登入者 Email
-         *
-         * owner_user 是 text
-         * 且存放 Email
-         * -----------------------------------------------------
-         */
+        /* -----------------------------------------------------
+           取得登入者 Email
+           
+           owner_user 是 text
+           且存放 Email
+        ----------------------------------------------------- */
 
         const userEmail =
             session.user.email;
 
 
-        /*
-         * -----------------------------------------------------
-         * 顯示目前登入帳號
-         * -----------------------------------------------------
-         */
+        /* -----------------------------------------------------
+           顯示目前登入帳號
+        ----------------------------------------------------- */
 
         document.getElementById(
             "userInfo"
@@ -817,11 +1090,9 @@
             userEmail;
 
 
-        /*
-         * =====================================================
-         * 取得目前方案
-         * =====================================================
-         */
+        /* =====================================================
+           取得目前方案
+        ===================================================== */
 
         const {
             data,
@@ -835,6 +1106,7 @@
 
                 .select(`
                     id,
+                    plan_id,
                     plan_name,
                     duration_years,
                     start_year,
@@ -867,11 +1139,9 @@
                 );
 
 
-        /*
-         * =====================================================
-         * 查詢錯誤
-         * =====================================================
-         */
+        /* =====================================================
+           查詢錯誤
+        ===================================================== */
 
         if (error) {
 
@@ -879,6 +1149,7 @@
                 "取得方案失敗：",
                 error
             );
+
 
             document.getElementById(
                 "content"
@@ -904,11 +1175,9 @@
         }
 
 
-        /*
-         * =====================================================
-         * 沒有方案
-         * =====================================================
-         */
+        /* =====================================================
+           沒有方案
+        ===================================================== */
 
         if (
             !data ||
@@ -937,21 +1206,17 @@
         }
 
 
-        /*
-         * =====================================================
-         * 最新方案
-         * =====================================================
-         */
+        /* =====================================================
+           最新方案
+        ===================================================== */
 
         const currentPlan =
             data[0];
 
 
-        /*
-         * =====================================================
-         * Pending Banner
-         * =====================================================
-         */
+        /* =====================================================
+           Pending Banner
+        ===================================================== */
 
         let pendingBannerHtml = "";
 
@@ -991,6 +1256,7 @@
 
 
                         <div class="pending-plan">
+
 
                             <div class="pending-plan-item">
 
@@ -1045,6 +1311,7 @@
 
                             </div>
 
+
                         </div>
 
 
@@ -1066,15 +1333,18 @@
         }
 
 
-        /*
-         * =====================================================
-         * 建立方案卡片
-         * =====================================================
-         */
+        /* =====================================================
+           建立方案卡片
+        ===================================================== */
 
         const plansHtml =
             data.map(
                 plan => {
+
+
+                    /* -------------------------------------------------
+                       狀態名稱
+                    ------------------------------------------------- */
 
                     const status =
                         statusNames[
@@ -1084,6 +1354,10 @@
                         "未知";
 
 
+                    /* -------------------------------------------------
+                       狀態 CSS
+                    ------------------------------------------------- */
+
                     const statusClass =
                         "status-" +
                         (
@@ -1091,6 +1365,10 @@
                             ""
                         ).toLowerCase();
 
+
+                    /* -------------------------------------------------
+                       開始日期
+                    ------------------------------------------------- */
 
                     const startDate =
                         plan.start_year &&
@@ -1101,6 +1379,10 @@
                             : "—";
 
 
+                    /* -------------------------------------------------
+                       結束日期
+                    ------------------------------------------------- */
+
                     const endDate =
                         plan.end_year &&
                         plan.end_month
@@ -1110,13 +1392,9 @@
                             : "—";
 
 
-                    /*
-                     * duration_years 已經包含「年」
-                     * 例如：
-                     * 1 年
-                     * 3 年
-                     * 6 年
-                     */
+                    /* -------------------------------------------------
+                       合約年限
+                    ------------------------------------------------- */
 
                     const duration =
                         plan.duration_years !== null &&
@@ -1129,6 +1407,10 @@
                             : "—";
 
 
+                    /* -------------------------------------------------
+                       Pending 說明
+                    ------------------------------------------------- */
+
                     const statusDescription =
                         plan.status === "pending"
 
@@ -1136,6 +1418,48 @@
 
                             : "";
 
+
+                    /* -------------------------------------------------
+                       只有 Active 顯示變更方案
+                    ------------------------------------------------- */
+
+                    const changePlanHtml =
+                        plan.status === "active"
+
+                            ? `
+
+                                <a
+                                    class="change-plan-button"
+                                    href="plan-change.html"
+                                >
+
+                                    <div class="change-plan-content">
+
+                                        <div class="change-plan-title">
+                                            變更方案
+                                        </div>
+
+                                        <div class="change-plan-description">
+                                            調整目前的方案內容與合約期間
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="change-plan-arrow">
+                                        →
+                                    </div>
+
+                                </a>
+
+                            `
+
+                            : "";
+
+
+                    /* -------------------------------------------------
+                       方案卡片
+                    ------------------------------------------------- */
 
                     return `
 
@@ -1306,19 +1630,25 @@
                             </div>
 
 
+                            <!-- =================================================
+                                 Active 才顯示
+                            ================================================== -->
+
+                            ${changePlanHtml}
+
+
                         </div>
 
                     `;
 
                 }
+
             ).join("");
 
 
-        /*
-         * =====================================================
-         * 最終顯示
-         * =====================================================
-         */
+        /* =====================================================
+           最終顯示
+        ===================================================== */
 
         document.getElementById(
             "content"
@@ -1336,11 +1666,9 @@
     }
 
 
-    /*
-     * =========================================================
-     * 登出
-     * =========================================================
-     */
+    /* =========================================================
+       登出
+    ========================================================= */
 
     async function logout() {
 
@@ -1368,11 +1696,9 @@
     }
 
 
-    /*
-     * =========================================================
-     * 頁面載入
-     * =========================================================
-     */
+    /* =========================================================
+       頁面載入
+    ========================================================= */
 
     document.addEventListener(
         "DOMContentLoaded",
@@ -1381,5 +1707,7 @@
 
 </script>
 
+
 </body>
+
 </html>
